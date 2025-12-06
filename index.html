@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Spanish Flashcards – Semi-Beginner Trainer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- PWA bits -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#020617" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Spanish Flashcards" />
+
+  <!-- Modern font: Inter -->
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+  />
+
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-alt: #020617;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.12);
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --card-bg: #020617;
+      --border-subtle: rgba(148, 163, 184, 0.25);
+      --danger: #f97373;
+      --danger-soft: rgba(239, 68, 68, 0.18);
+      --radius-lg: 18px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.9);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+        "SF Pro Text", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #111827, #020617 45%, #020617);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .app {
+      display: flex;
+      width: 100%;
+      max-width: 1100px;
+      margin: 12px auto;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #020617, #020617 40%, #020617);
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: #020617;
+      border-right: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .logo {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .logo-title {
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .logo-main {
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .logo-pill {
+      font-size: 11px;
+      text-transform: uppercase;
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 2px 8px;
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .deck-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .deck-item {
+      border-radius: 12px;
+      padding: 9px 10px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: background 0.15s ease, border-color 0.15s ease,
+        transform 0.1s ease;
+      font-size: 13px;
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--text-main);
+    }
+
+    .deck-item:hover {
+      background: rgba(15, 23, 42, 0.95);
+      border-color: rgba(148, 163, 184, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .deck-item.active {
+      background: radial-gradient(circle at top left, #22c55e25, #020617);
+      border-color: var(--accent);
+    }
+
+    .deck-name {
+      font-weight: 600;
+    }
+
+    .deck-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .settings-box {
+      margin-top: auto;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px dashed rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.92);
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .toggle-row span {
+      font-size: 12px;
+      color: var(--text-main);
+    }
+
+    .pill-toggle {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 2px;
+      background: #020617;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      gap: 4px;
+      font-size: 11px;
+    }
+
+    .pill-toggle button {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: background 0.15s ease, color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .pill-toggle button.active {
+      background: var(--accent);
+      color: #052e16;
+      font-weight: 600;
+    }
+
+    .reset-btn {
+      margin-top: 4px;
+      font-size: 11px;
+      padding: 6px 8px;
+      background: rgba(248, 250, 252, 0.02);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .reset-btn:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--danger);
+      color: #fecaca;
+    }
+
+    /* Main area */
+    .main {
+      flex: 1;
+      padding: 18px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: radial-gradient(circle at top left, #020617, #020617);
+    }
+
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.02em;
+    }
+
+    .title-block p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .stat-pill {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .stat-pill strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .stat-pill--accent {
+      border-color: rgba(34, 197, 94, 0.8);
+      background: var(--accent-soft);
+      color: #bbf7d0;
+    }
+
+    .stat-pill--danger {
+      border-color: rgba(239, 68, 68, 0.8);
+      background: var(--danger-soft);
+      color: #fecaca;
+    }
+
+    /* Card */
+    .card-shell {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .card {
+      flex: 1;
+      min-height: 220px;
+      border-radius: 24px;
+      background: #020617;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 22px 22px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at top left,
+        rgba(56, 189, 248, 0.14),
+        transparent 55%
+      );
+      pointer-events: none;
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      z-index: 1;
+    }
+
+    .card-deck-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+    }
+
+    .card-sub-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .card-body {
+      z-index: 1;
+      margin-top: 10px;
+      margin-bottom: 14px;
+    }
+
+    .card-front-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .card-front-text {
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--text-main);
+      word-wrap: break-word;
+    }
+
+    .card-back {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(148, 163, 184, 0.5);
+    }
+
+    .card-back-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .card-back-main {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .card-back-example {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .card-back-example span {
+      display: block;
+      margin-top: 2px;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      z-index: 1;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .card-primary-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 13px;
+      padding: 8px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, border-color 0.15s ease,
+        transform 0.08s ease;
+      white-space: nowrap;
+    }
+
+    .btn-ghost {
+      background: transparent;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      border-color: #22c55e;
+      color: #052e16;
+      font-weight: 600;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: var(--danger);
+      color: #fecaca;
+    }
+
+    .btn:hover {
+      transform: translateY(-0.5px);
+      border-color: rgba(248, 250, 252, 0.8);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: default;
+      transform: none;
+    }
+
+    .session-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+
+    .session-left,
+    .session-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .session-info {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 11px;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    /* Typed-answer UI */
+    .typed-answer {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .typed-answer input {
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 7px 12px;
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+    }
+
+    .typed-answer input::placeholder {
+      color: #6b7280;
+    }
+
+    .typed-answer input:focus {
+      border-color: var(--accent);
+    }
+
+    .typed-feedback {
+      font-size: 11px;
+      color: var(--text-muted);
+      min-height: 14px;
+    }
+
+    /* Add-card section */
+    .add-card {
+      margin-top: 6px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 1px dashed rgba(148, 163, 184, 0.55);
+      background: rgba(15, 23, 42, 0.96);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .add-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .add-card-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .add-card small {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .add-card form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px 10px;
+      margin-top: 4px;
+    }
+
+    .add-card label {
+      font-size: 11px;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .add-card input,
+    .add-card select {
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 6px 10px;
+      color: var(--text-main);
+      font-size: 12px;
+      outline: none;
+      width: 100%;
+    }
+
+    .add-card input::placeholder {
+      color: #6b7280;
+    }
+
+    .add-card input:focus,
+    .add-card select:focus {
+      border-color: var(--accent);
+    }
+
+    .add-card-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .add-feedback {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Medium screens / tablets */
+    @media (max-width: 880px) {
+      .app {
+        flex-direction: column;
+        margin: 0;
+        border-radius: 0;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.45);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        overflow-x: hidden;
+      }
+
+      .deck-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .deck-item {
+        flex: 1 1 calc(50% - 8px);
+      }
+
+      .settings-box {
+        width: 100%;
+        min-width: 0;
+        margin-top: 0;
+      }
+
+      .main {
+        padding: 14px;
+      }
+
+      .card {
+        padding: 18px 16px 16px;
+        min-height: 200px;
+      }
+
+      .card-front-text {
+        font-size: 28px;
+      }
+
+      .add-card form {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Phones */
+    @media (max-width: 540px) {
+      .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .stats {
+        justify-content: flex-start;
+      }
+
+      .session-controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .session-right {
+        justify-content: flex-start;
+      }
+
+      .card-front-text {
+        font-size: 24px;
+      }
+
+      .sidebar {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-title">Spanish trainer</div>
+        <div class="logo-main">
+          FlashCards
+          <span class="logo-pill">semi-beginner</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">Decks</div>
+        <div class="deck-list" id="deckList"></div>
+      </div>
+
+      <div class="settings-box">
+        <div class="sidebar-section-title">Session</div>
+
+        <div class="toggle-row">
+          <span>Direction</span>
+          <div class="pill-toggle" id="directionToggle">
+            <button data-direction="es-en" class="active">ES → EN</button>
+            <button data-direction="en-es">EN → ES</button>
+          </div>
+        </div>
+
+        <div class="toggle-row">
+          <span>Mode</span>
+          <div class="pill-toggle" id="modeToggle">
+            <button data-mode="normal" class="active">Normal</button>
+            <button data-mode="focus">Focus learning</button>
+          </div>
+        </div>
+
+        <div class="toggle-row">
+          <span>Answer mode</span>
+          <div class="pill-toggle" id="answerModeToggle">
+            <button data-answer-mode="reveal" class="active">Reveal</button>
+            <button data-answer-mode="type">Type</button>
+          </div>
+        </div>
+
+        <button class="reset-btn" id="resetProgressBtn">
+          ⟲ Reset learning progress
+        </button>
+
+        <div style="font-size: 11px; margin-top: 4px;">
+          Tip: Tap <strong>“I knew it”</strong> only when you really knew it
+          without guessing. The app will then show that card less often.
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="main-header">
+        <div class="title-block">
+          <h1>Train your Spanish vocabulary</h1>
+          <p id="deckDescription">
+            Choose a deck on the left, then reveal or type the answer and mark if you
+            knew it or not.
+          </p>
+        </div>
+        <div class="stats">
+          <div class="stat-pill stat-pill--accent">
+            Session cards: <strong id="statSessionSeen">0</strong>
+          </div>
+          <div class="stat-pill">
+            Knew it: <strong id="statSessionKnew">0</strong>
+          </div>
+          <div class="stat-pill stat-pill--danger">
+            Still learning: <strong id="statSessionLearning">0</strong>
+          </div>
+          <div class="stat-pill">
+            Total words: <strong id="statTotalWords">0</strong>
+          </div>
+        </div>
+      </header>
+
+      <section class="card-shell">
+        <div class="card" id="card">
+          <div class="card-header-row">
+            <div class="card-deck-label" id="cardDeckLabel">
+              All decks
+            </div>
+            <div class="card-sub-label" id="cardStrengthLabel">
+              New word
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="card-front-label" id="cardFrontLabel">Front</div>
+            <div class="card-front-text" id="cardFrontText">
+              Choose a deck to begin
+            </div>
+
+            <div class="typed-answer" id="typedAnswerContainer" style="display: none;">
+              <input
+                type="text"
+                id="typedAnswerInput"
+                placeholder="Type the translation and press Enter…"
+                autocomplete="off"
+              />
+              <div class="typed-feedback" id="typedFeedback"></div>
+            </div>
+
+            <div class="card-back" id="cardBack" style="display: none;">
+              <div class="card-back-label">Answer</div>
+              <div class="card-back-main" id="cardBackMain"></div>
+              <div class="card-back-example" id="cardBackExample"></div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="hint" id="cardHint">
+              Click “Show answer” or press the spacebar.
+            </div>
+            <div class="card-primary-actions">
+              <button class="btn btn-ghost" id="showAnswerBtn">
+                👀 Show answer
+              </button>
+              <button class="btn btn-danger" id="learningBtn" disabled>
+                🤔 Still learning
+              </button>
+              <button class="btn btn-accent" id="knewItBtn" disabled>
+                ✅ I knew it
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="session-controls">
+          <div class="session-left">
+            <span class="session-info" id="sessionInfo">
+              Start by picking a deck. The app will keep mixing words and show
+              the tough ones more often.
+            </span>
+          </div>
+          <div class="session-right">
+            <span class="badge" id="cardIndexBadge">—</span>
+            <button class="btn btn-ghost" id="skipBtn" disabled>
+              ⏭ Skip word
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Add your own card -->
+      <section class="add-card">
+        <div class="add-card-header">
+          <div class="add-card-title">Add your own words</div>
+          <small>
+            Saved locally in your browser. They’ll be included in “All decks”.
+          </small>
+        </div>
+        <form id="addCardForm">
+          <label>
+            Spanish *
+            <input type="text" id="addEs" placeholder="por ejemplo: la pared" />
+          </label>
+          <label>
+            English *
+            <input type="text" id="addEn" placeholder="for example: the wall" />
+          </label>
+          <label>
+            Example ES
+            <input type="text" id="addExampleEs" placeholder="optional sentence in Spanish" />
+          </label>
+          <label>
+            Example EN
+            <input type="text" id="addExampleEn" placeholder="optional sentence in English" />
+          </label>
+          <label>
+            Deck
+            <select id="addDeckSelect"></select>
+          </label>
+          <div class="add-card-actions">
+            <span class="add-feedback" id="addFeedback">
+              Tip: Add words you meet in real life (books, series, etc.).
+            </span>
+            <button type="submit" class="btn btn-accent">
+              ➕ Add word
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- All JS below is unchanged (functionality intact) -->
+  <script>
+    /******************************************************
+     * 1. DATA – semi-beginner decks (static base)
+     ******************************************************/
+    const DECKS = [
+      {
+        id: "all",
+        name: "All decks",
+        description:
+          "Mix of core verbs, everyday words, and useful phrases. Good default for daily practice.",
+        cards: [],
+        meta: {},
+      },
+      {
+        id: "core-verbs",
+        name: "Core verbs",
+        description:
+          "Most common verbs you’ll see and use every day: be, have, go, want, etc.",
+        cards: [
+          {
+            es: "ser",
+            en: "to be (essential, permanent)",
+            exampleEs: "Soy estudiante.",
+            exampleEn: "I am a student.",
+          },
+          {
+            es: "estar",
+            en: "to be (state, location)",
+            exampleEs: "Estoy cansado.",
+            exampleEn: "I am tired.",
+          },
+          {
+            es: "tener",
+            en: "to have",
+            exampleEs: "Tengo dos hermanos.",
+            exampleEn: "I have two brothers.",
+          },
+          {
+            es: "hacer",
+            en: "to do, to make",
+            exampleEs: "¿Qué haces?",
+            exampleEn: "What are you doing?",
+          },
+          {
+            es: "ir",
+            en: "to go",
+            exampleEs: "Voy al trabajo.",
+            exampleEn: "I’m going to work.",
+          },
+          {
+            es: "poder",
+            en: "can, to be able to",
+            exampleEs: "¿Puedes ayudarme?",
+            exampleEn: "Can you help me?",
+          },
+          {
+            es: "querer",
+            en: "to want, to love",
+            exampleEs: "Quiero aprender español.",
+            exampleEn: "I want to learn Spanish.",
+          },
+          {
+            es: "necesitar",
+            en: "to need",
+            exampleEs: "Necesito agua.",
+            exampleEn: "I need water.",
+          },
+          {
+            es: "decir",
+            en: "to say, to tell",
+            exampleEs: "Dime la verdad.",
+            exampleEn: "Tell me the truth.",
+          },
+          {
+            es: "ver",
+            en: "to see",
+            exampleEs: "No te veo.",
+            exampleEn: "I don’t see you.",
+          },
+          {
+            es: "dar",
+            en: "to give",
+            exampleEs: "Te doy mi número.",
+            exampleEn: "I’ll give you my number.",
+          },
+          {
+            es: "venir",
+            en: "to come",
+            exampleEs: "¿Vienes conmigo?",
+            exampleEn: "Are you coming with me?",
+          },
+          {
+            es: "poner",
+            en: "to put, to place",
+            exampleEs: "Pon la mesa, por favor.",
+            exampleEn: "Set the table, please.",
+          },
+          {
+            es: "salir",
+            en: "to go out, to leave",
+            exampleEs: "Salgo a las ocho.",
+            exampleEn: "I leave at eight.",
+          },
+          {
+            es: "comer",
+            en: "to eat",
+            exampleEs: "Comemos a las dos.",
+            exampleEn: "We eat at two.",
+          },
+          {
+            es: "beber",
+            en: "to drink",
+            exampleEs: "Bebo café por la mañana.",
+            exampleEn: "I drink coffee in the morning.",
+          },
+          {
+            es: "vivir",
+            en: "to live",
+            exampleEs: "Vivo en España.",
+            exampleEn: "I live in Spain.",
+          },
+          {
+            es: "hablar",
+            en: "to speak, to talk",
+            exampleEs: "Hablo un poco de español.",
+            exampleEn: "I speak a little Spanish.",
+          },
+          {
+            es: "entender",
+            en: "to understand",
+            exampleEs: "No entiendo.",
+            exampleEn: "I don’t understand.",
+          },
+          {
+            es: "aprender",
+            en: "to learn",
+            exampleEs: "Estoy aprendiendo español.",
+            exampleEn: "I am learning Spanish.",
+          },
+        ],
+      },
+      {
+        id: "everyday-nouns",
+        name: "Everyday words",
+        description:
+          "Common concrete words: house, food, family, days of the week, etc.",
+        cards: [
+          {
+            es: "la casa",
+            en: "house, home",
+            exampleEs: "Vuelvo a casa.",
+            exampleEn: "I’m going back home.",
+          },
+          {
+            es: "el trabajo",
+            en: "work, job",
+            exampleEs: "Estoy en el trabajo.",
+            exampleEn: "I’m at work.",
+          },
+          {
+            es: "la comida",
+            en: "food, meal",
+            exampleEs: "La comida está lista.",
+            exampleEn: "The food is ready.",
+          },
+          {
+            es: "el agua",
+            en: "water",
+            exampleEs: "¿Puedo tener un vaso de agua?",
+            exampleEn: "Can I have a glass of water?",
+          },
+          {
+            es: "la gente",
+            en: "people",
+            exampleEs: "Hay mucha gente aquí.",
+            exampleEn: "There are many people here.",
+          },
+          {
+            es: "el tiempo",
+            en: "time; weather",
+            exampleEs: "No tengo tiempo.",
+            exampleEn: "I don’t have time.",
+          },
+          {
+            es: "el dinero",
+            en: "money",
+            exampleEs: "No tengo mucho dinero.",
+            exampleEn: "I don’t have much money.",
+          },
+          {
+            es: "la familia",
+            en: "family",
+            exampleEs: "Mi familia es pequeña.",
+            exampleEn: "My family is small.",
+          },
+          {
+            es: "el amigo / la amiga",
+            en: "friend (male / female)",
+            exampleEs: "Ella es mi mejor amiga.",
+            exampleEn: "She is my best friend.",
+          },
+          {
+            es: "la ciudad",
+            en: "city",
+            exampleEs: "La ciudad es muy bonita.",
+            exampleEn: "The city is very beautiful.",
+          },
+          {
+            es: "el coche / el carro",
+            en: "car",
+            exampleEs: "Voy en coche.",
+            exampleEn: "I go by car.",
+          },
+          {
+            es: "el día",
+            en: "day",
+            exampleEs: "Buen día.",
+            exampleEn: "Good day.",
+          },
+          {
+            es: "la noche",
+            en: "night",
+            exampleEs: "Buenas noches.",
+            exampleEn: "Good night.",
+          },
+          {
+            es: "la mañana",
+            en: "morning",
+            exampleEs: "Por la mañana estudio.",
+            exampleEn: "In the morning I study.",
+          },
+          {
+            es: "el lunes",
+            en: "Monday",
+            exampleEs: "El lunes trabajo.",
+            exampleEn: "On Monday I work.",
+          },
+          {
+            es: "el fin de semana",
+            en: "weekend",
+            exampleEs: "Nos vemos el fin de semana.",
+            exampleEn: "See you on the weekend.",
+          },
+          {
+            es: "la habitación",
+            en: "room (in a house / hotel)",
+            exampleEs: "Mi habitación es pequeña.",
+            exampleEn: "My room is small.",
+          },
+          {
+            es: "la calle",
+            en: "street",
+            exampleEs: "Vivo en esta calle.",
+            exampleEn: "I live on this street.",
+          },
+          {
+            es: "el supermercado",
+            en: "supermarket",
+            exampleEs: "Voy al supermercado.",
+            exampleEn: "I’m going to the supermarket.",
+          },
+          {
+            es: "el restaurante",
+            en: "restaurant",
+            exampleEs: "Comemos en un restaurante.",
+            exampleEn: "We eat in a restaurant.",
+          },
+        ],
+      },
+      {
+        id: "adjectives",
+        name: "Useful adjectives",
+        description:
+          "Small set of high-frequency adjectives to describe people and things.",
+        cards: [
+          {
+            es: "grande",
+            en: "big, large",
+            exampleEs: "La casa es grande.",
+            exampleEn: "The house is big.",
+          },
+          {
+            es: "pequeño / pequeña",
+            en: "small",
+            exampleEs: "Es un pueblo pequeño.",
+            exampleEn: "It’s a small town.",
+          },
+          {
+            es: "bueno / buena",
+            en: "good",
+            exampleEs: "Es una idea buena.",
+            exampleEn: "It’s a good idea.",
+          },
+          {
+            es: "malo / mala",
+            en: "bad",
+            exampleEs: "Es un día malo.",
+            exampleEn: "It’s a bad day.",
+          },
+          {
+            es: "nuevo / nueva",
+            en: "new",
+            exampleEs: "Tengo un trabajo nuevo.",
+            exampleEn: "I have a new job.",
+          },
+          {
+            es: "viejo / vieja",
+            en: "old",
+            exampleEs: "Es un edificio viejo.",
+            exampleEn: "It’s an old building.",
+          },
+          {
+            es: "caro / cara",
+            en: "expensive",
+            exampleEs: "Este café es caro.",
+            exampleEn: "This coffee is expensive.",
+          },
+          {
+            es: "barato / barata",
+            en: "cheap, inexpensive",
+            exampleEs: "El menú es barato.",
+            exampleEn: "The menu is cheap.",
+          },
+          {
+            es: "fácil",
+            en: "easy",
+            exampleEs: "El ejercicio es fácil.",
+            exampleEn: "The exercise is easy.",
+          },
+          {
+            es: "difícil",
+            en: "difficult, hard",
+            exampleEs: "El idioma es difícil.",
+            exampleEn: "The language is hard.",
+          },
+          {
+            es: "ocupado / ocupada",
+            en: "busy",
+            exampleEs: "Estoy muy ocupado hoy.",
+            exampleEn: "I am very busy today.",
+          },
+          {
+            es: "libre",
+            en: "free (not busy)",
+            exampleEs: "Estoy libre esta tarde.",
+            exampleEn: "I’m free this afternoon.",
+          },
+          {
+            es: "cansado / cansada",
+            en: "tired",
+            exampleEs: "Estoy cansada pero feliz.",
+            exampleEn: "I’m tired but happy.",
+          },
+          {
+            es: "feliz",
+            en: "happy",
+            exampleEs: "Estoy muy feliz.",
+            exampleEn: "I am very happy.",
+          },
+          {
+            es: "triste",
+            en: "sad",
+            exampleEs: "Ella está triste hoy.",
+            exampleEn: "She is sad today.",
+          },
+        ],
+      },
+      {
+        id: "phrases",
+        name: "Survival phrases",
+        description:
+          "Polite everyday phrases for travel and conversation openings.",
+        cards: [
+          {
+            es: "Hola",
+            en: "Hi / Hello",
+            exampleEs: "Hola, ¿cómo estás?",
+            exampleEn: "Hi, how are you?",
+          },
+          {
+            es: "Buenos días",
+            en: "Good morning",
+            exampleEs: "Buenos días, señor.",
+            exampleEn: "Good morning, sir.",
+          },
+          {
+            es: "Buenas tardes",
+            en: "Good afternoon",
+            exampleEs: "Buenas tardes a todos.",
+            exampleEn: "Good afternoon, everyone.",
+          },
+          {
+            es: "Buenas noches",
+            en: "Good evening / Good night",
+            exampleEs: "Buenas noches, hasta mañana.",
+            exampleEn: "Good night, see you tomorrow.",
+          },
+          {
+            es: "Por favor",
+            en: "Please",
+            exampleEs: "Una mesa para dos, por favor.",
+            exampleEn: "A table for two, please.",
+          },
+          {
+            es: "Gracias",
+            en: "Thank you",
+            exampleEs: "Muchas gracias.",
+            exampleEn: "Thank you very much.",
+          },
+          {
+            es: "De nada",
+            en: "You’re welcome",
+            exampleEs: "—Gracias. —De nada.",
+            exampleEn: "“Thanks.” “You’re welcome.”",
+          },
+          {
+            es: "Perdón / Disculpa",
+            en: "Sorry; excuse me",
+            exampleEs: "Perdón, no entiendo.",
+            exampleEn: "Sorry, I don’t understand.",
+          },
+          {
+            es: "No hablo mucho español",
+            en: "I don’t speak much Spanish",
+            exampleEs: "Lo siento, no hablo mucho español.",
+            exampleEn: "Sorry, I don’t speak much Spanish.",
+          },
+          {
+            es: "¿Puedes hablar más despacio?",
+            en: "Can you speak more slowly?",
+            exampleEs: "Por favor, ¿puedes hablar más despacio?",
+            exampleEn: "Please, can you speak more slowly?",
+          },
+          {
+            es: "¿Cuánto cuesta?",
+            en: "How much does it cost?",
+            exampleEs: "¿Cuánto cuesta este café?",
+            exampleEn: "How much is this coffee?",
+          },
+          {
+            es: "¿Dónde está el baño?",
+            en: "Where is the bathroom?",
+            exampleEs: "Perdón, ¿dónde está el baño?",
+            exampleEn: "Excuse me, where is the bathroom?",
+          },
+          {
+            es: "Mucho gusto",
+            en: "Nice to meet you",
+            exampleEs: "Hola, soy Ana. Mucho gusto.",
+            exampleEn: "Hi, I’m Ana. Nice to meet you.",
+          },
+          {
+            es: "Hasta luego",
+            en: "See you later",
+            exampleEs: "Adiós, hasta luego.",
+            exampleEn: "Bye, see you later.",
+          },
+          {
+            es: "Nos vemos",
+            en: "See you",
+            exampleEs: "Vale, nos vemos mañana.",
+            exampleEn: "Okay, see you tomorrow.",
+          },
+        ],
+      },
+    ];
+
+    // Fill "all" deck with all base cards
+    (function populateAllDeck() {
+      const allDeck = DECKS.find((d) => d.id === "all");
+      DECKS.forEach((deck) => {
+        if (deck.id === "all") return;
+        deck.cards.forEach((card) => {
+          allDeck.cards.push({
+            ...card,
+            _sourceDeckId: deck.id,
+          });
+        });
+      });
+      allDeck.meta = {
+        fromDecks: DECKS.filter((d) => d.id !== "all").map((d) => d.id),
+      };
+    })();
+
+    /******************************************************
+     * 2. STATE & STORAGE
+     ******************************************************/
+    const STORAGE_KEY = "spanishFlashAppProgress_v1";
+    const STORAGE_CUSTOM = "spanishFlashAppCustomCards_v1";
+
+    let progressMap = {}; // { cardId: { strength: 0-3, seen: n, lastSeen: ms } }
+    let customCardsStore = {}; // { deckId: [ card, ... ] }
+
+    let currentDeckId = "all";
+    let currentDirection = "es-en"; // "es-en" or "en-es"
+    let currentMode = "normal"; // "normal" or "focus"
+    let currentAnswerMode = "reveal"; // "reveal" or "type"
+    let currentCardRef = null; // { deckId, index }
+    let currentRevealed = false;
+
+    const sessionStats = {
+      seen: 0,
+      knew: 0,
+      learning: 0,
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (data && typeof data === "object") {
+          progressMap = data;
+        }
+      } catch (e) {
+        console.warn("Could not load progress:", e);
+      }
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(progressMap));
+      } catch (e) {
+        console.warn("Could not save progress:", e);
+      }
+    }
+
+    function resetProgress() {
+      progressMap = {};
+      saveProgress();
+      updateStatsUI();
+      updateCardStrengthLabel(null);
+    }
+
+    function loadCustomCards() {
+      try {
+        const raw = localStorage.getItem(STORAGE_CUSTOM);
+        if (!raw) return;
+        const data = JSON.parse(raw) || {};
+        customCardsStore = data;
+        const allDeck = DECKS.find((d) => d.id === "all");
+
+        Object.entries(data).forEach(([deckId, cards]) => {
+          const deck = DECKS.find((d) => d.id === deckId);
+          if (!deck) return;
+          cards.forEach((card) => {
+            deck.cards.push(card);
+            allDeck.cards.push({
+              ...card,
+              _sourceDeckId: deckId,
+            });
+          });
+        });
+      } catch (e) {
+        console.warn("Could not load custom cards:", e);
+      }
+    }
+
+    function saveCustomCards() {
+      try {
+        localStorage.setItem(STORAGE_CUSTOM, JSON.stringify(customCardsStore));
+      } catch (e) {
+        console.warn("Could not save custom cards:", e);
+      }
+    }
+
+    function getCardId(deckId, index) {
+      return deckId + "::" + index;
+    }
+
+    function getCardProgress(deckId, index) {
+      const id = getCardId(deckId, index);
+      return progressMap[id] || { strength: 0, seen: 0, lastSeen: 0 };
+    }
+
+    function setCardProgress(deckId, index, update) {
+      const id = getCardId(deckId, index);
+      const prev = progressMap[id] || { strength: 0, seen: 0, lastSeen: 0 };
+      const next = {
+        ...prev,
+        ...update,
+      };
+      progressMap[id] = next;
+      saveProgress();
+      return next;
+    }
+
+    /******************************************************
+     * 3. DOM references
+     ******************************************************/
+    const deckListEl = document.getElementById("deckList");
+    const deckDescriptionEl = document.getElementById("deckDescription");
+    const statSessionSeenEl = document.getElementById("statSessionSeen");
+    const statSessionKnewEl = document.getElementById("statSessionKnew");
+    const statSessionLearningEl =
+      document.getElementById("statSessionLearning");
+    const statTotalWordsEl = document.getElementById("statTotalWords");
+
+    const cardEl = document.getElementById("card");
+    const cardDeckLabelEl = document.getElementById("cardDeckLabel");
+    const cardStrengthLabelEl = document.getElementById("cardStrengthLabel");
+    const cardFrontLabelEl = document.getElementById("cardFrontLabel");
+    const cardFrontTextEl = document.getElementById("cardFrontText");
+    const cardBackEl = document.getElementById("cardBack");
+    const cardBackMainEl = document.getElementById("cardBackMain");
+    const cardBackExampleEl = document.getElementById("cardBackExample");
+    const cardHintEl = document.getElementById("cardHint");
+    const cardIndexBadgeEl = document.getElementById("cardIndexBadge");
+
+    const typedAnswerContainer = document.getElementById("typedAnswerContainer");
+    const typedAnswerInput = document.getElementById("typedAnswerInput");
+    const typedFeedbackEl = document.getElementById("typedFeedback");
+
+    const showAnswerBtn = document.getElementById("showAnswerBtn");
+    const learningBtn = document.getElementById("learningBtn");
+    const knewItBtn = document.getElementById("knewItBtn");
+    const skipBtn = document.getElementById("skipBtn");
+
+    const directionToggleEl = document.getElementById("directionToggle");
+    const modeToggleEl = document.getElementById("modeToggle");
+    const answerModeToggleEl = document.getElementById("answerModeToggle");
+    const resetProgressBtn = document.getElementById("resetProgressBtn");
+    const sessionInfoEl = document.getElementById("sessionInfo");
+
+    // Add-card form
+    const addCardFormEl = document.getElementById("addCardForm");
+    const addDeckSelectEl = document.getElementById("addDeckSelect");
+    const addEsInputEl = document.getElementById("addEs");
+    const addEnInputEl = document.getElementById("addEn");
+    const addExampleEsInputEl = document.getElementById("addExampleEs");
+    const addExampleEnInputEl = document.getElementById("addExampleEn");
+    const addFeedbackEl = document.getElementById("addFeedback");
+
+    /******************************************************
+     * 4. Helpers
+     ******************************************************/
+    function normalizeAnswerString(str) {
+      if (!str) return "";
+      return str
+        .toLowerCase()
+        .normalize("NFD") // decompose accents
+        .replace(/[\u0300-\u036f]/g, "") // remove diacritics
+        .replace(/[¿?¡!.,;:()"'«»\-]/g, " ") // remove punctuation
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    /******************************************************
+     * 5. UI helpers
+     ******************************************************/
+    function renderDeckList() {
+      deckListEl.innerHTML = "";
+      DECKS.forEach((deck) => {
+        const item = document.createElement("div");
+        item.className = "deck-item";
+        if (deck.id === currentDeckId) {
+          item.classList.add("active");
+        }
+        item.dataset.deckId = deck.id;
+
+        const name = document.createElement("div");
+        name.className = "deck-name";
+        name.textContent = deck.name;
+
+        const meta = document.createElement("div");
+        meta.className = "deck-meta";
+
+        let totalCards = deck.cards.length;
+        meta.textContent = `${totalCards} words`;
+
+        item.appendChild(name);
+        item.appendChild(meta);
+        deckListEl.appendChild(item);
+      });
+    }
+
+    function populateAddDeckSelect() {
+      addDeckSelectEl.innerHTML = "";
+      DECKS.forEach((deck) => {
+        if (deck.id === "all") return;
+        const opt = document.createElement("option");
+        opt.value = deck.id;
+        opt.textContent = deck.name;
+        addDeckSelectEl.appendChild(opt);
+      });
+
+      // default to current deck if it’s not "all"
+      if (currentDeckId !== "all") {
+        addDeckSelectEl.value = currentDeckId;
+      }
+    }
+
+    function updateDeckDescription() {
+      const deck = DECKS.find((d) => d.id === currentDeckId);
+      deckDescriptionEl.textContent = deck
+        ? deck.description
+        : "Pick a deck to start practicing.";
+    }
+
+    function updateStatsUI() {
+      const allDeck = DECKS.find((d) => d.id === "all");
+      statTotalWordsEl.textContent = allDeck.cards.length;
+      statSessionSeenEl.textContent = sessionStats.seen;
+      statSessionKnewEl.textContent = sessionStats.knew;
+      statSessionLearningEl.textContent = sessionStats.learning;
+    }
+
+    function updateCardStrengthLabel(cardProgress) {
+      if (!cardProgress) {
+        cardStrengthLabelEl.textContent = "New word";
+        return;
+      }
+      const s = cardProgress.strength || 0;
+      if (s <= 0) {
+        cardStrengthLabelEl.textContent = "New word";
+      } else if (s === 1) {
+        cardStrengthLabelEl.textContent = "Learning · ☆";
+      } else if (s === 2) {
+        cardStrengthLabelEl.textContent = "Getting stronger · ☆☆";
+      } else {
+        cardStrengthLabelEl.textContent = "Strong word · ☆☆☆";
+      }
+    }
+
+    function renderCard() {
+      const deck = DECKS.find((d) => d.id === currentDeckId);
+      if (!deck || !deck.cards.length || !currentCardRef) {
+        cardFrontTextEl.textContent = "Choose a deck to begin";
+        cardBackEl.style.display = "none";
+        cardDeckLabelEl.textContent = "No deck";
+        cardHintEl.textContent =
+          "Pick a deck on the left to start your session.";
+        showAnswerBtn.disabled = true;
+        learningBtn.disabled = true;
+        knewItBtn.disabled = true;
+        skipBtn.disabled = true;
+        cardIndexBadgeEl.textContent = "—";
+        typedAnswerContainer.style.display = "none";
+        typedFeedbackEl.textContent = "";
+        updateCardStrengthLabel(null);
+        return;
+      }
+
+      const { deckId, index } = currentCardRef;
+      const currentDeck = DECKS.find((d) => d.id === deckId);
+      const card = currentDeck.cards[index];
+
+      cardDeckLabelEl.textContent =
+        deckId === "all" ? "All decks" : currentDeck.name;
+
+      const frontIsSpanish = currentDirection === "es-en";
+      cardFrontLabelEl.textContent = frontIsSpanish ? "Spanish" : "English";
+      const frontText = frontIsSpanish ? card.es : card.en;
+      const backText = frontIsSpanish ? card.en : card.es;
+
+      cardFrontTextEl.textContent = frontText;
+      cardBackMainEl.textContent = backText;
+
+      let exampleHtml = "";
+      if (card.exampleEs || card.exampleEn) {
+        if (frontIsSpanish) {
+          if (card.exampleEs) {
+            exampleHtml += "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
+          }
+          if (card.exampleEn) {
+            exampleHtml += "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
+          }
+        } else {
+          if (card.exampleEn) {
+            exampleHtml += "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
+          }
+          if (card.exampleEs) {
+            exampleHtml += "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
+          }
+        }
+      }
+      cardBackExampleEl.innerHTML = exampleHtml;
+
+      const progress = getCardProgress(deckId, index);
+      updateCardStrengthLabel(progress);
+
+      const totalInDeck = deck.cards.length;
+      cardIndexBadgeEl.textContent = `Card ${index + 1} of ${totalInDeck}`;
+
+      // Answer modes: reveal vs type
+      if (currentAnswerMode === "reveal") {
+        typedAnswerContainer.style.display = "none";
+        typedFeedbackEl.textContent = "";
+        typedAnswerInput.value = "";
+
+        cardBackEl.style.display = currentRevealed ? "block" : "none";
+        showAnswerBtn.disabled = currentRevealed;
+        learningBtn.disabled = !currentRevealed;
+        knewItBtn.disabled = !currentRevealed;
+
+        learningBtn.style.display = "inline-flex";
+        knewItBtn.style.display = "inline-flex";
+
+        showAnswerBtn.textContent = "👀 Show answer";
+
+        cardHintEl.textContent = currentRevealed
+          ? "Mark if you knew it or not."
+          : "Try to recall it, then show the answer.";
+      } else {
+        // type mode
+        typedAnswerContainer.style.display = "flex";
+        typedFeedbackEl.textContent = "";
+        cardBackEl.style.display = "none";
+        showAnswerBtn.disabled = false;
+
+        learningBtn.style.display = "none";
+        knewItBtn.style.display = "none";
+
+        showAnswerBtn.textContent = "⏎ Check answer";
+
+        cardHintEl.textContent =
+          'Type the translation and press Enter or "Check answer".';
+      }
+
+      skipBtn.disabled = false;
+    }
+
+    /******************************************************
+     * 6. Card selection logic (simple spaced repetition)
+     ******************************************************/
+    function chooseNextCard() {
+      const deck = DECKS.find((d) => d.id === currentDeckId);
+      if (!deck || !deck.cards.length) {
+        currentCardRef = null;
+        return;
+      }
+
+      const now = Date.now();
+      const candidates = deck.cards.map((_, idx) => {
+        const prog = getCardProgress(currentDeckId, idx);
+        const ageMinutes =
+          prog.lastSeen > 0 ? (now - prog.lastSeen) / 60000 : 9999;
+        let weight = 1 + Math.max(0, 3 - (prog.strength || 0)) * 2;
+
+        if (currentMode === "focus") {
+          if ((prog.strength || 0) <= 1) {
+            weight *= 2.2;
+          } else {
+            weight *= 0.8;
+          }
+        }
+
+        if (ageMinutes < 1) {
+          weight *= 0.4;
+        }
+
+        return {
+          deckId: currentDeckId,
+          index: idx,
+          weight,
+        };
+      });
+
+      const totalWeight = candidates.reduce(
+        (sum, c) => sum + c.weight,
+        0
+      );
+      if (totalWeight <= 0) {
+        currentCardRef = { deckId: currentDeckId, index: 0 };
+        return;
+      }
+
+      let rnd = Math.random() * totalWeight;
+      let chosen = candidates[0];
+      for (const c of candidates) {
+        rnd -= c.weight;
+        if (rnd <= 0) {
+          chosen = c;
+          break;
+        }
+      }
+      currentCardRef = chosen;
+    }
+
+    function goToNextCard() {
+      currentRevealed = false;
+      chooseNextCard();
+      renderCard();
+
+      if (currentAnswerMode === "type" && typedAnswerInput) {
+        setTimeout(() => typedAnswerInput.focus(), 0);
+      }
+    }
+
+    /******************************************************
+     * 7. Event handlers
+     ******************************************************/
+    function onDeckClick(e) {
+      const item = e.target.closest(".deck-item");
+      if (!item) return;
+      const deckId = item.dataset.deckId;
+      if (!deckId || deckId === currentDeckId) return;
+      currentDeckId = deckId;
+      deckListEl
+        .querySelectorAll(".deck-item")
+        .forEach((el) => el.classList.remove("active"));
+      item.classList.add("active");
+      updateDeckDescription();
+      populateAddDeckSelect();
+      sessionInfoEl.textContent =
+        "New deck selected. The app will keep mixing words and show the ones you struggle with more often.";
+      goToNextCard();
+    }
+
+    function onShowAnswer() {
+      if (!currentCardRef) return;
+      currentRevealed = true;
+      renderCard();
+    }
+
+    function onCheckTypedAnswer() {
+      if (!currentCardRef) return;
+      const { deckId, index } = currentCardRef;
+      const currentDeck = DECKS.find((d) => d.id === deckId);
+      const card = currentDeck.cards[index];
+
+      const frontIsSpanish = currentDirection === "es-en";
+      const targetRaw = frontIsSpanish ? card.en : card.es;
+      const userRaw = typedAnswerInput.value || "";
+
+      const userNorm = normalizeAnswerString(userRaw);
+      const targetNorm = normalizeAnswerString(targetRaw);
+
+      if (!userNorm) {
+        typedFeedbackEl.textContent = "Type something first.";
+        typedFeedbackEl.style.color = "var(--text-muted)";
+        return;
+      }
+
+      const isCorrect = userNorm === targetNorm;
+
+      if (isCorrect) {
+        typedFeedbackEl.textContent = "Correct!";
+        typedFeedbackEl.style.color = "#bbf7d0";
+      } else {
+        typedFeedbackEl.textContent = `Almost. Correct: ${targetRaw}`;
+        typedFeedbackEl.style.color = "#fecaca";
+      }
+
+      // Short delay so you can see the feedback, then mark + move on
+      setTimeout(() => {
+        typedAnswerInput.value = "";
+        typedFeedbackEl.textContent = "";
+        onMark(isCorrect);
+      }, 600);
+    }
+
+    function onAnswerButtonClick() {
+      if (currentAnswerMode === "reveal") {
+        onShowAnswer();
+      } else {
+        onCheckTypedAnswer();
+      }
+    }
+
+    function onMark(known) {
+      if (!currentCardRef) return;
+
+      const { deckId, index } = currentCardRef;
+      const prev = getCardProgress(deckId, index);
+      const now = Date.now();
+
+      let newStrength = prev.strength || 0;
+      if (known) {
+        if (newStrength < 3) newStrength += 1;
+      } else {
+        newStrength = Math.max(0, newStrength - 1);
+      }
+
+      const updated = setCardProgress(deckId, index, {
+        strength: newStrength,
+        seen: (prev.seen || 0) + 1,
+        lastSeen: now,
+      });
+
+      sessionStats.seen += 1;
+      if (known) {
+        sessionStats.knew += 1;
+      } else {
+        sessionStats.learning += 1;
+      }
+      updateStatsUI();
+      updateCardStrengthLabel(updated);
+
+      goToNextCard();
+    }
+
+    function onSkip() {
+      if (!currentCardRef) return;
+      goToNextCard();
+    }
+
+    function onDirectionToggle(e) {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      const dir = btn.dataset.direction;
+      if (!dir || dir === currentDirection) return;
+      currentDirection = dir;
+
+      directionToggleEl
+        .querySelectorAll("button")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      if (currentCardRef) {
+        renderCard();
+      }
+    }
+
+    function onModeToggle(e) {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      const mode = btn.dataset.mode;
+      if (!mode || mode === currentMode) return;
+      currentMode = mode;
+
+      modeToggleEl
+        .querySelectorAll("button")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      sessionInfoEl.textContent =
+        mode === "focus"
+          ? "Focus mode: words you’re still learning will appear much more often."
+          : "Normal mode: a balanced mix of new and known words.";
+      goToNextCard();
+    }
+
+    function onAnswerModeToggle(e) {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      const mode = btn.dataset["answerMode"];
+      if (!mode || mode === currentAnswerMode) return;
+      currentAnswerMode = mode;
+
+      answerModeToggleEl
+        .querySelectorAll("button")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      if (currentAnswerMode === "type") {
+        sessionInfoEl.textContent =
+          "Type mode: you type the translation. Accents, case, and punctuation don’t matter.";
+      } else {
+        sessionInfoEl.textContent =
+          "Reveal mode: you see the answer and mark if you knew it.";
+      }
+
+      currentRevealed = false;
+      renderCard();
+      if (currentAnswerMode === "type" && typedAnswerInput) {
+        setTimeout(() => typedAnswerInput.focus(), 0);
+      }
+    }
+
+    function onResetProgress() {
+      if (
+        confirm(
+          "Reset all learning progress? This will forget which words you already know."
+        )
+      ) {
+        resetProgress();
+        sessionInfoEl.textContent =
+          "Progress reset. All words are new again.";
+        goToNextCard();
+      }
+    }
+
+    function onKeyDown(e) {
+      if (!currentCardRef) return;
+
+      // Typed mode shortcuts
+      if (currentAnswerMode === "type") {
+        if (e.key === "Enter" || e.code === "Space") {
+          e.preventDefault();
+          onCheckTypedAnswer();
+        } else if (e.key === "ArrowRight") {
+          onSkip();
+        }
+        return;
+      }
+
+      // Reveal mode shortcuts
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (!currentRevealed) {
+          onShowAnswer();
+        } else {
+          onMark(true);
+        }
+      } else if (e.key === "1") {
+        onMark(false);
+      } else if (e.key === "2") {
+        onMark(true);
+      } else if (e.key === "ArrowRight") {
+        onSkip();
+      }
+    }
+
+    function onAddCardSubmit(e) {
+      e.preventDefault();
+      const es = (addEsInputEl.value || "").trim();
+      const en = (addEnInputEl.value || "").trim();
+      const exampleEs = (addExampleEsInputEl.value || "").trim();
+      const exampleEn = (addExampleEnInputEl.value || "").trim();
+      let deckId = addDeckSelectEl.value;
+
+      if (!es || !en) {
+        addFeedbackEl.textContent = "Please fill in both Spanish and English.";
+        addFeedbackEl.style.color = "#fecaca";
+        return;
+      }
+
+      if (!deckId || deckId === "all") {
+        deckId = currentDeckId !== "all" ? currentDeckId : "core-verbs";
+      }
+
+      const card = {
+        es,
+        en,
+        exampleEs: exampleEs || undefined,
+        exampleEn: exampleEn || undefined,
+        _userAdded: true,
+      };
+
+      const targetDeck = DECKS.find((d) => d.id === deckId);
+      const allDeck = DECKS.find((d) => d.id === "all");
+      if (!targetDeck) {
+        addFeedbackEl.textContent = "Unknown deck. Try again.";
+        addFeedbackEl.style.color = "#fecaca";
+        return;
+      }
+
+      targetDeck.cards.push(card);
+      allDeck.cards.push({
+        ...card,
+        _sourceDeckId: deckId,
+      });
+
+      if (!customCardsStore[deckId]) {
+        customCardsStore[deckId] = [];
+      }
+      customCardsStore[deckId].push(card);
+      saveCustomCards();
+
+      addEsInputEl.value = "";
+      addEnInputEl.value = "";
+      addExampleEsInputEl.value = "";
+      addExampleEnInputEl.value = "";
+      addEsInputEl.focus();
+
+      addFeedbackEl.textContent = `Added to "${targetDeck.name}".`;
+      addFeedbackEl.style.color = "#bbf7d0";
+
+      updateStatsUI();
+      renderDeckList();
+    }
+
+    /******************************************************
+     * 8. Init
+     ******************************************************/
+    function init() {
+      loadProgress();
+      loadCustomCards();
+      renderDeckList();
+      updateDeckDescription();
+      populateAddDeckSelect();
+      updateStatsUI();
+
+      // default select first deck item in UI
+      const firstDeckEl = deckListEl.querySelector(
+        `.deck-item[data-deck-id="${currentDeckId}"]`
+      );
+      if (firstDeckEl) firstDeckEl.classList.add("active");
+
+      // Wire events
+      deckListEl.addEventListener("click", onDeckClick);
+      showAnswerBtn.addEventListener("click", onAnswerButtonClick);
+      learningBtn.addEventListener("click", () => onMark(false));
+      knewItBtn.addEventListener("click", () => onMark(true));
+      skipBtn.addEventListener("click", onSkip);
+      directionToggleEl.addEventListener("click", onDirectionToggle);
+      modeToggleEl.addEventListener("click", onModeToggle);
+      answerModeToggleEl.addEventListener("click", onAnswerModeToggle);
+      resetProgressBtn.addEventListener("click", onResetProgress);
+      document.addEventListener("keydown", onKeyDown);
+
+      addCardFormEl.addEventListener("submit", onAddCardSubmit);
+
+      goToNextCard();
+    }
+
+    init();
+  </script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("./service-worker.js")
+          .catch((err) => {
+            console.log("Service worker registration failed:", err);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
