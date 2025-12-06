@@ -2715,37 +2715,52 @@
     }
 
     function onKeyDown(e) {
-      if (!currentCardRef) return;
+  const target = e.target;
+  const tag = target && target.tagName;
+  const isFormField =
+    tag === "INPUT" ||
+    tag === "TEXTAREA" ||
+    tag === "SELECT" ||
+    (target && target.isContentEditable);
 
-      if (currentAnswerMode === "type") {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          if (!typeAnswerChecked) {
-            onCheckTypedAnswer();
-          } else {
-            onTypeNext();
-          }
-        } else if (e.key === "ArrowRight") {
-          onSkip();
-        }
-        return;
-      }
+  // If we are typing in any input/textarea/select that is NOT the main
+  // typed-answer field, do NOT hijack the spacebar or other shortcuts.
+  if (isFormField && target !== typedAnswerInput) {
+    return;
+  }
 
-      if (e.code === "Space") {
-        e.preventDefault();
-        if (!currentRevealed) {
-          onShowAnswer();
-        } else {
-          onMark(true);
-        }
-      } else if (e.key === "1") {
-        onMark(false);
-      } else if (e.key === "2") {
-        onMark(true);
-      } else if (e.key === "ArrowRight") {
-        onSkip();
+  if (!currentCardRef) return;
+
+  if (currentAnswerMode === "type") {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (!typeAnswerChecked) {
+        onCheckTypedAnswer();
+      } else {
+        onTypeNext();
       }
+    } else if (e.key === "ArrowRight") {
+      onSkip();
     }
+    return;
+  }
+
+  if (e.code === "Space" || e.key === " ") {
+    e.preventDefault();
+    if (!currentRevealed) {
+      onShowAnswer();
+    } else {
+      onMark(true);
+    }
+  } else if (e.key === "1") {
+    onMark(false);
+  } else if (e.key === "2") {
+    onMark(true);
+  } else if (e.key === "ArrowRight") {
+    onSkip();
+  }
+}
+
 
         function onAddCardSubmit(e) {
       e.preventDefault();
