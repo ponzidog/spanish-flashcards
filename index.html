@@ -67,12 +67,15 @@
       border: 1px solid rgba(148, 163, 184, 0.45);
       box-shadow: var(--shadow-soft);
       overflow: hidden;
+      position: relative;
     }
 
     .app-header {
       padding: 18px 18px 10px;
       border-bottom: 1px solid rgba(148, 163, 184, 0.35);
       background: radial-gradient(circle at top left, #020617, #020617);
+      position: relative;
+      z-index: 10;
     }
 
     .header-top {
@@ -372,23 +375,32 @@
     }
 
     .add-card input,
-    .add-card select {
+    .add-card select,
+    .add-card textarea {
       background: rgba(15, 23, 42, 0.98);
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.7);
-      padding: 7px 11px;
+      padding: 10px 12px;
       color: var(--text-main);
-      font-size: 12px;
+      font-size: 16px; /* >=16px to avoid mobile zoom */
       outline: none;
       width: 100%;
     }
 
-    .add-card input::placeholder {
+    .add-card textarea {
+      border-radius: 14px;
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .add-card input::placeholder,
+    .add-card textarea::placeholder {
       color: #6b7280;
     }
 
     .add-card input:focus,
-    .add-card select:focus {
+    .add-card select:focus,
+    .add-card textarea:focus {
       border-color: var(--accent);
     }
 
@@ -407,6 +419,124 @@
       color: var(--text-muted);
     }
 
+    .add-card-examples,
+    .add-card-examples-fields {
+      grid-column: 1 / -1;
+    }
+
+    .add-card-examples-fields {
+      display: none;
+      gap: 6px 10px;
+      margin-top: 4px;
+    }
+
+    .add-card-examples-fields label textarea {
+      width: 100%;
+    }
+
+    .btn-lg {
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Words panel (view/edit/delete) */
+    .words-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+
+    .words-deck-select {
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 7px 11px;
+      color: var(--text-main);
+      font-size: 12px;
+      outline: none;
+    }
+
+    .words-deck-select:focus {
+      border-color: var(--accent);
+    }
+
+    .words-list {
+      max-height: 260px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .word-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 6px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(30, 64, 175, 0.4);
+      background: rgba(15, 23, 42, 0.96);
+    }
+
+    .word-row-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .word-row-line {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .word-row-line span.label {
+      font-size: 11px;
+      color: var(--text-muted);
+      min-width: 36px;
+    }
+
+    .word-input {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 7px 10px;
+      font-size: 14px;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .word-input:focus {
+      border-color: var(--accent);
+    }
+
+    .word-row-deck {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .word-row-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .btn-xs {
+      padding: 5px 8px;
+      font-size: 11px;
+    }
+
+    .words-empty {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
     /* Main / game area */
     .main {
       padding: 14px 18px 18px;
@@ -414,6 +544,8 @@
       flex-direction: column;
       gap: 12px;
       background: radial-gradient(circle at top left, #020617, #020617);
+      position: relative;
+      z-index: 1;
     }
 
     .card-shell {
@@ -666,6 +798,104 @@
       background: rgba(15, 23, 42, 0.96);
     }
 
+    /* Stats panel below game */
+    .stats-bar {
+      width: 100%;
+      max-width: 640px;
+      margin: 8px auto 0;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .stats-panel {
+      width: 100%;
+      max-width: 640px;
+      margin: 8px auto 0;
+      border-radius: 18px;
+      border: 1px dashed rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.96);
+      padding: 10px 12px;
+      font-size: 12px;
+      display: none;
+    }
+
+    .stats-panel-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .stats-panel-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* Deck-complete overlay + confetti */
+    .deck-complete-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.78);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 60;
+    }
+
+    .deck-complete-card {
+      background: radial-gradient(circle at top left, #020617, #020617 40%);
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      box-shadow: var(--shadow-soft);
+      padding: 18px 20px 16px;
+      max-width: 380px;
+      width: 90%;
+    }
+
+    .deck-complete-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .deck-complete-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .deck-complete-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .confetti-container {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 80;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 8px;
+      height: 14px;
+      opacity: 0.9;
+      border-radius: 2px;
+      animation: confetti-fall 2.8s linear forwards;
+    }
+
+    @keyframes confetti-fall {
+      to {
+        transform: translate3d(0, 110vh, 0) rotateZ(360deg);
+        opacity: 0;
+      }
+    }
+
     /* Responsive */
     @media (max-width: 880px) {
       .app {
@@ -684,6 +914,10 @@
 
       .add-card form {
         grid-template-columns: 1fr;
+      }
+
+      .add-card-examples-fields {
+        display: none;
       }
     }
 
@@ -757,6 +991,9 @@
         <button class="top-nav-btn" data-panel="add">
           ➕ <span class="label">Add word</span>
         </button>
+        <button class="top-nav-btn" data-panel="words">
+          📝 <span class="label">Words</span>
+        </button>
       </div>
 
       <!-- Panels -->
@@ -780,14 +1017,6 @@
             </div>
 
             <div class="settings-row">
-              <span class="label">Mode</span>
-              <div class="pill-toggle" id="modeToggle">
-                <button data-mode="normal" class="active">Normal</button>
-                <button data-mode="focus">Focus learning</button>
-              </div>
-            </div>
-
-            <div class="settings-row">
               <span class="label">Answer mode</span>
               <div class="pill-toggle" id="answerModeToggle">
                 <button data-answer-mode="reveal" class="active">Reveal</button>
@@ -800,8 +1029,8 @@
             </button>
 
             <div style="font-size: 11px; margin-top: 4px;">
-              Tip: Tap <strong>“I knew it”</strong> only when you really knew it
-              without guessing. The app will then show that card less often.
+              Focus mode is always on: words you’re still learning appear much more
+              often than strong ones.
             </div>
           </div>
         </div>
@@ -823,14 +1052,30 @@
                 English *
                 <input type="text" id="addEn" placeholder="for example: the wall" />
               </label>
-              <label>
-                Example ES
-                <input type="text" id="addExampleEs" placeholder="optional sentence in Spanish" />
-              </label>
-              <label>
-                Example EN
-                <input type="text" id="addExampleEn" placeholder="optional sentence in English" />
-              </label>
+
+              <div class="add-card-examples">
+                <button type="button" class="btn btn-ghost btn-xs" id="toggleExamplesBtn">
+                  ➕ Add examples
+                </button>
+              </div>
+
+              <div class="add-card-examples-fields" id="exampleFields">
+                <label>
+                  Example ES
+                  <textarea
+                    id="addExampleEs"
+                    placeholder="optional sentence in Spanish"
+                  ></textarea>
+                </label>
+                <label>
+                  Example EN
+                  <textarea
+                    id="addExampleEn"
+                    placeholder="optional sentence in English"
+                  ></textarea>
+                </label>
+              </div>
+
               <label>
                 Deck
                 <select id="addDeckSelect"></select>
@@ -839,12 +1084,22 @@
                 <span class="add-feedback" id="addFeedback">
                   Tip: Add words you meet in real life (books, series, etc.).
                 </span>
-                <button type="submit" class="btn btn-accent">
+                <button type="submit" class="btn btn-accent btn-lg">
                   ➕ Add word
                 </button>
               </div>
             </form>
           </div>
+        </div>
+
+        <!-- Words view/edit panel -->
+        <div class="top-panel" id="panel-words">
+          <div class="panel-title">All words</div>
+          <div class="words-controls">
+            <span>View deck:</span>
+            <select id="wordsDeckSelect" class="words-deck-select"></select>
+          </div>
+          <div class="words-list" id="wordsList"></div>
         </div>
       </div>
     </header>
@@ -918,11 +1173,54 @@
             </button>
           </div>
         </div>
+
+        <div class="stats-bar">
+          <button class="btn btn-ghost btn-xs" id="statsToggleBtn">📊 Stats</button>
+        </div>
+        <div class="stats-panel" id="statsPanel">
+          <div class="stats-panel-row">
+            <div class="stat-pill stat-pill--accent">
+              Already know: <strong id="statsKnownCount">0</strong>
+            </div>
+            <div class="stat-pill">
+              Don’t know yet: <strong id="statsDontKnowCount">0</strong>
+            </div>
+            <div class="stat-pill stat-pill--danger">
+              Struggle words: <strong id="statsStruggleCount">0</strong>
+            </div>
+          </div>
+          <div class="stats-panel-actions">
+            <button class="btn btn-ghost btn-xs" id="statsExcludeKnownBtn">
+              🚫 Exclude known words this session
+            </button>
+            <button class="btn btn-danger btn-xs" id="statsDeleteKnownBtn">
+              🗑 Delete known words from file
+            </button>
+          </div>
+        </div>
       </section>
     </main>
+
+    <!-- Deck complete overlay -->
+    <div class="deck-complete-overlay" id="deckCompleteOverlay">
+      <div class="deck-complete-card">
+        <div class="deck-complete-title" id="deckCompleteTitle">🎉 Congrats!</div>
+        <div class="deck-complete-text" id="deckCompleteText">
+          You went through every card in this deck.
+        </div>
+        <div class="deck-complete-actions">
+          <button class="btn btn-accent" id="deckCompleteStruggleBtn">
+            🔁 Practice struggle words
+          </button>
+          <button class="btn btn-ghost" id="deckCompleteCloseBtn">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- JS – logic mostly unchanged, with new type-mode + layout behavior -->
+  <!-- JS -->
   <script>
     /******************************************************
      * 1. DATA – semi-beginner decks (static base)
@@ -1390,22 +1688,23 @@
       },
     ];
 
-    // Fill "all" deck with all base cards
-    (function populateAllDeck() {
+    function rebuildAllDeck() {
       const allDeck = DECKS.find((d) => d.id === "all");
+      allDeck.cards = [];
       DECKS.forEach((deck) => {
         if (deck.id === "all") return;
-        deck.cards.forEach((card) => {
+        deck.cards.forEach((card, index) => {
           allDeck.cards.push({
             ...card,
             _sourceDeckId: deck.id,
+            _sourceIndex: index,
           });
         });
       });
       allDeck.meta = {
         fromDecks: DECKS.filter((d) => d.id !== "all").map((d) => d.id),
       };
-    })();
+    }
 
     /******************************************************
      * 2. STATE & STORAGE
@@ -1413,12 +1712,12 @@
     const STORAGE_KEY = "spanishFlashAppProgress_v1";
     const STORAGE_CUSTOM = "spanishFlashAppCustomCards_v1";
 
-    let progressMap = {}; // { cardId: { strength: 0-3, seen: n, lastSeen: ms } }
+    let progressMap = {}; // { cardKey: { strength, seen, lastSeen, correct, wrong, firstAnswerCorrect } }
     let customCardsStore = {}; // { deckId: [ card, ... ] }
 
     let currentDeckId = "all";
     let currentDirection = "es-en"; // "es-en" or "en-es"
-    let currentMode = "normal"; // "normal" or "focus"
+    let currentMode = "focus"; // always focus
     let currentAnswerMode = "reveal"; // "reveal" or "type"
     let currentCardRef = null; // { deckId, index }
     let currentRevealed = false;
@@ -1429,9 +1728,15 @@
       learning: 0,
     };
 
-    // extra state for "type" mode
     let typeAnswerChecked = false;
     let lastTypeWasCorrect = null;
+
+    // Session filters / completion
+    let currentSessionFilter = "all"; // "all" | "struggle"
+    let excludeKnownFromSession = false;
+    let sessionSeenByDeck = {}; // { deckId: Set(cardIds) }
+    let deckCompletionShown = {}; // { deckId: true }
+    let lastCompletedDeckId = null;
 
     function loadProgress() {
       try {
@@ -1467,17 +1772,11 @@
         if (!raw) return;
         const data = JSON.parse(raw) || {};
         customCardsStore = data;
-        const allDeck = DECKS.find((d) => d.id === "all");
-
         Object.entries(data).forEach(([deckId, cards]) => {
           const deck = DECKS.find((d) => d.id === deckId);
           if (!deck) return;
           cards.forEach((card) => {
             deck.cards.push(card);
-            allDeck.cards.push({
-              ...card,
-              _sourceDeckId: deckId,
-            });
           });
         });
       } catch (e) {
@@ -1491,6 +1790,27 @@
       } catch (e) {
         console.warn("Could not save custom cards:", e);
       }
+    }
+
+    function syncCustomStoreFromDecks() {
+      const nextStore = {};
+      DECKS.forEach((deck) => {
+        if (deck.id === "all") return;
+        deck.cards.forEach((card) => {
+          if (card._userAdded) {
+            if (!nextStore[deck.id]) nextStore[deck.id] = [];
+            nextStore[deck.id].push({
+              es: card.es,
+              en: card.en,
+              exampleEs: card.exampleEs,
+              exampleEn: card.exampleEn,
+              _userAdded: true,
+            });
+          }
+        });
+      });
+      customCardsStore = nextStore;
+      saveCustomCards();
     }
 
     function getCardId(deckId, index) {
@@ -1512,6 +1832,53 @@
       progressMap[id] = next;
       saveProgress();
       return next;
+    }
+
+    function findAllDeckIndexForCard(deckId, index) {
+      const allDeck = DECKS.find((d) => d.id === "all");
+      if (!allDeck) return -1;
+      for (let i = 0; i < allDeck.cards.length; i++) {
+        const c = allDeck.cards[i];
+        if (c._sourceDeckId === deckId && c._sourceIndex === index) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    function getAggregatedProgressForAllIndex(allIndex) {
+      const allDeck = DECKS.find((d) => d.id === "all");
+      if (!allDeck || !allDeck.cards[allIndex]) {
+        return { correct: 0, wrong: 0 };
+      }
+      const card = allDeck.cards[allIndex];
+      const progAll = getCardProgress("all", allIndex);
+      let progSource = { correct: 0, wrong: 0 };
+      if (
+        card._sourceDeckId &&
+        card._sourceDeckId !== "all" &&
+        typeof card._sourceIndex === "number"
+      ) {
+        progSource = getCardProgress(card._sourceDeckId, card._sourceIndex);
+      }
+      return {
+        correct: (progAll.correct || 0) + (progSource.correct || 0),
+        wrong: (progAll.wrong || 0) + (progSource.wrong || 0),
+      };
+    }
+
+    function getAggregatedProgress(deckId, index) {
+      const progDeck = getCardProgress(deckId, index);
+      const allIndex = findAllDeckIndexForCard(deckId, index);
+      let progAll = { correct: 0, wrong: 0 };
+      if (allIndex >= 0) {
+        const p = getCardProgress("all", allIndex);
+        progAll = p;
+      }
+      return {
+        correct: (progDeck.correct || 0) + (progAll.correct || 0),
+        wrong: (progDeck.wrong || 0) + (progAll.wrong || 0),
+      };
     }
 
     /******************************************************
@@ -1536,7 +1903,9 @@
     const cardHintEl = document.getElementById("cardHint");
     const cardIndexBadgeEl = document.getElementById("cardIndexBadge");
 
-    const typedAnswerContainer = document.getElementById("typedAnswerContainer");
+    const typedAnswerContainer = document.getElementById(
+      "typedAnswerContainer"
+    );
     const typedAnswerInput = document.getElementById("typedAnswerInput");
     const typedFeedbackEl = document.getElementById("typedFeedback");
 
@@ -1546,7 +1915,6 @@
     const skipBtn = document.getElementById("skipBtn");
 
     const directionToggleEl = document.getElementById("directionToggle");
-    const modeToggleEl = document.getElementById("modeToggle");
     const answerModeToggleEl = document.getElementById("answerModeToggle");
     const resetProgressBtn = document.getElementById("resetProgressBtn");
     const sessionInfoEl = document.getElementById("sessionInfo");
@@ -1556,6 +1924,7 @@
     const panelDecksEl = document.getElementById("panel-decks");
     const panelSessionEl = document.getElementById("panel-session");
     const panelAddEl = document.getElementById("panel-add");
+    const panelWordsEl = document.getElementById("panel-words");
     let currentOpenPanelId = "panel-decks";
 
     // Add-card form
@@ -1566,6 +1935,35 @@
     const addExampleEsInputEl = document.getElementById("addExampleEs");
     const addExampleEnInputEl = document.getElementById("addExampleEn");
     const addFeedbackEl = document.getElementById("addFeedback");
+    const toggleExamplesBtn = document.getElementById("toggleExamplesBtn");
+    const exampleFieldsEl = document.getElementById("exampleFields");
+
+    // Words view/edit
+    const wordsDeckSelectEl = document.getElementById("wordsDeckSelect");
+    const wordsListEl = document.getElementById("wordsList");
+
+    // Stats panel
+    const statsToggleBtn = document.getElementById("statsToggleBtn");
+    const statsPanelEl = document.getElementById("statsPanel");
+    const statsKnownCountEl = document.getElementById("statsKnownCount");
+    const statsDontKnowCountEl = document.getElementById("statsDontKnowCount");
+    const statsStruggleCountEl = document.getElementById("statsStruggleCount");
+    const statsDeleteKnownBtn = document.getElementById("statsDeleteKnownBtn");
+    const statsExcludeKnownBtn = document.getElementById(
+      "statsExcludeKnownBtn"
+    );
+
+    // Deck-complete overlay
+    const deckCompleteOverlayEl =
+      document.getElementById("deckCompleteOverlay");
+    const deckCompleteTitleEl = document.getElementById("deckCompleteTitle");
+    const deckCompleteTextEl = document.getElementById("deckCompleteText");
+    const deckCompleteStruggleBtn = document.getElementById(
+      "deckCompleteStruggleBtn"
+    );
+    const deckCompleteCloseBtn = document.getElementById(
+      "deckCompleteCloseBtn"
+    );
 
     /******************************************************
      * 4. Helpers
@@ -1582,9 +1980,9 @@
     }
 
     function setTopPanel(panelIdOrNull) {
-      [panelDecksEl, panelSessionEl, panelAddEl].forEach((p) =>
-        p.classList.remove("active")
-      );
+      [panelDecksEl, panelSessionEl, panelAddEl, panelWordsEl].forEach((p) => {
+        if (p) p.classList.remove("active");
+      });
       topNavEl
         .querySelectorAll(".top-nav-btn")
         .forEach((btn) => btn.classList.remove("active"));
@@ -1594,18 +1992,92 @@
         return;
       }
 
-      const panelEl =
-        panelIdOrNull === "panel-decks"
-          ? panelDecksEl
-          : panelIdOrNull === "panel-session"
-          ? panelSessionEl
-          : panelAddEl;
+      let panelEl = null;
+      if (panelIdOrNull === "panel-decks") panelEl = panelDecksEl;
+      else if (panelIdOrNull === "panel-session") panelEl = panelSessionEl;
+      else if (panelIdOrNull === "panel-add") panelEl = panelAddEl;
+      else if (panelIdOrNull === "panel-words") panelEl = panelWordsEl;
 
-      panelEl.classList.add("active");
+      if (panelEl) panelEl.classList.add("active");
       const key = panelIdOrNull.replace("panel-", "");
       const btn = topNavEl.querySelector(`.top-nav-btn[data-panel="${key}"]`);
       if (btn) btn.classList.add("active");
       currentOpenPanelId = panelIdOrNull;
+    }
+
+    function computeGlobalStats() {
+      const allDeck = DECKS.find((d) => d.id === "all");
+      if (!allDeck) return { known: 0, dontKnow: 0, struggle: 0 };
+      let known = 0;
+      let dontKnow = 0;
+      let struggle = 0;
+      allDeck.cards.forEach((card, idx) => {
+        const agg = getAggregatedProgressForAllIndex(idx);
+        const c = agg.correct || 0;
+        const w = agg.wrong || 0;
+        if (c === 0 && w === 0) {
+          dontKnow++;
+        } else if (c === 0 && w > 0) {
+          // seen but never correct
+          dontKnow++;
+        } else if (c > 0 && w === 0) {
+          known++;
+        } else if (c > 0 && w > 0) {
+          struggle++;
+        }
+      });
+      return { known, dontKnow, struggle };
+    }
+
+    function launchConfetti() {
+      const container = document.createElement("div");
+      container.className = "confetti-container";
+      const colors = ["#22c55e", "#38bdf8", "#facc15", "#f97316", "#a855f7"];
+
+      for (let i = 0; i < 120; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        piece.style.left = Math.random() * 100 + "vw";
+        piece.style.top = Math.random() * -20 + "vh";
+        piece.style.backgroundColor =
+          colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDelay = Math.random() * 0.4 + "s";
+        piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+        container.appendChild(piece);
+      }
+
+      document.body.appendChild(container);
+      setTimeout(() => {
+        container.remove();
+      }, 3200);
+    }
+
+    function handleDeckCompleted(deckId) {
+      const deck = DECKS.find((d) => d.id === deckId);
+      if (!deck) return;
+      lastCompletedDeckId = deckId;
+
+      const allDeck = DECKS.find((d) => d.id === "all");
+      let struggleCount = 0;
+      if (allDeck) {
+        allDeck.cards.forEach((card, idx) => {
+          if (card._sourceDeckId !== deckId) return;
+          const agg = getAggregatedProgressForAllIndex(idx);
+          if ((agg.wrong || 0) > 0) struggleCount++;
+        });
+      }
+
+      deckCompleteTitleEl.textContent = "🎉 Congrats!";
+      deckCompleteTextEl.textContent =
+        struggleCount > 0
+          ? `You went through every card in "${deck.name}". Want to focus on the ${struggleCount} words you struggled with?`
+          : `You went through every card in "${deck.name}" without really struggling. Nice work!`;
+
+      deckCompleteStruggleBtn.style.display =
+        struggleCount > 0 ? "inline-flex" : "none";
+
+      deckCompleteOverlayEl.style.display = "flex";
+      launchConfetti();
     }
 
     /******************************************************
@@ -1614,6 +2086,7 @@
     function renderDeckList() {
       deckListEl.innerHTML = "";
       DECKS.forEach((deck) => {
+        if (!deck) return;
         const item = document.createElement("div");
         item.className = "deck-item";
         if (deck.id === currentDeckId) {
@@ -1647,10 +2120,128 @@
         addDeckSelectEl.appendChild(opt);
       });
 
-      // default to current deck if it’s not "all"
       if (currentDeckId !== "all") {
         addDeckSelectEl.value = currentDeckId;
       }
+    }
+
+    function populateWordsDeckSelect() {
+      if (!wordsDeckSelectEl) return;
+      const previous = wordsDeckSelectEl.value;
+      wordsDeckSelectEl.innerHTML = "";
+
+      const allOpt = document.createElement("option");
+      allOpt.value = "*all";
+      allOpt.textContent = "All decks";
+      wordsDeckSelectEl.appendChild(allOpt);
+
+      DECKS.forEach((deck) => {
+        if (deck.id === "all") return;
+        const opt = document.createElement("option");
+        opt.value = deck.id;
+        opt.textContent = deck.name;
+        wordsDeckSelectEl.appendChild(opt);
+      });
+
+      if (previous && [...wordsDeckSelectEl.options].some((o) => o.value === previous)) {
+        wordsDeckSelectEl.value = previous;
+      } else if (currentDeckId !== "all") {
+        wordsDeckSelectEl.value = currentDeckId;
+      } else {
+        wordsDeckSelectEl.value = "*all";
+      }
+    }
+
+    function createWordRow(row) {
+      const { deckId, index, card } = row;
+      const deck = DECKS.find((d) => d.id === deckId);
+      const rowEl = document.createElement("div");
+      rowEl.className = "word-row";
+      rowEl.dataset.deckId = deckId;
+      rowEl.dataset.index = index;
+
+      const main = document.createElement("div");
+      main.className = "word-row-main";
+
+      const line1 = document.createElement("div");
+      line1.className = "word-row-line";
+      const labelEs = document.createElement("span");
+      labelEs.className = "label";
+      labelEs.textContent = "ES";
+      const inputEs = document.createElement("input");
+      inputEs.className = "word-input";
+      inputEs.type = "text";
+      inputEs.value = card.es || "";
+      inputEs.dataset.field = "es";
+      line1.appendChild(labelEs);
+      line1.appendChild(inputEs);
+
+      const line2 = document.createElement("div");
+      line2.className = "word-row-line";
+      const labelEn = document.createElement("span");
+      labelEn.className = "label";
+      labelEn.textContent = "EN";
+      const inputEn = document.createElement("input");
+      inputEn.className = "word-input";
+      inputEn.type = "text";
+      inputEn.value = card.en || "";
+      inputEn.dataset.field = "en";
+      line2.appendChild(labelEn);
+      line2.appendChild(inputEn);
+
+      const deckLine = document.createElement("div");
+      deckLine.className = "word-row-deck";
+      deckLine.textContent = deck ? deck.name : deckId;
+
+      main.appendChild(line1);
+      main.appendChild(line2);
+      main.appendChild(deckLine);
+
+      const actions = document.createElement("div");
+      actions.className = "word-row-actions";
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "btn btn-danger btn-xs word-delete-btn";
+      deleteBtn.textContent = "🗑";
+      actions.appendChild(deleteBtn);
+
+      rowEl.appendChild(main);
+      rowEl.appendChild(actions);
+      return rowEl;
+    }
+
+    function renderWordsList() {
+      if (!wordsListEl || !wordsDeckSelectEl) return;
+      const selected = wordsDeckSelectEl.value || "*all";
+      wordsListEl.innerHTML = "";
+
+      const rows = [];
+      if (selected === "*all") {
+        DECKS.forEach((deck) => {
+          if (deck.id === "all") return;
+          deck.cards.forEach((card, index) => {
+            rows.push({ deckId: deck.id, index, card });
+          });
+        });
+      } else {
+        const deck = DECKS.find((d) => d.id === selected);
+        if (deck) {
+          deck.cards.forEach((card, index) => {
+            rows.push({ deckId: selected, index, card });
+          });
+        }
+      }
+
+      if (!rows.length) {
+        const empty = document.createElement("div");
+        empty.className = "words-empty";
+        empty.textContent = "No words yet in this view.";
+        wordsListEl.appendChild(empty);
+        return;
+      }
+
+      rows.forEach((row) => {
+        wordsListEl.appendChild(createWordRow(row));
+      });
     }
 
     function updateDeckDescription() {
@@ -1662,10 +2253,17 @@
 
     function updateStatsUI() {
       const allDeck = DECKS.find((d) => d.id === "all");
-      statTotalWordsEl.textContent = allDeck.cards.length;
+      statTotalWordsEl.textContent = allDeck ? allDeck.cards.length : 0;
       statSessionSeenEl.textContent = sessionStats.seen;
       statSessionKnewEl.textContent = sessionStats.knew;
       statSessionLearningEl.textContent = sessionStats.learning;
+
+      if (statsKnownCountEl && statsDontKnowCountEl && statsStruggleCountEl) {
+        const global = computeGlobalStats();
+        statsKnownCountEl.textContent = global.known;
+        statsDontKnowCountEl.textContent = global.dontKnow;
+        statsStruggleCountEl.textContent = global.struggle;
+      }
     }
 
     function updateCardStrengthLabel(cardProgress) {
@@ -1687,12 +2285,35 @@
 
     function renderCard() {
       const deck = DECKS.find((d) => d.id === currentDeckId);
-      if (!deck || !deck.cards.length || !currentCardRef) {
-        cardFrontTextEl.textContent = "Choose a deck to begin";
+
+      if (!deck || !deck.cards.length) {
+        cardFrontTextEl.textContent = "No words in this deck yet.";
+        cardDeckLabelEl.textContent = deck ? deck.name : "No deck";
         cardBackEl.style.display = "none";
-        cardDeckLabelEl.textContent = "No deck";
         cardHintEl.textContent =
-          "Pick a deck from the Decks panel above to start your session.";
+          "Add words in the Add word panel or pick another deck.";
+        showAnswerBtn.disabled = true;
+        learningBtn.disabled = true;
+        knewItBtn.disabled = true;
+        skipBtn.disabled = true;
+        cardIndexBadgeEl.textContent = "—";
+        typedAnswerContainer.style.display = "none";
+        typedFeedbackEl.textContent = "";
+        updateCardStrengthLabel(null);
+        return;
+      }
+
+      if (!currentCardRef) {
+        const hasFilter =
+          excludeKnownFromSession || currentSessionFilter !== "all";
+        cardFrontTextEl.textContent = hasFilter
+          ? "No cards match the current filter."
+          : "Choose a deck to begin";
+        cardDeckLabelEl.textContent = deck.name;
+        cardBackEl.style.display = "none";
+        cardHintEl.textContent = hasFilter
+          ? "Adjust your stats filters below or pick another deck to keep practicing."
+          : "Pick a deck from the Decks panel above to start your session.";
         showAnswerBtn.disabled = true;
         learningBtn.disabled = true;
         knewItBtn.disabled = true;
@@ -1723,17 +2344,21 @@
       if (card.exampleEs || card.exampleEn) {
         if (frontIsSpanish) {
           if (card.exampleEs) {
-            exampleHtml += "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
+            exampleHtml +=
+              "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
           }
           if (card.exampleEn) {
-            exampleHtml += "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
+            exampleHtml +=
+              "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
           }
         } else {
           if (card.exampleEn) {
-            exampleHtml += "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
+            exampleHtml +=
+              "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
           }
           if (card.exampleEs) {
-            exampleHtml += "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
+            exampleHtml +=
+              "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
           }
         }
       }
@@ -1794,8 +2419,19 @@
       }
 
       const now = Date.now();
-      const candidates = deck.cards.map((_, idx) => {
+      const candidates = [];
+
+      deck.cards.forEach((_, idx) => {
         const prog = getCardProgress(currentDeckId, idx);
+        const agg = getAggregatedProgress(currentDeckId, idx);
+
+        if (currentSessionFilter === "struggle" && (agg.wrong || 0) <= 0) {
+          return;
+        }
+        if (excludeKnownFromSession && (agg.correct || 0) > 0 && (agg.wrong || 0) === 0) {
+          return;
+        }
+
         const ageMinutes =
           prog.lastSeen > 0 ? (now - prog.lastSeen) / 60000 : 9999;
         let weight = 1 + Math.max(0, 3 - (prog.strength || 0)) * 2;
@@ -1812,22 +2448,19 @@
           weight *= 0.4;
         }
 
-        return {
+        candidates.push({
           deckId: currentDeckId,
           index: idx,
           weight,
-        };
+        });
       });
 
-      const totalWeight = candidates.reduce(
-        (sum, c) => sum + c.weight,
-        0
-      );
-      if (totalWeight <= 0) {
-        currentCardRef = { deckId: currentDeckId, index: 0 };
+      if (!candidates.length) {
+        currentCardRef = null;
         return;
       }
 
+      const totalWeight = candidates.reduce((sum, c) => sum + c.weight, 0);
       let rnd = Math.random() * totalWeight;
       let chosen = candidates[0];
       for (const c of candidates) {
@@ -1869,6 +2502,10 @@
       item.classList.add("active");
       updateDeckDescription();
       populateAddDeckSelect();
+      populateWordsDeckSelect();
+      renderWordsList();
+      currentSessionFilter = "all";
+      sessionSeenByDeck[currentDeckId] = new Set();
       sessionInfoEl.textContent =
         "New deck selected. The app will keep mixing words and show the ones you struggle with more often.";
       goToNextCard();
@@ -1876,8 +2513,12 @@
 
     function onShowAnswer() {
       if (!currentCardRef) return;
-      currentRevealed = true;
-      renderCard();
+      if (currentAnswerMode === "reveal") {
+        currentRevealed = true;
+        renderCard();
+      } else {
+        onAnswerButtonClick();
+      }
     }
 
     function onCheckTypedAnswer() {
@@ -1919,19 +2560,16 @@
     function onTypeNext() {
       if (!currentCardRef) return;
       if (!typeAnswerChecked || lastTypeWasCorrect === null) {
-        // if for some reason it's not checked, just skip
         goToNextCard();
         return;
       }
       onMark(lastTypeWasCorrect);
-      // onMark -> goToNextCard, which resets typeAnswerChecked
     }
 
     function onAnswerButtonClick() {
       if (currentAnswerMode === "reveal") {
         onShowAnswer();
       } else {
-        // type mode
         if (!typeAnswerChecked) {
           onCheckTypedAnswer();
         } else {
@@ -1948,16 +2586,34 @@
       const now = Date.now();
 
       let newStrength = prev.strength || 0;
+      let correct = prev.correct || 0;
+      let wrong = prev.wrong || 0;
+      let firstAnswerCorrect =
+        typeof prev.firstAnswerCorrect === "boolean"
+          ? prev.firstAnswerCorrect
+          : null;
+
       if (known) {
         if (newStrength < 3) newStrength += 1;
+        correct += 1;
+        if (prev.seen === 0 || prev.seen == null) {
+          firstAnswerCorrect = true;
+        }
       } else {
         newStrength = Math.max(0, newStrength - 1);
+        wrong += 1;
+        if (prev.seen === 0 || prev.seen == null) {
+          firstAnswerCorrect = false;
+        }
       }
 
       const updated = setCardProgress(deckId, index, {
         strength: newStrength,
         seen: (prev.seen || 0) + 1,
         lastSeen: now,
+        correct,
+        wrong,
+        firstAnswerCorrect,
       });
 
       sessionStats.seen += 1;
@@ -1968,6 +2624,23 @@
       }
       updateStatsUI();
       updateCardStrengthLabel(updated);
+
+      // track per-deck seen for deck completion
+      if (!sessionSeenByDeck[deckId]) {
+        sessionSeenByDeck[deckId] = new Set();
+      }
+      sessionSeenByDeck[deckId].add(getCardId(deckId, index));
+
+      const deck = DECKS.find((d) => d.id === deckId);
+      if (
+        deck &&
+        !deckCompletionShown[deckId] &&
+        sessionSeenByDeck[deckId].size >= deck.cards.length &&
+        deck.cards.length > 0
+      ) {
+        deckCompletionShown[deckId] = true;
+        handleDeckCompleted(deckId);
+      }
 
       goToNextCard();
     }
@@ -1992,25 +2665,6 @@
       if (currentCardRef) {
         renderCard();
       }
-    }
-
-    function onModeToggle(e) {
-      const btn = e.target.closest("button");
-      if (!btn) return;
-      const mode = btn.dataset.mode;
-      if (!mode || mode === currentMode) return;
-      currentMode = mode;
-
-      modeToggleEl
-        .querySelectorAll("button")
-        .forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-
-      sessionInfoEl.textContent =
-        mode === "focus"
-          ? "Focus mode: words you’re still learning will appear much more often."
-          : "Normal mode: a balanced mix of new and known words.";
-      goToNextCard();
     }
 
     function onAnswerModeToggle(e) {
@@ -2054,6 +2708,8 @@
         resetProgress();
         sessionInfoEl.textContent =
           "Progress reset. All words are new again.";
+        sessionSeenByDeck = {};
+        deckCompletionShown = {};
         goToNextCard();
       }
     }
@@ -2061,7 +2717,6 @@
     function onKeyDown(e) {
       if (!currentCardRef) return;
 
-      // Typed mode shortcuts
       if (currentAnswerMode === "type") {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -2076,7 +2731,6 @@
         return;
       }
 
-      // Reveal mode shortcuts
       if (e.code === "Space") {
         e.preventDefault();
         if (!currentRevealed) {
@@ -2093,7 +2747,7 @@
       }
     }
 
-    function onAddCardSubmit(e) {
+        function onAddCardSubmit(e) {
       e.preventDefault();
       const es = (addEsInputEl.value || "").trim();
       const en = (addEnInputEl.value || "").trim();
@@ -2102,13 +2756,21 @@
       let deckId = addDeckSelectEl.value;
 
       if (!es || !en) {
-        addFeedbackEl.textContent = "Please fill in both Spanish and English.";
+        addFeedbackEl.textContent =
+          "Please fill in both Spanish and English.";
         addFeedbackEl.style.color = "#fecaca";
         return;
       }
 
       if (!deckId || deckId === "all") {
         deckId = currentDeckId !== "all" ? currentDeckId : "core-verbs";
+      }
+
+      const deck = DECKS.find((d) => d.id === deckId);
+      if (!deck) {
+        addFeedbackEl.textContent = "Unknown deck. Try again.";
+        addFeedbackEl.style.color = "#fecaca";
+        return;
       }
 
       const card = {
@@ -2119,25 +2781,9 @@
         _userAdded: true,
       };
 
-      const targetDeck = DECKS.find((d) => d.id === deckId);
-      const allDeck = DECKS.find((d) => d.id === "all");
-      if (!targetDeck) {
-        addFeedbackEl.textContent = "Unknown deck. Try again.";
-        addFeedbackEl.style.color = "#fecaca";
-        return;
-      }
-
-      targetDeck.cards.push(card);
-      allDeck.cards.push({
-        ...card,
-        _sourceDeckId: deckId,
-      });
-
-      if (!customCardsStore[deckId]) {
-        customCardsStore[deckId] = [];
-      }
-      customCardsStore[deckId].push(card);
-      saveCustomCards();
+      deck.cards.push(card);
+      syncCustomStoreFromDecks();
+      rebuildAllDeck();
 
       addEsInputEl.value = "";
       addEnInputEl.value = "";
@@ -2145,11 +2791,18 @@
       addExampleEnInputEl.value = "";
       addEsInputEl.focus();
 
-      addFeedbackEl.textContent = `Added to "${targetDeck.name}".`;
+      addFeedbackEl.textContent = `Added to "${deck.name}".`;
       addFeedbackEl.style.color = "#bbf7d0";
 
       updateStatsUI();
       renderDeckList();
+      populateWordsDeckSelect();
+      renderWordsList();
+
+      if (!currentCardRef || currentDeckId === deckId) {
+        currentDeckId = deckId;
+        goToNextCard();
+      }
     }
 
     function onTopNavClick(e) {
@@ -2157,11 +2810,201 @@
       if (!btn) return;
       const key = btn.dataset.panel;
       const panelId = "panel-" + key;
+
       if (currentOpenPanelId === panelId) {
-        // toggle off
         setTopPanel(null);
       } else {
         setTopPanel(panelId);
+        if (panelId === "panel-words") {
+          renderWordsList();
+        }
+      }
+    }
+
+    function onWordsDeckChange() {
+      renderWordsList();
+    }
+
+    function onWordsListInput(e) {
+      const input = e.target.closest(".word-input");
+      if (!input) return;
+      const row = e.target.closest(".word-row");
+      if (!row) return;
+
+      const deckId = row.dataset.deckId;
+      const index = parseInt(row.dataset.index, 10);
+      const deck = DECKS.find((d) => d.id === deckId);
+      if (!deck || !deck.cards[index]) return;
+
+      const field = input.dataset.field;
+      if (field !== "es" && field !== "en") return;
+
+      deck.cards[index][field] = input.value;
+      syncCustomStoreFromDecks();
+      rebuildAllDeck();
+      updateStatsUI();
+
+      if (
+        currentCardRef &&
+        currentCardRef.deckId === deckId &&
+        currentCardRef.index === index
+      ) {
+        renderCard();
+      }
+    }
+
+    function onWordsListClick(e) {
+      const deleteBtn = e.target.closest(".word-delete-btn");
+      if (!deleteBtn) return;
+
+      const row = deleteBtn.closest(".word-row");
+      if (!row) return;
+
+      const deckId = row.dataset.deckId;
+      const index = parseInt(row.dataset.index, 10);
+      const deck = DECKS.find((d) => d.id === deckId);
+      if (!deck || !deck.cards[index]) return;
+
+      const card = deck.cards[index];
+      const label = card.es || card.en || "this word";
+
+      const ok = confirm(
+        `Delete "${label}" from the "${deck.name}" deck?`
+      );
+      if (!ok) return;
+
+      deck.cards.splice(index, 1);
+      syncCustomStoreFromDecks();
+      rebuildAllDeck();
+      updateStatsUI();
+      renderDeckList();
+      renderWordsList();
+
+      if (currentDeckId === deckId) {
+        currentCardRef = null;
+        goToNextCard();
+      }
+    }
+
+    function deleteKnownWords() {
+      const allDeck = DECKS.find((d) => d.id === "all");
+      if (!allDeck) return;
+
+      const toDeleteByDeck = {};
+      allDeck.cards.forEach((card, idx) => {
+        const agg = getAggregatedProgressForAllIndex(idx);
+        const c = agg.correct || 0;
+        const w = agg.wrong || 0;
+        const isKnown = c > 0 && w === 0;
+
+        if (!isKnown) return;
+        const srcDeckId = card._sourceDeckId;
+        const srcIndex = card._sourceIndex;
+        if (!srcDeckId || srcDeckId === "all") return;
+        if (typeof srcIndex !== "number") return;
+
+        if (!toDeleteByDeck[srcDeckId]) {
+          toDeleteByDeck[srcDeckId] = new Set();
+        }
+        toDeleteByDeck[srcDeckId].add(srcIndex);
+      });
+
+      DECKS.forEach((deck) => {
+        if (deck.id === "all") return;
+        const marks = toDeleteByDeck[deck.id];
+        if (!marks || !marks.size) return;
+        deck.cards = deck.cards.filter((_, idx) => !marks.has(idx));
+      });
+
+      syncCustomStoreFromDecks();
+      rebuildAllDeck();
+
+      // Easiest + safest: reset learning after pruning
+      resetProgress();
+      sessionSeenByDeck = {};
+      deckCompletionShown = {};
+
+      renderDeckList();
+      populateWordsDeckSelect();
+      renderWordsList();
+      updateStatsUI();
+
+      currentCardRef = null;
+      goToNextCard();
+    }
+
+    function onStatsToggle() {
+      if (!statsPanelEl) return;
+      const visible = statsPanelEl.style.display === "block";
+      statsPanelEl.style.display = visible ? "none" : "block";
+      statsToggleBtn.textContent = visible ? "📊 Stats" : "📊 Hide stats";
+      if (!visible) {
+        updateStatsUI();
+      }
+    }
+
+    function onStatsDeleteKnown() {
+      const ok = confirm(
+        "Delete all words you already know (only correct answers, never wrong) from all decks? This also resets your learning progress."
+      );
+      if (!ok) return;
+      deleteKnownWords();
+      sessionInfoEl.textContent =
+        "Known words removed and progress reset. Fresh start with the remaining words.";
+    }
+
+    function onStatsExcludeKnown() {
+      excludeKnownFromSession = !excludeKnownFromSession;
+      if (excludeKnownFromSession) {
+        statsExcludeKnownBtn.textContent =
+          "✅ Excluding known words this session";
+      } else {
+        statsExcludeKnownBtn.textContent =
+          "🚫 Exclude known words this session";
+      }
+      currentCardRef = null;
+      goToNextCard();
+    }
+
+    function onDeckCompletePracticeStruggle() {
+      const deckId = lastCompletedDeckId;
+      if (!deckId) return;
+      const deck = DECKS.find((d) => d.id === deckId);
+      currentDeckId = deckId;
+      currentSessionFilter = "struggle";
+      excludeKnownFromSession = false;
+
+      renderDeckList();
+      updateDeckDescription();
+      deckCompleteOverlayEl.style.display = "none";
+
+      sessionSeenByDeck[deckId] = new Set();
+      sessionInfoEl.textContent = deck
+        ? `Now focusing only on the words you struggled with in "${deck.name}".`
+        : "Now focusing only on the words you struggled with in this deck.";
+
+      currentCardRef = null;
+      goToNextCard();
+    }
+
+    function onDeckCompleteClose() {
+      deckCompleteOverlayEl.style.display = "none";
+      currentSessionFilter = "all";
+      sessionInfoEl.textContent =
+        "Nice work – you’ve seen every word in this deck. Keep going or switch decks.";
+    }
+
+    function onToggleExamples() {
+      if (!exampleFieldsEl) return;
+      const isVisible = exampleFieldsEl.style.display === "grid" ||
+        exampleFieldsEl.style.display === "block";
+      if (isVisible) {
+        exampleFieldsEl.style.display = "none";
+        toggleExamplesBtn.textContent = "➕ Add examples";
+      } else {
+        // grid on desktop, block on mobile; CSS will handle mobile @media
+        exampleFieldsEl.style.display = "grid";
+        toggleExamplesBtn.textContent = "➖ Hide examples";
       }
     }
 
@@ -2171,33 +3014,71 @@
     function init() {
       loadProgress();
       loadCustomCards();
+      rebuildAllDeck();
+
       renderDeckList();
       updateDeckDescription();
       populateAddDeckSelect();
+      populateWordsDeckSelect();
+      renderWordsList();
       updateStatsUI();
 
-      // Wire events
+      // Events
       deckListEl.addEventListener("click", onDeckClick);
       showAnswerBtn.addEventListener("click", onAnswerButtonClick);
       learningBtn.addEventListener("click", () => onMark(false));
       knewItBtn.addEventListener("click", () => onMark(true));
       skipBtn.addEventListener("click", onSkip);
+
       directionToggleEl.addEventListener("click", onDirectionToggle);
-      modeToggleEl.addEventListener("click", onModeToggle);
       answerModeToggleEl.addEventListener("click", onAnswerModeToggle);
       resetProgressBtn.addEventListener("click", onResetProgress);
       document.addEventListener("keydown", onKeyDown);
+
       addCardFormEl.addEventListener("submit", onAddCardSubmit);
+      toggleExamplesBtn.addEventListener("click", onToggleExamples);
+
       topNavEl.addEventListener("click", onTopNavClick);
 
-      // default open decks panel
+      if (wordsDeckSelectEl) {
+        wordsDeckSelectEl.addEventListener("change", onWordsDeckChange);
+      }
+      if (wordsListEl) {
+        wordsListEl.addEventListener("input", onWordsListInput);
+        wordsListEl.addEventListener("click", onWordsListClick);
+      }
+
+      if (statsToggleBtn) {
+        statsToggleBtn.addEventListener("click", onStatsToggle);
+      }
+      if (statsDeleteKnownBtn) {
+        statsDeleteKnownBtn.addEventListener("click", onStatsDeleteKnown);
+      }
+      if (statsExcludeKnownBtn) {
+        statsExcludeKnownBtn.addEventListener("click", onStatsExcludeKnown);
+      }
+
+      if (deckCompleteStruggleBtn) {
+        deckCompleteStruggleBtn.addEventListener(
+          "click",
+          onDeckCompletePracticeStruggle
+        );
+      }
+      if (deckCompleteCloseBtn) {
+        deckCompleteCloseBtn.addEventListener("click", onDeckCompleteClose);
+      }
+
+      // Default: decks panel open, focus mode always on
       setTopPanel("panel-decks");
+      sessionInfoEl.textContent =
+        "Focus learning is on: words you’re still learning will appear much more often.";
       goToNextCard();
     }
 
     init();
   </script>
 
+  <!-- Keep your existing service worker file; this just registers it -->
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
@@ -2209,5 +3090,7 @@
       });
     }
   </script>
-</body>
-</html>
+
+
+
+
