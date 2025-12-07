@@ -123,7 +123,10 @@
       color: var(--text-muted);
       display: inline-flex;
       gap: 4px;
+      cursor: pointer;
+      transition: 0.2s;
     }
+    .stat-pill:hover { background: rgba(30, 41, 59, 0.9); border-color: var(--text-muted); }
     .stat-pill strong { color: var(--text-main); font-weight: 600; }
     .stat-pill.accent { border-color: rgba(34, 197, 94, 0.4); color: #bbf7d0; background: rgba(34, 197, 94, 0.1); }
     .stat-pill.danger { border-color: rgba(239, 68, 68, 0.4); color: #fecaca; background: rgba(239, 68, 68, 0.1); }
@@ -136,6 +139,7 @@
       padding: 4px;
       border-radius: 99px;
       border: var(--card-border);
+      overflow-x: auto;
     }
 
     .nav-tab {
@@ -153,6 +157,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      white-space: nowrap;
     }
     .nav-tab:hover { color: var(--text-main); background: rgba(255,255,255,0.03); }
     .nav-tab.active {
@@ -168,6 +173,8 @@
       display: flex;
       flex-direction: column;
       position: relative;
+      overflow-y: auto;
+      max-height: 75vh;
     }
     .panel { display: none; padding: 20px; animation: fadeIn 0.2s ease; }
     .panel.active { display: block; }
@@ -199,18 +206,25 @@
       font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;
     }
     .back-btn:hover { border-color: var(--text-muted); color: var(--text-main); }
-    .crumb-text { font-size: 13px; color: var(--text-muted); }
 
     /* Settings */
     .setting-group { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(148,163,184,0.1); }
     .setting-group:last-child { border-bottom: none; }
     .setting-header { font-size: 13px; color: var(--text-main); margin-bottom: 8px; font-weight: 500; }
-    .toggle-row { display: flex; gap: 4px; background: rgba(15,23,42,0.4); padding: 3px; border-radius: 99px; width: fit-content; border: 1px solid rgba(148,163,184,0.1); }
+    .toggle-row { display: flex; gap: 4px; background: rgba(15,23,42,0.4); padding: 3px; border-radius: 99px; width: fit-content; border: 1px solid rgba(148,163,184,0.1); flex-wrap: wrap; }
     .toggle-btn {
       border: none; background: transparent; color: var(--text-muted);
       padding: 6px 12px; border-radius: 99px; font-size: 12px; cursor: pointer; transition: 0.2s;
     }
     .toggle-btn.active { background: var(--accent); color: #022c22; font-weight: 600; }
+    
+    .setting-check-btn {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 10px; border-radius: var(--radius-sm);
+      background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(148,163,184,0.1);
+      cursor: pointer; margin-bottom: 8px; font-size: 13px; color: var(--text-muted);
+    }
+    .setting-check-btn.checked { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); color: #bbf7d0; }
 
     /* Add Card Form */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -230,10 +244,36 @@
       cursor: pointer; margin-top: 12px;
     }
     .btn-submit:hover { background: var(--accent-hover); }
+    .toggle-ex-btn {
+      background: transparent; border: 1px dashed rgba(148,163,184,0.3); color: var(--text-muted);
+      width: 100%; padding: 8px; border-radius: var(--radius-sm); cursor: pointer; font-size: 12px;
+    }
+    .toggle-ex-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Words Manager */
+    .filter-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .filter-input { flex: 1; min-width: 120px; padding: 8px; font-size: 13px; }
+    .word-list { display: flex; flex-direction: column; gap: 6px; }
+    .word-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px; background: rgba(30,41,59,0.5); border-radius: var(--radius-sm);
+      border: 1px solid rgba(148,163,184,0.1);
+    }
+    .word-info { flex: 1; }
+    .word-main { font-weight: 600; font-size: 14px; color: var(--text-main); }
+    .word-sub { font-size: 11px; color: var(--text-muted); }
+    .word-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; background: rgba(0,0,0,0.3); color: #94a3b8; }
+    .word-score { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+    .score-0 { background: #334155; }
+    .score-1 { background: #fca5a5; }
+    .score-4 { background: #4ade80; }
+    
+    .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; font-size: 14px; }
+    .btn-icon:hover { color: var(--danger); }
 
     /* Game Card */
     .game-area {
-      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; min-height: 400px;
     }
     .flashcard {
       width: 100%; max-width: 500px; min-height: 280px;
@@ -247,7 +287,7 @@
     .card-meta { display: flex; justify-content: space-between; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 20px; }
     .card-main { text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
     .label-lang { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-    .word-text { font-size: 36px; font-weight: 700; color: var(--text-main); margin-bottom: 20px; line-height: 1.2; }
+    .word-text { font-size: 36px; font-weight: 700; color: var(--text-main); margin-bottom: 20px; line-height: 1.2; word-break: break-word; }
     .reveal-section { border-top: 1px dashed rgba(148,163,184,0.2); padding-top: 20px; margin-top: 10px; animation: fadeIn 0.3s ease; }
     .reveal-text { font-size: 24px; font-weight: 500; color: #bae6fd; margin-bottom: 8px; }
     .examples { font-size: 14px; color: var(--text-muted); font-style: italic; line-height: 1.5; }
@@ -284,6 +324,7 @@
       .word-text { font-size: 28px; }
       .form-grid { grid-template-columns: 1fr; }
       .form-group.full { grid-column: span 1; }
+      .nav-tabs { justify-content: flex-start; }
     }
   </style>
 </head>
@@ -297,15 +338,16 @@
         <p class="deck-description" id="headerDesc">Select a difficulty to begin.</p>
       </div>
       <div class="stats-row">
-        <div class="stat-pill accent">Known: <strong id="statKnown">0</strong></div>
-        <div class="stat-pill danger">Learning: <strong id="statLearning">0</strong></div>
-        <div class="stat-pill">Total: <strong id="statTotal">0</strong></div>
+        <div class="stat-pill accent" onclick="openWordsTab('known')">Known: <strong id="statKnown">0</strong></div>
+        <div class="stat-pill danger" onclick="openWordsTab('learning')">Learning: <strong id="statLearning">0</strong></div>
+        <div class="stat-pill" onclick="openWordsTab('all')">Total: <strong id="statTotal">0</strong></div>
       </div>
     </div>
 
     <div class="nav-tabs">
       <button class="nav-tab active" data-panel="decks">📚 Decks</button>
       <button class="nav-tab" data-panel="game">🎮 Play</button>
+      <button class="nav-tab" data-panel="words">🗂 Words</button>
       <button class="nav-tab" data-panel="add">➕ Add</button>
       <button class="nav-tab" data-panel="settings">⚙️ Settings</button>
     </div>
@@ -372,19 +414,46 @@
           <input type="text" id="addEn" placeholder="e.g. the table" autocapitalize="off" autocomplete="off">
         </div>
         <div class="form-group full">
-          <label>Target Deck</label>
-          <select id="addDeckSelect"></select>
+          <label>Category (Topic)</label>
+          <select id="addTopicSelect"></select>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+            Added words appear in <strong>Mix</strong> decks and specific <strong>Topic</strong> decks across all levels.
+          </div>
         </div>
+        
         <div class="form-group full">
-          <label>Examples (Optional)</label>
+          <button type="button" class="toggle-ex-btn" id="btnToggleEx" onclick="toggleAddEx()">➕ Add Examples (Optional)</button>
+        </div>
+
+        <div class="form-group full" id="divAddEx" style="display:none">
           <textarea id="addExEs" placeholder="Spanish example sentence..." rows="2" autocapitalize="off"></textarea>
           <textarea id="addExEn" placeholder="English translation..." rows="2" autocapitalize="off" style="margin-top:8px"></textarea>
         </div>
+
         <div class="form-group full">
           <button class="btn-submit" id="btnAddSubmit">Save Card</button>
           <div id="addMsg" style="text-align:center; font-size:12px; margin-top:8px; min-height:16px;"></div>
         </div>
       </div>
+    </div>
+
+    <div id="panel-words" class="panel">
+       <div class="filter-bar">
+         <select id="filterStatus" class="input-answer filter-input" onchange="renderWordList()">
+           <option value="all">All Status</option>
+           <option value="known">Known / Mastered</option>
+           <option value="learning">Still Learning</option>
+         </select>
+         <select id="filterTopic" class="input-answer filter-input" onchange="renderWordList()">
+           <option value="all">All Categories</option>
+         </select>
+         <select id="filterSort" class="input-answer filter-input" onchange="renderWordList()">
+            <option value="diff">Sort: Difficulty</option>
+            <option value="az">Sort: A-Z (ES)</option>
+         </select>
+       </div>
+       <div id="wordListContainer" class="word-list">
+          </div>
     </div>
 
     <div id="panel-settings" class="panel">
@@ -405,14 +474,25 @@
       </div>
 
       <div class="setting-group">
+        <div class="setting-header">Game Rules</div>
+        <div class="setting-check-btn" id="btnToggleKnownOnce" onclick="toggleSetting('knownOnce')">
+           <span>Review known words only once per session</span>
+           <span class="status-icon">○</span>
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:4px; line-height:1.4">
+          If enabled, mastered words will appear once (for review) and then be removed from the rotation so you can focus on new words.
+        </div>
+      </div>
+
+      <div class="setting-group">
         <div class="setting-header">Custom Content</div>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-             <input type="checkbox" id="checkIncludeCustom" checked> Include my added words in decks
-          </label>
-          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-             <input type="checkbox" id="checkOnlyCustom"> Play ONLY my added words (ignore defaults)
-          </label>
+        <div class="setting-check-btn" id="btnToggleIncludeCustom" onclick="toggleSetting('includeCustom')">
+           <span>Include my added words in decks</span>
+           <span class="status-icon">✓</span>
+        </div>
+        <div class="setting-check-btn" id="btnToggleOnlyCustom" onclick="toggleSetting('onlyCustom')">
+           <span>Play ONLY my added words</span>
+           <span class="status-icon">○</span>
         </div>
       </div>
 
@@ -428,7 +508,8 @@
     <div class="overlay-content">
       <h2 style="margin-top:0">🎉 Deck Complete!</h2>
       <p style="color:var(--text-muted); margin-bottom:20px;">You've cycled through all available cards.</p>
-      <button class="btn-action primary" onclick="document.getElementById('overlay').style.display='none'">Keep Practicing</button>
+      <button class="btn-action primary" onclick="document.getElementById('overlay').style.display='none'; startSession(STATE.currentDeckId);">Restart Deck</button>
+      <button class="btn-action ghost" onclick="document.getElementById('overlay').style.display='none'; switchPanel('decks');" style="margin-top:10px">Back to Decks</button>
     </div>
   </div>
 
@@ -441,22 +522,29 @@
 const STATE = {
   decksRaw: [], // Loaded from JSON
   activeDecks: [], // Flattened list
-  customCards: {}, // { deckId: [cards] }
-  progress: {}, // { cardId: { strength, ... } }
+  customCards: {}, // { topicId: [cards] } -> Changed to TopicID based
+  progress: {}, // { cardId: { score, seen, ... } }
   blacklist: new Set(), // Deleted card IDs
   
+  // Session State
+  sessionSeen: new Set(), // Track what we've seen this session
+  lastCardUid: null, // Track previous card to avoid dupes
+  
   // Navigation
-  view: 'root', // root -> diff -> level -> decks
+  view: 'root', 
   selDiff: null,
   selLevel: null,
   
   // Game Config
   currentDeckId: null,
   currentCard: null,
+  
+  // Settings
   direction: 'es-en',
   mode: 'reveal',
   includeCustom: true,
-  onlyCustom: false
+  onlyCustom: false,
+  knownOnce: false
 };
 
 // --- INIT ---
@@ -466,8 +554,7 @@ async function init() {
   bindEvents();
   renderDecks();
   updateStats();
-  // If we have a last played deck, auto-select it in add dropdown
-  populateAddDropdown(); 
+  populateAddDropdown();
 }
 
 // --- DATA HANDLING ---
@@ -505,13 +592,15 @@ function loadLocalData() {
   const settings = JSON.parse(localStorage.getItem('sf_settings') || '{}');
   if(settings.dir) changeToggle('dir', settings.dir);
   if(settings.mode) changeToggle('mode', settings.mode);
-  if(settings.selDiff) STATE.selDiff = settings.selDiff; // Remember last diff
   
   STATE.includeCustom = settings.includeCustom !== false;
   STATE.onlyCustom = settings.onlyCustom === true;
-  
-  document.getElementById('checkIncludeCustom').checked = STATE.includeCustom;
-  document.getElementById('checkOnlyCustom').checked = STATE.onlyCustom;
+  STATE.knownOnce = settings.knownOnce === true;
+  if(settings.selDiff) STATE.selDiff = settings.selDiff;
+
+  updateCheckUI('includeCustom', STATE.includeCustom);
+  updateCheckUI('onlyCustom', STATE.onlyCustom);
+  updateCheckUI('knownOnce', STATE.knownOnce);
 }
 
 function saveData() {
@@ -524,28 +613,28 @@ function saveData() {
     mode: STATE.mode,
     includeCustom: STATE.includeCustom,
     onlyCustom: STATE.onlyCustom,
+    knownOnce: STATE.knownOnce,
     selDiff: STATE.selDiff
   };
   localStorage.setItem('sf_settings', JSON.stringify(settings));
 }
 
 function injectCustomCards() {
-  // Clear any previously injected custom cards from activeDecks to avoid dupes on re-run
-  // (In a real app we'd structure this cleaner, but this works for simple reload)
-  if(!STATE.activeDecks.length) return;
+  // Inject custom cards into ALL decks matching the topic ID
+  // Also inject into Mix decks (which usually don't have topicId, but we can logic it)
+  // Actually, we inject into any deck where topicId matches.
   
-  // Re-load base cards logic could go here, but we simply append
-  Object.keys(STATE.customCards).forEach(deckId => {
-    const deck = STATE.activeDecks.find(d => d.id === deckId);
-    if(deck) {
-       const users = STATE.customCards[deckId];
-       // Filter out if already pushed
-       users.forEach(c => {
-         // rudimentary check
-         const exists = deck.cards.find(ex => ex.es === c.es && ex._custom);
-         if(!exists) deck.cards.push(c);
-       });
-    }
+  STATE.activeDecks.forEach(deck => {
+    // Reset deck cards to original first (to avoid double push on re-run)
+    // In this simple app, we just reload page to refresh data, so simpler logic:
+    
+    // Find custom cards for this topic
+    const topicCards = STATE.customCards[deck.topicId] || [];
+    topicCards.forEach(c => {
+       // Avoid duplicates
+       const exists = deck.cards.find(ex => ex.es === c.es && ex._custom);
+       if(!exists) deck.cards.push(c);
+    });
   });
 }
 
@@ -566,7 +655,7 @@ function renderDecks() {
       const el = createCard(diff.label, "Difficulty", () => {
         STATE.selDiff = diff.id;
         STATE.view = 'level';
-        saveData(); // Save last diff selection
+        saveData();
         renderDecks();
       });
       domGrid.appendChild(el);
@@ -639,8 +728,6 @@ function addBreadcrumb(label, onClick) {
 }
 
 function getPlayableCount(deck) {
-  // Count cards that aren't blacklisted
-  // Also respect Include/Only Custom filters
   return deck.cards.filter(c => {
     const id = getCardId(deck.id, c);
     if(STATE.blacklist.has(id)) return false;
@@ -652,62 +739,60 @@ function getPlayableCount(deck) {
 
 // --- GAME LOGIC ---
 function startSession(deckId, isMix = false) {
-  STATE.currentDeckId = deckId; // if isMix, this is null
+  STATE.currentDeckId = deckId;
+  STATE.sessionSeen = new Set();
+  STATE.lastCardUid = null;
   
-  // Build Queue
-  let pool = [];
+  if(!isMix && !deckId) return;
   
-  const relevantDecks = isMix 
-    ? STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel)
-    : [STATE.activeDecks.find(d => d.id === deckId)];
-    
-  relevantDecks.forEach(d => {
-    d.cards.forEach((c, idx) => {
-      const uid = getCardId(d.id, c);
-      // FILTERS
-      if(STATE.blacklist.has(uid)) return;
-      if(STATE.onlyCustom && !c._custom) return;
-      if(!STATE.includeCustom && c._custom) return;
-
-      pool.push({
-        ...c,
-        _realDeckId: d.id,
-        _realIndex: idx,
-        _uid: uid
-      });
-    });
-  });
+  // Check if we have cards
+  const pool = getPoolFromCurrentSession();
   
   if(pool.length === 0) {
     alert("No cards available with current filters!");
     return;
   }
   
-  // Switch Tab
   switchPanel('game');
-  nextCard(pool);
+  nextCard();
 }
 
-function nextCard(pool) {
-  // Simple weighted random
-  if(!pool) pool = getPoolFromCurrentSession();
+function nextCard() {
+  const pool = getPoolFromCurrentSession();
   
-  if(pool.length === 0) {
+  // Filter Pool based on Game Rules
+  const playable = pool.filter(c => {
+    // 1. "Review Known Once" Logic
+    if(STATE.knownOnce) {
+      const score = (STATE.progress[c._uid] || {}).score || 0;
+      // If mastered (score>3) AND seen in this session, don't show again
+      if(score > 3 && STATE.sessionSeen.has(c._uid)) return false;
+    }
+    
+    // 2. "No Repeats" Logic
+    // If pool is larger than 1, don't show the immediate last card
+    if(pool.length > 1 && c._uid === STATE.lastCardUid) return false;
+    
+    return true;
+  });
+
+  if(playable.length === 0) {
+    // Deck exhausted
     document.getElementById('overlay').style.display = 'flex';
     return;
   }
   
-  // Pick one
-  const card = pool[Math.floor(Math.random() * pool.length)];
+  // Weighted Random based on score
+  // Simple version: Pick random from playable
+  const card = playable[Math.floor(Math.random() * playable.length)];
+  
   STATE.currentCard = card;
+  STATE.lastCardUid = card._uid;
+  STATE.sessionSeen.add(card._uid);
   renderGameCard();
 }
 
 function getPoolFromCurrentSession() {
-  // Re-build pool quickly to account for changes? 
-  // For simplicity, just reusing startSession logic or we assume we jump to next.
-  // We'll restart the session logic briefly to get a new random card.
-  // Ideally we keep a persistent queue, but stateless random is fine for flashcards.
   let pool = [];
   const isMix = !STATE.currentDeckId;
   const relevantDecks = isMix 
@@ -715,6 +800,8 @@ function getPoolFromCurrentSession() {
     : [STATE.activeDecks.find(d => d.id === STATE.currentDeckId)];
     
   relevantDecks.forEach(d => {
+    // For mix decks, we also want to include any custom cards that match the topics of these decks
+    // But since we injected custom cards into activeDecks at start, they are already here!
     d.cards.forEach((c, idx) => {
       const uid = getCardId(d.id, c);
       if(STATE.blacklist.has(uid)) return;
@@ -766,26 +853,22 @@ function renderGameCard() {
 }
 
 function showAnswer(force = false) {
-  // If Type mode, check answer first
   if(STATE.mode === 'type' && !force) {
     const input = document.getElementById('gameInput');
     const val = input.value.trim().toLowerCase();
     const isEs = STATE.direction === 'es-en';
     const target = (isEs ? STATE.currentCard.en : STATE.currentCard.es).toLowerCase();
     
-    // Simple loose match
-    // Remove punctuation
     const clean = str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     
     if(clean(val) === clean(target)) {
       document.getElementById('gameFeedback').textContent = "✅ Correct!";
       document.getElementById('gameFeedback').style.color = "#4ade80";
-      markCard(true); // Auto-grade correct on typing
+      markCard(true); 
       return; 
     } else {
       document.getElementById('gameFeedback').textContent = `❌ Incorrect.`;
       document.getElementById('gameFeedback').style.color = "#f87171";
-      // Fall through to show reveal
     }
   }
 
@@ -804,8 +887,13 @@ function markCard(success) {
   if(!STATE.progress[c._uid]) STATE.progress[c._uid] = { score: 0, seen: 0 };
   
   STATE.progress[c._uid].seen++;
-  if(success) STATE.progress[c._uid].score++;
-  else STATE.progress[c._uid].score = Math.max(0, STATE.progress[c._uid].score - 1);
+  if(success) {
+     // I KNEW IT -> Mark as Mastered (Score 4) immediately
+     STATE.progress[c._uid].score = 4;
+  } else {
+     // Still Learning -> Drop score
+     STATE.progress[c._uid].score = Math.max(0, STATE.progress[c._uid].score - 1);
+  }
   
   saveData();
   updateStats();
@@ -815,68 +903,174 @@ function markCard(success) {
 }
 
 function deleteCurrentCard() {
-  if(!confirm("Permanently remove this card from your game?")) return;
-  
+  if(!confirm("Permanently remove this card?")) return;
   const c = STATE.currentCard;
   
-  // If user card, remove from store
   if(c._custom) {
-    const deckCards = STATE.customCards[c._realDeckId];
-    if(deckCards) {
-      const idx = deckCards.findIndex(x => x.es === c.es && x.en === c.en);
-      if(idx > -1) deckCards.splice(idx, 1);
+    // Remove from custom store
+    const topicCards = STATE.customCards[c._realDeckId]; // Wait, _realDeckId might be deck id, need to find topic...
+    // Easier: Remove from topic store
+    // Find Topic ID based on deck
+    const deck = STATE.activeDecks.find(d => d.id === c._realDeckId);
+    if(deck && STATE.customCards[deck.topicId]) {
+      const arr = STATE.customCards[deck.topicId];
+      const idx = arr.findIndex(x => x.es === c.es && x.en === c.en);
+      if(idx > -1) arr.splice(idx, 1);
     }
-    // Also remove from activeDeck in memory
-    const activeDeck = STATE.activeDecks.find(d => d.id === c._realDeckId);
-    if(activeDeck) {
-       const adIdx = activeDeck.cards.findIndex(x => x.es === c.es && x.en === c.en);
-       if(adIdx > -1) activeDeck.cards.splice(adIdx, 1);
-    }
-  } else {
-    // File card: Blacklist it
-    STATE.blacklist.add(c._uid);
-  }
+  } 
+  
+  // Add to blacklist (handles both custom and default)
+  STATE.blacklist.add(c._uid);
   
   saveData();
   updateStats();
   nextCard();
 }
 
+// --- WORDS MANAGER UI ---
+function openWordsTab(filter) {
+  switchPanel('words');
+  document.getElementById('filterStatus').value = filter || 'all';
+  renderWordList();
+}
+
+function renderWordList() {
+  const container = document.getElementById('wordListContainer');
+  const fStatus = document.getElementById('filterStatus').value;
+  const fTopic = document.getElementById('filterTopic').value;
+  const fSort = document.getElementById('filterSort').value;
+  
+  container.innerHTML = 'Loading...';
+
+  // Gather ALL cards from active decks (deduplicated by uid)
+  const allCardsMap = new Map();
+  STATE.activeDecks.forEach(d => {
+    d.cards.forEach(c => {
+       const uid = getCardId(d.id, c);
+       if(STATE.blacklist.has(uid)) return; // Don't show deleted
+       
+       // Status Filter
+       const score = (STATE.progress[uid] || {}).score || 0;
+       if(fStatus === 'known' && score < 4) return;
+       if(fStatus === 'learning' && score >= 4) return;
+
+       // Topic Filter
+       if(fTopic !== 'all' && d.topicId !== fTopic) return;
+       
+       allCardsMap.set(uid, { ...c, _deckName: d.name, _score: score, _uid: uid });
+    });
+  });
+  
+  let list = Array.from(allCardsMap.values());
+  
+  // Sort
+  if(fSort === 'az') {
+    list.sort((a,b) => a.es.localeCompare(b.es));
+  } else if (fSort === 'diff') {
+     // Sort by difficulty (Level) then score
+     // We need level info. It's on the deck.
+     // Getting complex. Let's sort by Score (Weakest first)
+     list.sort((a,b) => a._score - b._score);
+  }
+  
+  container.innerHTML = '';
+  if(list.length === 0) {
+    container.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted)">No words match filter.</div>';
+    return;
+  }
+  
+  // Limit render for performance (first 100)
+  const renderLimit = list.slice(0, 100); 
+  
+  renderLimit.forEach(c => {
+    const scoreClass = c._score >= 4 ? 'score-4' : (c._score > 0 ? 'score-1' : 'score-0');
+    const el = document.createElement('div');
+    el.className = 'word-row';
+    el.innerHTML = `
+      <div class="word-info">
+        <div class="word-main">
+          <span class="word-score ${scoreClass}"></span>
+          ${c.es} 
+          <span style="font-weight:400; color:var(--text-muted)">— ${c.en}</span>
+        </div>
+        <div class="word-sub">
+          ${c._deckName}
+          ${c._custom ? '<span class="word-tag">Custom</span>' : ''}
+        </div>
+      </div>
+      <button class="btn-icon" onclick="deleteWordByUid('${c._uid}')">🗑</button>
+    `;
+    container.appendChild(el);
+  });
+  
+  if(list.length > 100) {
+     const more = document.createElement('div');
+     more.style.textAlign = 'center';
+     more.style.fontSize = '12px';
+     more.style.padding = '10px';
+     more.style.color = 'var(--text-muted)';
+     more.textContent = `...and ${list.length - 100} more`;
+     container.appendChild(more);
+  }
+}
+
+function deleteWordByUid(uid) {
+  if(!confirm("Permanently delete word?")) return;
+  STATE.blacklist.add(uid);
+  saveData();
+  renderWordList(); // Re-render
+  updateStats();
+}
+
+function populateTopicFilter() {
+  const sel = document.getElementById('filterTopic');
+  sel.innerHTML = '<option value="all">All Categories</option>';
+  if(STATE.decksRaw.topics) {
+    STATE.decksRaw.topics.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.label;
+      sel.appendChild(opt);
+    });
+  }
+}
+
 // --- ADD CARD UI ---
 function populateAddDropdown() {
-  const sel = document.getElementById('addDeckSelect');
+  const sel = document.getElementById('addTopicSelect');
   sel.innerHTML = '';
   
-  // Group by difficulty
-  STATE.activeDecks.forEach(d => {
-    // Skip mix decks if any exist in array
-    const topic = STATE.decksRaw.topics.find(t => t.id === d.topicId)?.label || d.name;
-    const diff = STATE.decksRaw.difficulties.find(x => x.id === d.difficultyId)?.label || d.difficultyId;
-    
-    const opt = document.createElement('option');
-    opt.value = d.id;
-    opt.textContent = `[${diff} L${d.levelIndex}] ${topic}`;
-    sel.appendChild(opt);
-  });
+  // Only show Categories (Topics)
+  if(STATE.decksRaw.topics) {
+    STATE.decksRaw.topics.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.label;
+      sel.appendChild(opt);
+    });
+  }
+}
 
-  // Auto-select based on last played difficulty/deck
-  if(STATE.currentDeckId) {
-    sel.value = STATE.currentDeckId;
-  } else if (STATE.selDiff) {
-    // Try to find first deck of current difficulty
-    const match = STATE.activeDecks.find(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel);
-    if(match) sel.value = match.id;
+function toggleAddEx() {
+  const div = document.getElementById('divAddEx');
+  const btn = document.getElementById('btnToggleEx');
+  if(div.style.display === 'none') {
+    div.style.display = 'block';
+    btn.textContent = '➖ Hide Examples';
+  } else {
+    div.style.display = 'none';
+    btn.textContent = '➕ Add Examples (Optional)';
   }
 }
 
 function onAddSubmit() {
   const es = document.getElementById('addEs').value.trim();
   const en = document.getElementById('addEn').value.trim();
-  const deckId = document.getElementById('addDeckSelect').value;
+  const topicId = document.getElementById('addTopicSelect').value;
   const exEs = document.getElementById('addExEs').value.trim();
   const exEn = document.getElementById('addExEn').value.trim();
   
-  if(!es || !en || !deckId) {
+  if(!es || !en || !topicId) {
     document.getElementById('addMsg').textContent = "Please fill required fields.";
     document.getElementById('addMsg').style.color = "#f87171";
     return;
@@ -884,19 +1078,23 @@ function onAddSubmit() {
   
   const newCard = { es, en, exampleEs: exEs, exampleEn: exEn, _custom: true };
   
-  // Save to LocalStorage Store
-  if(!STATE.customCards[deckId]) STATE.customCards[deckId] = [];
-  STATE.customCards[deckId].push(newCard);
+  // Save to LocalStorage Store (By Topic ID now!)
+  if(!STATE.customCards[topicId]) STATE.customCards[topicId] = [];
+  STATE.customCards[topicId].push(newCard);
   
-  // Push to active memory
-  const deck = STATE.activeDecks.find(d => d.id === deckId);
-  if(deck) deck.cards.push(newCard);
+  // Inject into active decks immediately
+  STATE.activeDecks.forEach(d => {
+    if(d.topicId === topicId) {
+       d.cards.push(newCard);
+    }
+  });
   
   saveData();
   updateStats();
   
   // Feedback
-  document.getElementById('addMsg').textContent = "Card Added!";
+  const topicLabel = STATE.decksRaw.topics.find(t=>t.id===topicId)?.label || "Topic";
+  document.getElementById('addMsg').textContent = `Added to ${topicLabel} decks!`;
   document.getElementById('addMsg').style.color = "#4ade80";
   
   // Clear inputs
@@ -916,10 +1114,11 @@ function switchPanel(panelId) {
   document.getElementById('panel-'+panelId).classList.add('active');
   
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-  document.querySelector(`.nav-tab[data-panel="${panelId}"]`).classList.add('active');
+  const navBtn = document.querySelector(`.nav-tab[data-panel="${panelId}"]`);
+  if(navBtn) navBtn.classList.add('active');
   
   if(panelId === 'decks') renderDecks();
-  if(panelId === 'add') populateAddDropdown();
+  if(panelId === 'words') { populateTopicFilter(); renderWordList(); }
 }
 
 function changeToggle(group, val) {
@@ -933,19 +1132,53 @@ function changeToggle(group, val) {
   saveData();
 }
 
+function toggleSetting(key) {
+  STATE[key] = !STATE[key];
+  saveData();
+  updateCheckUI(key, STATE[key]);
+  renderDecks(); // Update counts
+}
+
+function updateCheckUI(key, val) {
+  const el = document.getElementById('btnToggle' + key.charAt(0).toUpperCase() + key.slice(1));
+  if(!el) return;
+  if(val) {
+    el.classList.add('checked');
+    el.querySelector('.status-icon').textContent = '✓';
+  } else {
+    el.classList.remove('checked');
+    el.querySelector('.status-icon').textContent = '○';
+  }
+}
+
 function updateStats() {
   let known = 0, learning = 0;
   // Calculate based on progress
-  Object.values(STATE.progress).forEach(p => {
+  Object.entries(STATE.progress).forEach(([uid, p]) => {
+    // Only count if not blacklisted
+    if(STATE.blacklist.has(uid)) return;
     if(p.score > 3) known++;
-    else learning++;
+    else if (p.score > 0) learning++;
   });
   
   // Total cards available (respecting filters)
   let total = 0;
   STATE.activeDecks.forEach(d => {
-    total += getPlayableCount(d);
+    // Only count non-mix to avoid double counting for stats
+    // We check if it's a "generated" mix deck (which we didn't flag explicitly, but mix decks usually have 'mix' in ID)
+    // Actually, simplest is count unique UIDs
+    d.cards.forEach(c => total++); 
   });
+  // Since cards are duplciated across levels in raw data (e.g. nouns lev 1, nouns lev 2), 
+  // we should just count unique UIDs available.
+  const uniqueAll = new Set();
+  STATE.activeDecks.forEach(d => {
+      d.cards.forEach(c => {
+         const uid = getCardId(d.id, c);
+         if(!STATE.blacklist.has(uid)) uniqueAll.add(uid);
+      });
+  });
+  total = uniqueAll.size;
 
   document.getElementById('statKnown').textContent = known;
   document.getElementById('statLearning').textContent = learning;
@@ -953,9 +1186,6 @@ function updateStats() {
 }
 
 function getCardId(deckId, card) {
-  // Unique ID generator
-  // For file cards, use deckId + index? No, index shifts if we delete.
-  // Use content hash.
   return `${deckId}:${card.es.replace(/\s/g,'')}`;
 }
 
@@ -977,18 +1207,6 @@ function bindEvents() {
   document.querySelectorAll('.toggle-btn').forEach(btn => {
     btn.onclick = () => changeToggle(btn.dataset.group, btn.dataset.val);
   });
-  
-  // Settings Checkboxes
-  document.getElementById('checkIncludeCustom').onchange = (e) => {
-    STATE.includeCustom = e.target.checked;
-    saveData();
-    renderDecks(); // update counts
-  };
-  document.getElementById('checkOnlyCustom').onchange = (e) => {
-    STATE.onlyCustom = e.target.checked;
-    saveData();
-    renderDecks(); // update counts
-  };
   
   // Game Buttons
   document.getElementById('btnShowAnswer').onclick = () => showAnswer();
