@@ -23,6 +23,8 @@
       --accent: #22c55e;
       --accent-hover: #16a34a;
       --accent-soft: rgba(34, 197, 94, 0.15);
+      --gold: #eab308;
+      --gold-soft: rgba(234, 179, 8, 0.15);
       --text-main: #f1f5f9;
       --text-muted: #94a3b8;
       --danger: #ef4444;
@@ -192,9 +194,19 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+      position: relative;
     }
     .deck-card:hover { background: rgba(30, 41, 59, 0.9); border-color: rgba(148, 163, 184, 0.3); transform: translateY(-2px); }
     .deck-card.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.05); }
+    
+    .deck-card.level-complete {
+      border-color: var(--gold);
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(234, 179, 8, 0.05));
+    }
+    .deck-card.level-complete::after {
+      content: '★'; position: absolute; top: 8px; right: 10px; color: var(--gold); font-size: 14px;
+    }
+
     .deck-title { font-weight: 600; font-size: 14px; }
     .deck-count { font-size: 12px; color: var(--text-muted); }
 
@@ -266,6 +278,7 @@
     .word-score { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
     .score-0 { background: #334155; }
     .score-1 { background: #fca5a5; }
+    .score-3 { background: #bae6fd; }
     .score-4 { background: #4ade80; }
     
     .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; font-size: 14px; }
@@ -317,6 +330,9 @@
     /* Overlay */
     .overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.9); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
     .overlay-content { background: #1e293b; padding: 30px; border-radius: var(--radius-lg); text-align: center; max-width: 90%; width: 400px; border: 1px solid rgba(148,163,184,0.2); }
+    .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 101; overflow: hidden; }
+    .confetti { position: absolute; width: 8px; height: 14px; animation: fall 3s linear forwards; }
+    @keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
 
     @media (max-width: 600px) {
       .app { min-height: 100vh; border-radius: 0; border: none; }
@@ -458,6 +474,18 @@
 
     <div id="panel-settings" class="panel">
       <div class="setting-group">
+        <div class="setting-header">Custom Content</div>
+        <div class="setting-check-btn" id="btnToggleIncludeCustom" onclick="toggleSetting('includeCustom')">
+           <span>Include my added words in decks</span>
+           <span class="status-icon">✓</span>
+        </div>
+        <div class="setting-check-btn" id="btnToggleOnlyCustom" onclick="toggleSetting('onlyCustom')">
+           <span>Play ONLY my added words</span>
+           <span class="status-icon">○</span>
+        </div>
+      </div>
+
+      <div class="setting-group">
         <div class="setting-header">Practice Direction</div>
         <div class="toggle-row">
           <button class="toggle-btn active" data-group="dir" data-val="es-en">Spanish → English</button>
@@ -485,18 +513,6 @@
       </div>
 
       <div class="setting-group">
-        <div class="setting-header">Custom Content</div>
-        <div class="setting-check-btn" id="btnToggleIncludeCustom" onclick="toggleSetting('includeCustom')">
-           <span>Include my added words in decks</span>
-           <span class="status-icon">✓</span>
-        </div>
-        <div class="setting-check-btn" id="btnToggleOnlyCustom" onclick="toggleSetting('onlyCustom')">
-           <span>Play ONLY my added words</span>
-           <span class="status-icon">○</span>
-        </div>
-      </div>
-
-      <div class="setting-group">
         <div class="setting-header">Data</div>
         <button class="btn-action danger" id="btnResetData" style="width:100%">Reset All Progress</button>
       </div>
@@ -507,9 +523,14 @@
   <div class="overlay" id="overlay">
     <div class="overlay-content">
       <h2 style="margin-top:0">🎉 Deck Complete!</h2>
-      <p style="color:var(--text-muted); margin-bottom:20px;">You've cycled through all available cards.</p>
-      <button class="btn-action primary" onclick="document.getElementById('overlay').style.display='none'; startSession(STATE.currentDeckId);">Restart Deck</button>
-      <button class="btn-action ghost" onclick="document.getElementById('overlay').style.display='none'; switchPanel('decks');" style="margin-top:10px">Back to Decks</button>
+      
+      <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
+        <div class="stat-pill accent">1st Time Correct: <strong id="resCorrect">0</strong></div>
+        <div class="stat-pill danger">Struggled: <strong id="resStruggle">0</strong></div>
+      </div>
+      
+      <button class="btn-action primary" onclick="closeOverlay()">Back to Decks</button>
+      <button class="btn-action danger" id="btnPracticeStruggle" style="margin-top:10px" onclick="startPracticeStruggle()">Practice Struggle Words</button>
     </div>
   </div>
 
@@ -522,13 +543,16 @@
 const STATE = {
   decksRaw: [], // Loaded from JSON
   activeDecks: [], // Flattened list
-  customCards: {}, // { topicId: [cards] } -> Changed to TopicID based
+  customCards: {}, // { topicId: [cards] } 
   progress: {}, // { cardId: { score, seen, ... } }
   blacklist: new Set(), // Deleted card IDs
   
   // Session State
   sessionSeen: new Set(), // Track what we've seen this session
   lastCardUid: null, // Track previous card to avoid dupes
+  revealTime: 0, // Timestamp when answer revealed
+  sessionStats: { correctFirst: 0, struggle: 0 },
+  struggleList: [], // UIDs of struggled words in this session
   
   // Navigation
   view: 'root', 
@@ -538,6 +562,7 @@ const STATE = {
   // Game Config
   currentDeckId: null,
   currentCard: null,
+  isStruggleMode: false,
   
   // Settings
   direction: 'es-en',
@@ -620,18 +645,9 @@ function saveData() {
 }
 
 function injectCustomCards() {
-  // Inject custom cards into ALL decks matching the topic ID
-  // Also inject into Mix decks (which usually don't have topicId, but we can logic it)
-  // Actually, we inject into any deck where topicId matches.
-  
   STATE.activeDecks.forEach(deck => {
-    // Reset deck cards to original first (to avoid double push on re-run)
-    // In this simple app, we just reload page to refresh data, so simpler logic:
-    
-    // Find custom cards for this topic
     const topicCards = STATE.customCards[deck.topicId] || [];
     topicCards.forEach(c => {
-       // Avoid duplicates
        const exists = deck.cards.find(ex => ex.es === c.es && ex._custom);
        if(!exists) deck.cards.push(c);
     });
@@ -672,10 +688,15 @@ function renderDecks() {
     // Find levels
     const levels = new Set(STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff).map(d => d.levelIndex));
     [...levels].sort().forEach(lvl => {
+      // Check Completion
+      const isComplete = checkLevelComplete(STATE.selDiff, lvl);
+      
       const el = createCard(`Level ${lvl}`, `${diffObj.label}`, () => {
         STATE.selLevel = lvl;
         renderDecks();
       });
+      
+      if(isComplete) el.classList.add('level-complete');
       domGrid.appendChild(el);
     });
     return;
@@ -690,9 +711,13 @@ function renderDecks() {
     // Filter decks
     const decks = STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel);
     
+    // Calculate Mix Deck Count
+    let mixCount = 0;
+    decks.forEach(d => { mixCount += getPlayableCount(d); });
+    
     // Add Mix Deck Option
-    const mixEl = createCard("⚡ Mix All Topics", `Level ${STATE.selLevel}`, () => {
-       startSession(null, true); // null ID, isMix = true
+    const mixEl = createCard("⚡ Mix All Topics", `${mixCount} cards`, () => {
+       startSession(null, true); 
     });
     mixEl.classList.add('active');
     domGrid.appendChild(mixEl);
@@ -709,6 +734,27 @@ function renderDecks() {
       domGrid.appendChild(el);
     });
   }
+}
+
+function checkLevelComplete(diffId, levelIdx) {
+  // Level is complete if all non-custom words have score >= 4
+  const decks = STATE.activeDecks.filter(d => d.difficultyId === diffId && d.levelIndex === levelIdx);
+  if(decks.length === 0) return false;
+  
+  let totalBase = 0;
+  let masteredBase = 0;
+  
+  decks.forEach(d => {
+    d.cards.forEach(c => {
+      if(c._custom) return; // Exclude custom words
+      totalBase++;
+      const uid = getCardId(d.id, c);
+      const score = (STATE.progress[uid] || {}).score || 0;
+      if(score >= 4) masteredBase++;
+    });
+  });
+  
+  return totalBase > 0 && totalBase === masteredBase;
 }
 
 function createCard(title, sub, onClick) {
@@ -742,10 +788,12 @@ function startSession(deckId, isMix = false) {
   STATE.currentDeckId = deckId;
   STATE.sessionSeen = new Set();
   STATE.lastCardUid = null;
+  STATE.isStruggleMode = false;
+  STATE.sessionStats = { correctFirst: 0, struggle: 0 };
+  STATE.struggleList = [];
   
   if(!isMix && !deckId) return;
   
-  // Check if we have cards
   const pool = getPoolFromCurrentSession();
   
   if(pool.length === 0) {
@@ -757,33 +805,53 @@ function startSession(deckId, isMix = false) {
   nextCard();
 }
 
+function startPracticeStruggle() {
+  if(STATE.struggleList.length === 0) return;
+  
+  STATE.isStruggleMode = true;
+  STATE.sessionSeen = new Set();
+  STATE.lastCardUid = null;
+  
+  document.getElementById('overlay').style.display = 'none';
+  nextCard();
+}
+
 function nextCard() {
-  const pool = getPoolFromCurrentSession();
+  let pool = [];
+  
+  if(STATE.isStruggleMode) {
+    // Reconstruct pool from struggle UIDs
+    // We need to find the card objects again. Inefficient but safe.
+    STATE.activeDecks.forEach(d => {
+      d.cards.forEach(c => {
+         const uid = getCardId(d.id, c);
+         if(STATE.struggleList.includes(uid)) {
+           pool.push({ ...c, _realDeckId: d.id, _uid: uid });
+         }
+      });
+    });
+  } else {
+    pool = getPoolFromCurrentSession();
+  }
   
   // Filter Pool based on Game Rules
   const playable = pool.filter(c => {
     // 1. "Review Known Once" Logic
-    if(STATE.knownOnce) {
+    if(STATE.knownOnce && !STATE.isStruggleMode) {
       const score = (STATE.progress[c._uid] || {}).score || 0;
-      // If mastered (score>3) AND seen in this session, don't show again
-      if(score > 3 && STATE.sessionSeen.has(c._uid)) return false;
+      if(score >= 4 && STATE.sessionSeen.has(c._uid)) return false;
     }
-    
-    // 2. "No Repeats" Logic
-    // If pool is larger than 1, don't show the immediate last card
+    // 2. No Repeats
     if(pool.length > 1 && c._uid === STATE.lastCardUid) return false;
-    
     return true;
   });
 
   if(playable.length === 0) {
-    // Deck exhausted
-    document.getElementById('overlay').style.display = 'flex';
+    showDeckComplete();
     return;
   }
   
-  // Weighted Random based on score
-  // Simple version: Pick random from playable
+  // Simple Random
   const card = playable[Math.floor(Math.random() * playable.length)];
   
   STATE.currentCard = card;
@@ -800,8 +868,6 @@ function getPoolFromCurrentSession() {
     : [STATE.activeDecks.find(d => d.id === STATE.currentDeckId)];
     
   relevantDecks.forEach(d => {
-    // For mix decks, we also want to include any custom cards that match the topics of these decks
-    // But since we injected custom cards into activeDecks at start, they are already here!
     d.cards.forEach((c, idx) => {
       const uid = getCardId(d.id, c);
       if(STATE.blacklist.has(uid)) return;
@@ -835,7 +901,7 @@ function renderGameCard() {
   const score = (STATE.progress[c._uid] || {}).score || 0;
   let strLabel = "New Word";
   if(score > 0) strLabel = "Learning";
-  if(score > 3) strLabel = "Mastered";
+  if(score >= 4) strLabel = "Mastered";
   document.getElementById('gameStrength').textContent = strLabel;
   
   document.getElementById('gameFrontLabel').textContent = isEs ? "Spanish" : "English";
@@ -844,7 +910,6 @@ function renderGameCard() {
   document.getElementById('gameBackLabel').textContent = isEs ? "English" : "Spanish";
   document.getElementById('gameBackText').textContent = isEs ? c.en : c.es;
   
-  // Examples
   let ex = "";
   if(c.exampleEs && c.exampleEn) {
     ex = `"${c.exampleEs}"<br>"${c.exampleEn}"`;
@@ -853,6 +918,8 @@ function renderGameCard() {
 }
 
 function showAnswer(force = false) {
+  STATE.revealTime = Date.now(); // Track time
+  
   if(STATE.mode === 'type' && !force) {
     const input = document.getElementById('gameInput');
     const val = input.value.trim().toLowerCase();
@@ -887,19 +954,66 @@ function markCard(success) {
   if(!STATE.progress[c._uid]) STATE.progress[c._uid] = { score: 0, seen: 0 };
   
   STATE.progress[c._uid].seen++;
+  const diff = Date.now() - STATE.revealTime; // Time taken to decide
+
   if(success) {
-     // I KNEW IT -> Mark as Mastered (Score 4) immediately
-     STATE.progress[c._uid].score = 4;
+     if(STATE.progress[c._uid].seen === 1) STATE.sessionStats.correctFirst++;
+     
+     // TIME LOGIC:
+     // If correct < 3 seconds -> Mastered (4)
+     // If correct > 3 seconds -> Review Once (3) 
+     if(diff <= 3000) {
+       STATE.progress[c._uid].score = 4;
+     } else {
+       // If currently mastered, keep it. If not, set to 3.
+       if(STATE.progress[c._uid].score < 4) STATE.progress[c._uid].score = 3; 
+       // Also add to struggle list if it wasn't mastered before
+       if(!STATE.struggleList.includes(c._uid)) STATE.struggleList.push(c._uid);
+     }
   } else {
-     // Still Learning -> Drop score
+     // Still Learning
      STATE.progress[c._uid].score = Math.max(0, STATE.progress[c._uid].score - 1);
+     STATE.sessionStats.struggle++;
+     if(!STATE.struggleList.includes(c._uid)) STATE.struggleList.push(c._uid);
   }
   
   saveData();
   updateStats();
-  
-  // Next
   nextCard();
+}
+
+function showDeckComplete() {
+  document.getElementById('overlay').style.display = 'flex';
+  document.getElementById('resCorrect').textContent = STATE.sessionStats.correctFirst;
+  document.getElementById('resStruggle').textContent = STATE.sessionStats.struggle; // Using session counter
+  
+  const btnStruggle = document.getElementById('btnPracticeStruggle');
+  if(STATE.struggleList.length > 0) {
+    btnStruggle.style.display = 'inline-block';
+    btnStruggle.textContent = `Practice Struggle Words (${STATE.struggleList.length})`;
+  } else {
+    btnStruggle.style.display = 'none';
+  }
+  
+  launchConfetti();
+}
+
+function closeOverlay() {
+  document.getElementById('overlay').style.display = 'none';
+  switchPanel('decks');
+}
+
+function launchConfetti() {
+  const colors = ['#22c55e', '#38bdf8', '#facc15', '#f43f5e'];
+  for(let i=0; i<50; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+    el.style.animationDuration = (Math.random()*2 + 2) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
 }
 
 function deleteCurrentCard() {
@@ -907,21 +1021,14 @@ function deleteCurrentCard() {
   const c = STATE.currentCard;
   
   if(c._custom) {
-    // Remove from custom store
-    const topicCards = STATE.customCards[c._realDeckId]; // Wait, _realDeckId might be deck id, need to find topic...
-    // Easier: Remove from topic store
-    // Find Topic ID based on deck
-    const deck = STATE.activeDecks.find(d => d.id === c._realDeckId);
-    if(deck && STATE.customCards[deck.topicId]) {
-      const arr = STATE.customCards[deck.topicId];
-      const idx = arr.findIndex(x => x.es === c.es && x.en === c.en);
-      if(idx > -1) arr.splice(idx, 1);
+    const topicCards = STATE.customCards[STATE.activeDecks.find(d => d.id === c._realDeckId).topicId];
+    if(topicCards) {
+      const idx = topicCards.findIndex(x => x.es === c.es && x.en === c.en);
+      if(idx > -1) topicCards.splice(idx, 1);
     }
   } 
   
-  // Add to blacklist (handles both custom and default)
   STATE.blacklist.add(c._uid);
-  
   saveData();
   updateStats();
   nextCard();
@@ -942,19 +1049,17 @@ function renderWordList() {
   
   container.innerHTML = 'Loading...';
 
-  // Gather ALL cards from active decks (deduplicated by uid)
+  // Gather ALL cards
   const allCardsMap = new Map();
   STATE.activeDecks.forEach(d => {
     d.cards.forEach(c => {
        const uid = getCardId(d.id, c);
-       if(STATE.blacklist.has(uid)) return; // Don't show deleted
+       if(STATE.blacklist.has(uid)) return;
        
-       // Status Filter
        const score = (STATE.progress[uid] || {}).score || 0;
        if(fStatus === 'known' && score < 4) return;
        if(fStatus === 'learning' && score >= 4) return;
 
-       // Topic Filter
        if(fTopic !== 'all' && d.topicId !== fTopic) return;
        
        allCardsMap.set(uid, { ...c, _deckName: d.name, _score: score, _uid: uid });
@@ -967,9 +1072,6 @@ function renderWordList() {
   if(fSort === 'az') {
     list.sort((a,b) => a.es.localeCompare(b.es));
   } else if (fSort === 'diff') {
-     // Sort by difficulty (Level) then score
-     // We need level info. It's on the deck.
-     // Getting complex. Let's sort by Score (Weakest first)
      list.sort((a,b) => a._score - b._score);
   }
   
@@ -979,11 +1081,10 @@ function renderWordList() {
     return;
   }
   
-  // Limit render for performance (first 100)
   const renderLimit = list.slice(0, 100); 
   
   renderLimit.forEach(c => {
-    const scoreClass = c._score >= 4 ? 'score-4' : (c._score > 0 ? 'score-1' : 'score-0');
+    const scoreClass = c._score >= 4 ? 'score-4' : (c._score === 3 ? 'score-3' : (c._score > 0 ? 'score-1' : 'score-0'));
     const el = document.createElement('div');
     el.className = 'word-row';
     el.innerHTML = `
@@ -1039,8 +1140,6 @@ function populateTopicFilter() {
 function populateAddDropdown() {
   const sel = document.getElementById('addTopicSelect');
   sel.innerHTML = '';
-  
-  // Only show Categories (Topics)
   if(STATE.decksRaw.topics) {
     STATE.decksRaw.topics.forEach(t => {
       const opt = document.createElement('option');
@@ -1078,11 +1177,9 @@ function onAddSubmit() {
   
   const newCard = { es, en, exampleEs: exEs, exampleEn: exEn, _custom: true };
   
-  // Save to LocalStorage Store (By Topic ID now!)
   if(!STATE.customCards[topicId]) STATE.customCards[topicId] = [];
   STATE.customCards[topicId].push(newCard);
   
-  // Inject into active decks immediately
   STATE.activeDecks.forEach(d => {
     if(d.topicId === topicId) {
        d.cards.push(newCard);
@@ -1092,12 +1189,10 @@ function onAddSubmit() {
   saveData();
   updateStats();
   
-  // Feedback
   const topicLabel = STATE.decksRaw.topics.find(t=>t.id===topicId)?.label || "Topic";
   document.getElementById('addMsg').textContent = `Added to ${topicLabel} decks!`;
   document.getElementById('addMsg').style.color = "#4ade80";
   
-  // Clear inputs
   document.getElementById('addEs').value = '';
   document.getElementById('addEn').value = '';
   document.getElementById('addExEs').value = '';
@@ -1136,7 +1231,7 @@ function toggleSetting(key) {
   STATE[key] = !STATE[key];
   saveData();
   updateCheckUI(key, STATE[key]);
-  renderDecks(); // Update counts
+  renderDecks(); 
 }
 
 function updateCheckUI(key, val) {
@@ -1153,24 +1248,13 @@ function updateCheckUI(key, val) {
 
 function updateStats() {
   let known = 0, learning = 0;
-  // Calculate based on progress
   Object.entries(STATE.progress).forEach(([uid, p]) => {
-    // Only count if not blacklisted
     if(STATE.blacklist.has(uid)) return;
-    if(p.score > 3) known++;
+    if(p.score >= 4) known++;
     else if (p.score > 0) learning++;
   });
   
-  // Total cards available (respecting filters)
   let total = 0;
-  STATE.activeDecks.forEach(d => {
-    // Only count non-mix to avoid double counting for stats
-    // We check if it's a "generated" mix deck (which we didn't flag explicitly, but mix decks usually have 'mix' in ID)
-    // Actually, simplest is count unique UIDs
-    d.cards.forEach(c => total++); 
-  });
-  // Since cards are duplciated across levels in raw data (e.g. nouns lev 1, nouns lev 2), 
-  // we should just count unique UIDs available.
   const uniqueAll = new Set();
   STATE.activeDecks.forEach(d => {
       d.cards.forEach(c => {
@@ -1198,32 +1282,25 @@ function resetAllData() {
 
 // --- BINDINGS ---
 function bindEvents() {
-  // Nav
   document.querySelectorAll('.nav-tab').forEach(btn => {
     btn.onclick = () => switchPanel(btn.dataset.panel);
   });
   
-  // Toggles
   document.querySelectorAll('.toggle-btn').forEach(btn => {
     btn.onclick = () => changeToggle(btn.dataset.group, btn.dataset.val);
   });
   
-  // Game Buttons
   document.getElementById('btnShowAnswer').onclick = () => showAnswer();
   document.getElementById('btnEasy').onclick = () => markCard(true);
   document.getElementById('btnHard').onclick = () => markCard(false);
   document.getElementById('btnNextCard').onclick = () => nextCard();
   document.getElementById('btnDeleteCard').onclick = deleteCurrentCard;
   
-  // Input Enter Key
   document.getElementById('gameInput').onkeydown = (e) => {
     if(e.key === 'Enter') showAnswer();
   };
   
-  // Add Submit
   document.getElementById('btnAddSubmit').onclick = onAddSubmit;
-  
-  // Reset
   document.getElementById('btnResetData').onclick = resetAllData;
 }
 
