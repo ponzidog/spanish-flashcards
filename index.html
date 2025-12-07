@@ -1303,7 +1303,7 @@
 
     async function loadDecksFromJson() {
       try {
-        const res = await fetch(DECKS_URL, { cache: "no-store" });
+        const res = await fetch("./decks.json", { cache: "no-store" });
         if (!res.ok) {
           throw new Error("Failed to load decks.json");
         }
