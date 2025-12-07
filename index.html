@@ -231,6 +231,35 @@
     }
 
     /* Deck list in panel */
+    .deck-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      align-items: center;
+    }
+
+    .deck-filters label {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .deck-filters select {
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 7px 11px;
+      color: var(--text-main);
+      font-size: 12px;
+      outline: none;
+    }
+
+    .deck-filters select:focus {
+      border-color: var(--accent);
+    }
+
     .deck-list {
       display: flex;
       flex-wrap: wrap;
@@ -1018,6 +1047,16 @@
         <!-- Decks -->
         <div class="top-panel active" id="panel-decks">
           <div class="panel-title">Decks</div>
+          <div class="deck-filters">
+            <label>
+              Difficulty
+              <select id="difficultySelect"></select>
+            </label>
+            <label>
+              Level
+              <select id="levelSelect"></select>
+            </label>
+          </div>
           <div class="deck-list" id="deckList"></div>
         </div>
 
@@ -1252,470 +1291,98 @@
     /******************************************************
      * 1. DATA – semi-beginner decks (static base)
      ******************************************************/
-    const DECKS = [
-      {
-        id: "all",
-        name: "All decks",
-        description:
-          "Mix of core verbs, everyday words, and useful phrases. Good default for daily practice.",
-        cards: [],
-        meta: {},
-      },
-      {
-        id: "core-verbs",
-        name: "Core verbs",
-        description:
-          "Most common verbs you’ll see and use every day: be, have, go, want, etc.",
-        cards: [
-          {
-            es: "ser",
-            en: "to be (essential, permanent)",
-            exampleEs: "Soy estudiante.",
-            exampleEn: "I am a student.",
-          },
-          {
-            es: "estar",
-            en: "to be (state, location)",
-            exampleEs: "Estoy cansado.",
-            exampleEn: "I am tired.",
-          },
-          {
-            es: "tener",
-            en: "to have",
-            exampleEs: "Tengo dos hermanos.",
-            exampleEn: "I have two brothers.",
-          },
-          {
-            es: "hacer",
-            en: "to do, to make",
-            exampleEs: "¿Qué haces?",
-            exampleEn: "What are you doing?",
-          },
-          {
-            es: "ir",
-            en: "to go",
-            exampleEs: "Voy al trabajo.",
-            exampleEn: "I’m going to work.",
-          },
-          {
-            es: "poder",
-            en: "can, to be able to",
-            exampleEs: "¿Puedes ayudarme?",
-            exampleEn: "Can you help me?",
-          },
-          {
-            es: "querer",
-            en: "to want, to love",
-            exampleEs: "Quiero aprender español.",
-            exampleEn: "I want to learn Spanish.",
-          },
-          {
-            es: "necesitar",
-            en: "to need",
-            exampleEs: "Necesito agua.",
-            exampleEn: "I need water.",
-          },
-          {
-            es: "decir",
-            en: "to say, to tell",
-            exampleEs: "Dime la verdad.",
-            exampleEn: "Tell me the truth.",
-          },
-          {
-            es: "ver",
-            en: "to see",
-            exampleEs: "No te veo.",
-            exampleEn: "I don’t see you.",
-          },
-          {
-            es: "dar",
-            en: "to give",
-            exampleEs: "Te doy mi número.",
-            exampleEn: "I’ll give you my number.",
-          },
-          {
-            es: "venir",
-            en: "to come",
-            exampleEs: "¿Vienes conmigo?",
-            exampleEn: "Are you coming with me?",
-          },
-          {
-            es: "poner",
-            en: "to put, to place",
-            exampleEs: "Pon la mesa, por favor.",
-            exampleEn: "Set the table, please.",
-          },
-          {
-            es: "salir",
-            en: "to go out, to leave",
-            exampleEs: "Salgo a las ocho.",
-            exampleEn: "I leave at eight.",
-          },
-          {
-            es: "comer",
-            en: "to eat",
-            exampleEs: "Comemos a las dos.",
-            exampleEn: "We eat at two.",
-          },
-          {
-            es: "beber",
-            en: "to drink",
-            exampleEs: "Bebo café por la mañana.",
-            exampleEn: "I drink coffee in the morning.",
-          },
-          {
-            es: "vivir",
-            en: "to live",
-            exampleEs: "Vivo en España.",
-            exampleEn: "I live in Spain.",
-          },
-          {
-            es: "hablar",
-            en: "to speak, to talk",
-            exampleEs: "Hablo un poco de español.",
-            exampleEn: "I speak a little Spanish.",
-          },
-          {
-            es: "entender",
-            en: "to understand",
-            exampleEs: "No entiendo.",
-            exampleEn: "I don’t understand.",
-          },
-          {
-            es: "aprender",
-            en: "to learn",
-            exampleEs: "Estoy aprendiendo español.",
-            exampleEn: "I am learning Spanish.",
-          },
-        ],
-      },
-      {
-        id: "everyday-nouns",
-        name: "Everyday words",
-        description:
-          "Common concrete words: house, food, family, days of the week, etc.",
-        cards: [
-          {
-            es: "la casa",
-            en: "house, home",
-            exampleEs: "Vuelvo a casa.",
-            exampleEn: "I’m going back home.",
-          },
-          {
-            es: "el trabajo",
-            en: "work, job",
-            exampleEs: "Estoy en el trabajo.",
-            exampleEn: "I’m at work.",
-          },
-          {
-            es: "la comida",
-            en: "food, meal",
-            exampleEs: "La comida está lista.",
-            exampleEn: "The food is ready.",
-          },
-          {
-            es: "el agua",
-            en: "water",
-            exampleEs: "¿Puedo tener un vaso de agua?",
-            exampleEn: "Can I have a glass of water?",
-          },
-          {
-            es: "la gente",
-            en: "people",
-            exampleEs: "Hay mucha gente aquí.",
-            exampleEn: "There are many people here.",
-          },
-          {
-            es: "el tiempo",
-            en: "time; weather",
-            exampleEs: "No tengo tiempo.",
-            exampleEn: "I don’t have time.",
-          },
-          {
-            es: "el dinero",
-            en: "money",
-            exampleEs: "No tengo mucho dinero.",
-            exampleEn: "I don’t have much money.",
-          },
-          {
-            es: "la familia",
-            en: "family",
-            exampleEs: "Mi familia es pequeña.",
-            exampleEn: "My family is small.",
-          },
-          {
-            es: "el amigo / la amiga",
-            en: "friend (male / female)",
-            exampleEs: "Ella es mi mejor amiga.",
-            exampleEn: "She is my best friend.",
-          },
-          {
-            es: "la ciudad",
-            en: "city",
-            exampleEs: "La ciudad es muy bonita.",
-            exampleEn: "The city is very beautiful.",
-          },
-          {
-            es: "el coche / el carro",
-            en: "car",
-            exampleEs: "Voy en coche.",
-            exampleEn: "I go by car.",
-          },
-          {
-            es: "el día",
-            en: "day",
-            exampleEs: "Buen día.",
-            exampleEn: "Good day.",
-          },
-          {
-            es: "la noche",
-            en: "night",
-            exampleEs: "Buenas noches.",
-            exampleEn: "Good night.",
-          },
-          {
-            es: "la mañana",
-            en: "morning",
-            exampleEs: "Por la mañana estudio.",
-            exampleEn: "In the morning I study.",
-          },
-          {
-            es: "el lunes",
-            en: "Monday",
-            exampleEs: "El lunes trabajo.",
-            exampleEn: "On Monday I work.",
-          },
-          {
-            es: "el fin de semana",
-            en: "weekend",
-            exampleEs: "Nos vemos el fin de semana.",
-            exampleEn: "See you on the weekend.",
-          },
-          {
-            es: "la habitación",
-            en: "room (in a house / hotel)",
-            exampleEs: "Mi habitación es pequeña.",
-            exampleEn: "My room is small.",
-          },
-          {
-            es: "la calle",
-            en: "street",
-            exampleEs: "Vivo en esta calle.",
-            exampleEn: "I live on this street.",
-          },
-          {
-            es: "el supermercado",
-            en: "supermarket",
-            exampleEs: "Voy al supermercado.",
-            exampleEn: "I’m going to the supermarket.",
-          },
-          {
-            es: "el restaurante",
-            en: "restaurant",
-            exampleEs: "Comemos en un restaurante.",
-            exampleEn: "We eat in a restaurant.",
-          },
-        ],
-      },
-      {
-        id: "adjectives",
-        name: "Useful adjectives",
-        description:
-          "Small set of high-frequency adjectives to describe people and things.",
-        cards: [
-          {
-            es: "grande",
-            en: "big, large",
-            exampleEs: "La casa es grande.",
-            exampleEn: "The house is big.",
-          },
-          {
-            es: "pequeño / pequeña",
-            en: "small",
-            exampleEs: "Es un pueblo pequeño.",
-            exampleEn: "It’s a small town.",
-          },
-          {
-            es: "bueno / buena",
-            en: "good",
-            exampleEs: "Es una idea buena.",
-            exampleEn: "It’s a good idea.",
-          },
-          {
-            es: "malo / mala",
-            en: "bad",
-            exampleEs: "Es un día malo.",
-            exampleEn: "It’s a bad day.",
-          },
-          {
-            es: "nuevo / nueva",
-            en: "new",
-            exampleEs: "Tengo un trabajo nuevo.",
-            exampleEn: "I have a new job.",
-          },
-          {
-            es: "viejo / vieja",
-            en: "old",
-            exampleEs: "Es un edificio viejo.",
-            exampleEn: "It’s an old building.",
-          },
-          {
-            es: "caro / cara",
-            en: "expensive",
-            exampleEs: "Este café es caro.",
-            exampleEn: "This coffee is expensive.",
-          },
-          {
-            es: "barato / barata",
-            en: "cheap, inexpensive",
-            exampleEs: "El menú es barato.",
-            exampleEn: "The menu is cheap.",
-          },
-          {
-            es: "fácil",
-            en: "easy",
-            exampleEs: "El ejercicio es fácil.",
-            exampleEn: "The exercise is easy.",
-          },
-          {
-            es: "difícil",
-            en: "difficult, hard",
-            exampleEs: "El idioma es difícil.",
-            exampleEn: "The language is hard.",
-          },
-          {
-            es: "ocupado / ocupada",
-            en: "busy",
-            exampleEs: "Estoy muy ocupado hoy.",
-            exampleEn: "I am very busy today.",
-          },
-          {
-            es: "libre",
-            en: "free (not busy)",
-            exampleEs: "Estoy libre esta tarde.",
-            exampleEn: "I’m free this afternoon.",
-          },
-          {
-            es: "cansado / cansada",
-            en: "tired",
-            exampleEs: "Estoy cansada pero feliz.",
-            exampleEn: "I’m tired but happy.",
-          },
-          {
-            es: "feliz",
-            en: "happy",
-            exampleEs: "Estoy muy feliz.",
-            exampleEn: "I am very happy.",
-          },
-          {
-            es: "triste",
-            en: "sad",
-            exampleEs: "Ella está triste hoy.",
-            exampleEn: "She is sad today.",
-          },
-        ],
-      },
-      {
-        id: "phrases",
-        name: "Survival phrases",
-        description:
-          "Polite everyday phrases for travel and conversation openings.",
-        cards: [
-          {
-            es: "Hola",
-            en: "Hi / Hello",
-            exampleEs: "Hola, ¿cómo estás?",
-            exampleEn: "Hi, how are you?",
-          },
-          {
-            es: "Buenos días",
-            en: "Good morning",
-            exampleEs: "Buenos días, señor.",
-            exampleEn: "Good morning, sir.",
-          },
-          {
-            es: "Buenas tardes",
-            en: "Good afternoon",
-            exampleEs: "Buenas tardes a todos.",
-            exampleEn: "Good afternoon, everyone.",
-          },
-          {
-            es: "Buenas noches",
-            en: "Good evening / Good night",
-            exampleEs: "Buenas noches, hasta mañana.",
-            exampleEn: "Good night, see you tomorrow.",
-          },
-          {
-            es: "Por favor",
-            en: "Please",
-            exampleEs: "Una mesa para dos, por favor.",
-            exampleEn: "A table for two, please.",
-          },
-          {
-            es: "Gracias",
-            en: "Thank you",
-            exampleEs: "Muchas gracias.",
-            exampleEn: "Thank you very much.",
-          },
-          {
-            es: "De nada",
-            en: "You’re welcome",
-            exampleEs: "—Gracias. —De nada.",
-            exampleEn: "“Thanks.” “You’re welcome.”",
-          },
-          {
-            es: "Perdón / Disculpa",
-            en: "Sorry; excuse me",
-            exampleEs: "Perdón, no entiendo.",
-            exampleEn: "Sorry, I don’t understand.",
-          },
-          {
-            es: "No hablo mucho español",
-            en: "I don’t speak much Spanish",
-            exampleEs: "Lo siento, no hablo mucho español.",
-            exampleEn: "Sorry, I don’t speak much Spanish.",
-          },
-          {
-            es: "¿Puedes hablar más despacio?",
-            en: "Can you speak more slowly?",
-            exampleEs: "Por favor, ¿puedes hablar más despacio?",
-            exampleEn: "Please, can you speak more slowly?",
-          },
-          {
-            es: "¿Cuánto cuesta?",
-            en: "How much does it cost?",
-            exampleEs: "¿Cuánto cuesta este café?",
-            exampleEn: "How much is this coffee?",
-          },
-          {
-            es: "¿Dónde está el baño?",
-            en: "Where is the bathroom?",
-            exampleEs: "Perdón, ¿dónde está el baño?",
-            exampleEn: "Excuse me, where is the bathroom?",
-          },
-          {
-            es: "Mucho gusto",
-            en: "Nice to meet you",
-            exampleEs: "Hola, soy Ana. Mucho gusto.",
-            exampleEn: "Hi, I’m Ana. Nice to meet you.",
-          },
-          {
-            es: "Hasta luego",
-            en: "See you later",
-            exampleEs: "Adiós, hasta luego.",
-            exampleEn: "Bye, see you later.",
-          },
-          {
-            es: "Nos vemos",
-            en: "See you",
-            exampleEs: "Vale, nos vemos mañana.",
-            exampleEn: "Okay, see you tomorrow.",
-          },
-        ],
-      },
-    ];
+    
+    const DECKS_URL = "decks.json";
+    let DECKS = [];
+    let DIFFICULTIES = [];
+    let TOPICS = [];
+    let currentDifficultyId = null;
+    let currentLevelIndex = 1;
+    let lastPlayedDifficultyId = null;
+    let lastPlayedLevelIndex = 1;
 
-    function rebuildAllDeck() {
+    async function loadDecksFromJson() {
+      try {
+        const res = await fetch(DECKS_URL, { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error("Failed to load decks.json");
+        }
+        const data = await res.json();
+        DIFFICULTIES = (data.difficulties || []).slice().sort((a, b) => {
+          const ao = typeof a.order === "number" ? a.order : 999;
+          const bo = typeof b.order === "number" ? b.order : 999;
+          return ao - bo;
+        });
+        TOPICS = data.topics || [];
+        const baseDecks = data.decks || [];
+
+        const decks = [
+          {
+            id: "all",
+            name: "All words",
+            description: "All difficulties, topics, and levels combined.",
+            cards: [],
+            meta: {},
+            difficultyId: "*all",
+            levelIndex: 0
+          },
+        ];
+
+        baseDecks.forEach((deck) => {
+          if (!deck || !deck.id) return;
+          decks.push({
+            id: deck.id,
+            name: deck.name || deck.id,
+            description: deck.description || "",
+            cards: (deck.cards || []).map((c) => ({
+              es: c.es,
+              en: c.en,
+              exampleEs: c.exampleEs,
+              exampleEn: c.exampleEn,
+            })),
+            difficultyId: deck.difficultyId || null,
+            topicId: deck.topicId || null,
+            levelIndex:
+              typeof deck.levelIndex === "number"
+                ? deck.levelIndex
+                : parseInt(deck.levelIndex, 10) || 1,
+          });
+        });
+
+        DECKS = decks;
+
+        if (!currentDifficultyId && DIFFICULTIES.length) {
+          currentDifficultyId = DIFFICULTIES[0].id;
+        }
+        if (!lastPlayedDifficultyId) {
+          lastPlayedDifficultyId = currentDifficultyId;
+        }
+        currentLevelIndex = currentLevelIndex || 1;
+        lastPlayedLevelIndex = lastPlayedLevelIndex || currentLevelIndex;
+      } catch (err) {
+        console.error("Error loading decks.json:", err);
+        DECKS = [
+          {
+            id: "all",
+            name: "All words",
+            description:
+              "Could not load decks.json – using an empty placeholder deck.",
+            cards: [],
+            meta: {},
+          },
+        ];
+        const errorMsg =
+          "Could not load decks.json. Make sure it is in the same folder as index.html.";
+        if (typeof cardFrontTextEl !== "undefined") {
+          cardFrontTextEl.textContent = errorMsg;
+        }
+        if (typeof cardHintEl !== "undefined") {
+          cardHintEl.textContent = "Reload the page after fixing the file location.";
+        }
+      }
+    }
+
+function rebuildAllDeck() {
       const allDeck = DECKS.find((d) => d.id === "all");
       allDeck.cards = [];
       DECKS.forEach((deck) => {
@@ -1921,6 +1588,8 @@ function markCardDeletedForSession(deckId, index) {
      * 3. DOM references
      ******************************************************/
     const deckListEl = document.getElementById("deckList");
+    const difficultySelectEl = document.getElementById("difficultySelect");
+    const levelSelectEl = document.getElementById("levelSelect");
     const deckDescriptionEl = document.getElementById("deckDescription");
     const statSessionSeenEl = document.getElementById("statSessionSeen");
     const statSessionKnewEl = document.getElementById("statSessionKnew");
@@ -2118,11 +1787,107 @@ const skipBtn = document.getElementById("skipBtn");
     }
 
     /******************************************************
-     * 5. UI helpers
+     * 5. UI
+    function deckMatchesCurrentFilter(deck) {
+      if (!deck || deck.id === "all") return false;
+      if (currentDifficultyId && deck.difficultyId && deck.difficultyId !== currentDifficultyId) {
+        return false;
+      }
+      if (
+        typeof deck.levelIndex === "number" &&
+        deck.levelIndex !== currentLevelIndex
+      ) {
+        return false;
+      }
+      return true;
+    }
+
+    function populateDifficultySelect() {
+      if (!difficultySelectEl) return;
+      difficultySelectEl.innerHTML = "";
+      if (!DIFFICULTIES || !DIFFICULTIES.length) return;
+      DIFFICULTIES.forEach((diff) => {
+        const opt = document.createElement("option");
+        opt.value = diff.id;
+        opt.textContent = diff.label || diff.id;
+        difficultySelectEl.appendChild(opt);
+      });
+      if (!currentDifficultyId) {
+        currentDifficultyId = DIFFICULTIES[0].id;
+      }
+      difficultySelectEl.value = currentDifficultyId;
+    }
+
+    function populateLevelSelect() {
+      if (!levelSelectEl) return;
+      levelSelectEl.innerHTML = "";
+      const levels = [1, 2, 3];
+      levels.forEach((lvl) => {
+        const opt = document.createElement("option");
+        opt.value = String(lvl);
+        opt.textContent = "Level " + lvl;
+        levelSelectEl.appendChild(opt);
+      });
+      levelSelectEl.value = String(currentLevelIndex || 1);
+    }
+
+    function selectFirstDeckForCurrentFilter() {
+      const candidate = DECKS.find((d) => deckMatchesCurrentFilter(d));
+      if (candidate) {
+        currentDeckId = candidate.id;
+        sessionSeenByDeck[currentDeckId] = new Set();
+        sessionInfoEl.textContent =
+          "New difficulty/level selected – now training on " + candidate.name + ".";
+        goToNextCard();
+      } else {
+        currentDeckId = "all";
+        sessionSeenByDeck[currentDeckId] = new Set();
+        sessionInfoEl.textContent =
+          "No decks found for this difficulty/level. Try another combination.";
+        goToNextCard();
+      }
+    }
+
+    function onDifficultyChange() {
+      if (!difficultySelectEl) return;
+      currentDifficultyId = difficultySelectEl.value;
+      lastPlayedDifficultyId = currentDifficultyId;
+      renderDeckList();
+      populateAddDeckSelect();
+      populateWordsDeckSelect();
+      renderWordsList();
+      selectFirstDeckForCurrentFilter();
+    }
+
+    function onLevelChange() {
+      if (!levelSelectEl) return;
+      const lvl = parseInt(levelSelectEl.value, 10);
+      currentLevelIndex = Number.isNaN(lvl) ? 1 : lvl;
+      lastPlayedLevelIndex = currentLevelIndex;
+      renderDeckList();
+      populateAddDeckSelect();
+      populateWordsDeckSelect();
+      renderWordsList();
+      selectFirstDeckForCurrentFilter();
+    }
+
+ helpers
      ******************************************************/
     function renderDeckList() {
+      if (!deckListEl) return;
       deckListEl.innerHTML = "";
-      DECKS.forEach((deck) => {
+      if (!DECKS || !DECKS.length) return;
+
+      const filtered = DECKS.filter((deck) => deckMatchesCurrentFilter(deck));
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "words-empty";
+        empty.textContent = "No decks for this difficulty/level yet.";
+        deckListEl.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach((deck) => {
         if (!deck) return;
         const item = document.createElement("div");
         item.className = "deck-item";
@@ -2138,8 +1903,12 @@ const skipBtn = document.getElementById("skipBtn");
         const meta = document.createElement("div");
         meta.className = "deck-meta";
 
-        let totalCards = deck.cards.length;
-        meta.textContent = `${totalCards} words`;
+        const totalCards = deck.cards ? deck.cards.length : 0;
+        const levelLabel =
+          typeof deck.levelIndex === "number" && deck.levelIndex > 0
+            ? ` · L${deck.levelIndex}`
+            : "";
+        meta.textContent = `${totalCards} words${levelLabel}`;
 
         item.appendChild(name);
         item.appendChild(meta);
@@ -2148,17 +1917,33 @@ const skipBtn = document.getElementById("skipBtn");
     }
 
     function populateAddDeckSelect() {
+      if (!addDeckSelectEl) return;
       addDeckSelectEl.innerHTML = "";
+      if (!DECKS || !DECKS.length) return;
+
+      let defaultDeckId = null;
       DECKS.forEach((deck) => {
-        if (deck.id === "all") return;
+        if (!deck || deck.id === "all") return;
         const opt = document.createElement("option");
         opt.value = deck.id;
         opt.textContent = deck.name;
         addDeckSelectEl.appendChild(opt);
+
+        if (
+          !defaultDeckId &&
+          deck.difficultyId === lastPlayedDifficultyId &&
+          deck.levelIndex === lastPlayedLevelIndex
+        ) {
+          defaultDeckId = deck.id;
+        }
       });
 
-      if (currentDeckId !== "all") {
+      if (currentDeckId && currentDeckId !== "all") {
         addDeckSelectEl.value = currentDeckId;
+      } else if (defaultDeckId) {
+        addDeckSelectEl.value = defaultDeckId;
+      } else if (addDeckSelectEl.options.length) {
+        addDeckSelectEl.value = addDeckSelectEl.options[0].value;
       }
     }
 
@@ -2548,6 +2333,25 @@ const skipBtn = document.getElementById("skipBtn");
       const deckId = item.dataset.deckId;
       if (!deckId || deckId === currentDeckId) return;
       currentDeckId = deckId;
+
+      const deck = DECKS.find((d) => d.id === deckId);
+      if (deck) {
+        if (deck.difficultyId && deck.difficultyId !== "*all") {
+          currentDifficultyId = deck.difficultyId;
+          lastPlayedDifficultyId = deck.difficultyId;
+          if (difficultySelectEl) {
+            difficultySelectEl.value = deck.difficultyId;
+          }
+        }
+        if (typeof deck.levelIndex === "number" && deck.levelIndex > 0) {
+          currentLevelIndex = deck.levelIndex;
+          lastPlayedLevelIndex = deck.levelIndex;
+          if (levelSelectEl) {
+            levelSelectEl.value = String(deck.levelIndex);
+          }
+        }
+      }
+
       deckListEl
         .querySelectorAll(".deck-item")
         .forEach((el) => el.classList.remove("active"));
@@ -3111,11 +2915,15 @@ const skipBtn = document.getElementById("skipBtn");
     /******************************************************
      * 8. Init
      ******************************************************/
-    function init() {
+    
+    async function init() {
       loadProgress();
+      await loadDecksFromJson();
       loadCustomCards();
       rebuildAllDeck();
 
+      populateDifficultySelect();
+      populateLevelSelect();
       renderDeckList();
       updateDeckDescription();
       populateAddDeckSelect();
@@ -3124,25 +2932,54 @@ const skipBtn = document.getElementById("skipBtn");
       updateStatsUI();
 
       // Events
-      deckListEl.addEventListener("click", onDeckClick);
-      showAnswerBtn.addEventListener("click", onAnswerButtonClick);
-learningBtn.addEventListener("click", () => onMark(false));
-knewItBtn.addEventListener("click", () => onMark(true));
-skipBtn.addEventListener("click", onSkip);
+      if (deckListEl) {
+        deckListEl.addEventListener("click", onDeckClick);
+      }
+      if (showAnswerBtn) {
+        showAnswerBtn.addEventListener("click", onAnswerButtonClick);
+      }
+      if (learningBtn) {
+        learningBtn.addEventListener("click", () => onMark(false));
+      }
+      if (knewItBtn) {
+        knewItBtn.addEventListener("click", () => onMark(true));
+      }
+      if (skipBtn) {
+        skipBtn.addEventListener("click", onSkip);
+      }
+      if (deleteCurrentBtn) {
+        deleteCurrentBtn.addEventListener("click", onDeleteCurrentCard);
+      }
 
-if (deleteCurrentBtn) {
-  deleteCurrentBtn.addEventListener("click", onDeleteCurrentCard);
-}
+      if (directionToggleEl) {
+        directionToggleEl.addEventListener("click", onDirectionToggle);
+      }
+      if (answerModeToggleEl) {
+        answerModeToggleEl.addEventListener("click", onAnswerModeToggle);
+      }
+      if (resetProgressBtn) {
+        resetProgressBtn.addEventListener("click", onResetProgress);
+      }
 
-      directionToggleEl.addEventListener("click", onDirectionToggle);
-      answerModeToggleEl.addEventListener("click", onAnswerModeToggle);
-      resetProgressBtn.addEventListener("click", onResetProgress);
       document.addEventListener("keydown", onKeyDown);
 
-      addCardFormEl.addEventListener("submit", onAddCardSubmit);
-      toggleExamplesBtn.addEventListener("click", onToggleExamples);
+      if (addCardFormEl) {
+        addCardFormEl.addEventListener("submit", onAddCardSubmit);
+      }
+      if (toggleExamplesBtn) {
+        toggleExamplesBtn.addEventListener("click", onToggleExamples);
+      }
 
-      topNavEl.addEventListener("click", onTopNavClick);
+      if (difficultySelectEl) {
+        difficultySelectEl.addEventListener("change", onDifficultyChange);
+      }
+      if (levelSelectEl) {
+        levelSelectEl.addEventListener("change", onLevelChange);
+      }
+
+      if (topNavEl) {
+        topNavEl.addEventListener("click", onTopNavClick);
+      }
 
       if (wordsDeckSelectEl) {
         wordsDeckSelectEl.addEventListener("change", onWordsDeckChange);
@@ -3194,7 +3031,3 @@ if (deleteCurrentBtn) {
       });
     }
   </script>
-
-
-
-
