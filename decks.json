@@ -1,0 +1,2328 @@
+
+{
+  "difficulties": [
+    { "id": "beginner",   "label": "Beginner",   "order": 1 },
+    { "id": "basic",      "label": "Basic",      "order": 2 },
+    { "id": "proficient", "label": "Proficient", "order": 3 },
+    { "id": "advanced",   "label": "Advanced",   "order": 4 }
+  ],
+  "topics": [
+    { "id": "verbs",           "label": "Verbs" },
+    { "id": "everyday-nouns",  "label": "Everyday nouns" },
+    { "id": "adjectives",      "label": "Adjectives" },
+    { "id": "phrases",         "label": "Phrases" }
+  ],
+  "decks": [
+    {
+      "id": "verbs-beginner-1",
+      "difficultyId": "beginner",
+      "topicId": "verbs",
+      "levelIndex": 1,
+      "name": "Beginner verbs · Level 1",
+      "description": "Most common root verbs for beginners.",
+      "cards": [
+        { "es": "ser",      "en": "to be (essential, permanent)", "exampleEs": "Soy estudiante.",              "exampleEn": "I am a student." },
+        { "es": "estar",    "en": "to be (state, location)",      "exampleEs": "Estoy cansado.",               "exampleEn": "I am tired." },
+        { "es": "tener",    "en": "to have",                      "exampleEs": "Tengo dos hermanos.",          "exampleEn": "I have two brothers." },
+        { "es": "hacer",    "en": "to do, to make",               "exampleEs": "¿Qué haces?",                  "exampleEn": "What are you doing?" },
+        { "es": "ir",       "en": "to go",                        "exampleEs": "Voy al trabajo.",              "exampleEn": "I’m going to work." },
+        { "es": "poder",    "en": "can, to be able to",           "exampleEs": "¿Puedes ayudarme?",            "exampleEn": "Can you help me?" },
+        { "es": "querer",   "en": "to want, to love",             "exampleEs": "Quiero aprender español.",     "exampleEn": "I want to learn Spanish." },
+        { "es": "necesitar","en": "to need",                      "exampleEs": "Necesito agua.",              "exampleEn": "I need water." },
+        { "es": "decir",    "en": "to say, to tell",              "exampleEs": "Dime la verdad.",             "exampleEn": "Tell me the truth." },
+        { "es": "ver",      "en": "to see",                       "exampleEs": "No te veo.",                  "exampleEn": "I don’t see you." },
+        { "es": "dar",      "en": "to give",                      "exampleEs": "Te doy mi número.",           "exampleEn": "I’ll give you my number." },
+        { "es": "venir",    "en": "to come",                      "exampleEs": "¿Vienes conmigo?",            "exampleEn": "Are you coming with me?" },
+        { "es": "poner",    "en": "to put, to place",             "exampleEs": "Pon la mesa, por favor.",     "exampleEn": "Set the table, please." },
+        { "es": "salir",    "en": "to go out, to leave",          "exampleEs": "Salgo a las ocho.",           "exampleEn": "I leave at eight." },
+        { "es": "comer",    "en": "to eat",                       "exampleEs": "Comemos a las dos.",          "exampleEn": "We eat at two." },
+        { "es": "beber",    "en": "to drink",                     "exampleEs": "Bebo café por la mañana.",    "exampleEn": "I drink coffee in the morning." },
+        { "es": "vivir",    "en": "to live",                      "exampleEs": "Vivo en España.",             "exampleEn": "I live in Spain." },
+        { "es": "hablar",   "en": "to speak, to talk",            "exampleEs": "Hablo un poco de español.",   "exampleEn": "I speak a little Spanish." },
+        { "es": "entender", "en": "to understand",                "exampleEs": "No entiendo.",                "exampleEn": "I don’t understand." },
+        { "es": "aprender", "en": "to learn",                     "exampleEs": "Estoy aprendiendo español.",  "exampleEn": "I am learning Spanish." }
+      ]
+    },
+
+    {
+      "id": "everyday-nouns-beginner-1",
+      "difficultyId": "beginner",
+      "topicId": "everyday-nouns",
+      "levelIndex": 1,
+      "name": "Beginner nouns · Level 1",
+      "description": "Common everyday nouns for beginners.",
+      "cards": [
+        { "es": "la casa",          "en": "house, home",             "exampleEs": "Vuelvo a casa.",                        "exampleEn": "I’m going back home." },
+        { "es": "el trabajo",       "en": "work, job",               "exampleEs": "Estoy en el trabajo.",                  "exampleEn": "I’m at work." },
+        { "es": "la comida",        "en": "food, meal",              "exampleEs": "La comida está lista.",                 "exampleEn": "The food is ready." },
+        { "es": "el agua",          "en": "water",                   "exampleEs": "¿Puedo tener un vaso de agua?",         "exampleEn": "Can I have a glass of water?" },
+        { "es": "la gente",         "en": "people",                  "exampleEs": "Hay mucha gente aquí.",                 "exampleEn": "There are many people here." },
+        { "es": "el tiempo",        "en": "time; weather",           "exampleEs": "No tengo tiempo.",                      "exampleEn": "I don’t have time." },
+        { "es": "el dinero",        "en": "money",                   "exampleEs": "No tengo mucho dinero.",                "exampleEn": "I don’t have much money." },
+        { "es": "la familia",       "en": "family",                  "exampleEs": "Mi familia es pequeña.",                "exampleEn": "My family is small." },
+        { "es": "el amigo / la amiga","en":"friend (male / female)","exampleEs":"Ella es mi mejor amiga.","exampleEn":"She is my best friend." },
+        { "es": "la ciudad",        "en": "city",                    "exampleEs": "La ciudad es muy bonita.",              "exampleEn": "The city is very beautiful." },
+        { "es": "el coche / el carro","en": "car",                  "exampleEs": "Voy en coche.",                          "exampleEn": "I go by car." },
+        { "es": "el día",           "en": "day",                     "exampleEs": "Buen día.",                              "exampleEn": "Good day." },
+        { "es": "la noche",         "en": "night",                   "exampleEs": "Buenas noches.",                        "exampleEn": "Good night." },
+        { "es": "la mañana",        "en": "morning",                 "exampleEs": "Por la mañana estudio.",                 "exampleEn": "In the morning I study." },
+        { "es": "el lunes",         "en": "Monday",                  "exampleEs": "El lunes trabajo.",                      "exampleEn": "On Monday I work." },
+        { "es": "el fin de semana", "en": "weekend",                 "exampleEs": "Nos vemos el fin de semana.",           "exampleEn": "See you on the weekend." },
+        { "es": "la habitación",    "en": "room (in a house / hotel)","exampleEs":"Mi habitación es pequeña.","exampleEn":"My room is small." },
+        { "es": "la calle",         "en": "street",                  "exampleEs": "Vivo en esta calle.",                   "exampleEn": "I live on this street." },
+        { "es": "el supermercado",  "en": "supermarket",             "exampleEs": "Voy al supermercado.",                  "exampleEn": "I’m going to the supermarket." },
+        { "es": "el restaurante",   "en": "restaurant",              "exampleEs": "Comemos en un restaurante.",            "exampleEn": "We eat in a restaurant." }
+      ]
+    },
+
+    {
+      "id": "adjectives-beginner-1",
+      "difficultyId": "beginner",
+      "topicId": "adjectives",
+      "levelIndex": 1,
+      "name": "Beginner adjectives · Level 1",
+      "description": "Useful adjectives to describe people and things.",
+      "cards": [
+        { "es": "grande",            "en": "big, large",           "exampleEs": "La casa es grande.",                "exampleEn": "The house is big." },
+        { "es": "pequeño / pequeña", "en": "small",                "exampleEs": "Es un pueblo pequeño.",             "exampleEn": "It’s a small town." },
+        { "es": "bueno / buena",     "en": "good",                 "exampleEs": "Es una idea buena.",                "exampleEn": "It’s a good idea." },
+        { "es": "malo / mala",       "en": "bad",                  "exampleEs": "Es un día malo.",                   "exampleEn": "It’s a bad day." },
+        { "es": "nuevo / nueva",     "en": "new",                  "exampleEs": "Tengo un trabajo nuevo.",           "exampleEn": "I have a new job." },
+        { "es": "viejo / vieja",     "en": "old",                  "exampleEs": "Es un edificio viejo.",             "exampleEn": "It’s an old building." },
+        { "es": "caro / cara",       "en": "expensive",            "exampleEs": "Este café es caro.",                "exampleEn": "This coffee is expensive." },
+        { "es": "barato / barata",   "en": "cheap, inexpensive",   "exampleEs": "El menú es barato.",                "exampleEn": "The menu is cheap." },
+        { "es": "fácil",             "en": "easy",                 "exampleEs": "El ejercicio es fácil.",            "exampleEn": "The exercise is easy." },
+        { "es": "difícil",           "en": "difficult, hard",      "exampleEs": "El idioma es difícil.",             "exampleEn": "The language is hard." },
+        { "es": "ocupado / ocupada", "en": "busy",                 "exampleEs": "Estoy muy ocupado hoy.",            "exampleEn": "I am very busy today." },
+        { "es": "libre",             "en": "free (not busy)",      "exampleEs": "Estoy libre esta tarde.",           "exampleEn": "I’m free this afternoon." },
+        { "es": "cansado / cansada", "en": "tired",                "exampleEs": "Estoy cansada pero feliz.",         "exampleEn": "I’m tired but happy." },
+        { "es": "feliz",             "en": "happy",                "exampleEs": "Estoy muy feliz.",                 "exampleEn": "I am very happy." },
+        { "es": "triste",            "en": "sad",                  "exampleEs": "Ella está triste hoy.",            "exampleEn": "She is sad today." }
+      ]
+    },
+
+    {
+      "id": "phrases-beginner-1",
+      "difficultyId": "beginner",
+      "topicId": "phrases",
+      "levelIndex": 1,
+      "name": "Beginner phrases · Level 1",
+      "description": "Polite everyday phrases for travel and conversation.",
+      "cards": [
+        { "es": "Hola",                          "en": "Hi / Hello",                    "exampleEs": "Hola, ¿cómo estás?",                            "exampleEn": "Hi, how are you?" },
+        { "es": "Buenos días",                   "en": "Good morning",                  "exampleEs": "Buenos días, señor.",                         "exampleEn": "Good morning, sir." },
+        { "es": "Buenas tardes",                 "en": "Good afternoon",                "exampleEs": "Buenas tardes a todos.",                      "exampleEn": "Good afternoon, everyone." },
+        { "es": "Buenas noches",                 "en": "Good evening / Good night",     "exampleEs": "Buenas noches, hasta mañana.",                "exampleEn": "Good night, see you tomorrow." },
+        { "es": "Por favor",                     "en": "Please",                        "exampleEs": "Una mesa para dos, por favor.",               "exampleEn": "A table for two, please." },
+        { "es": "Gracias",                       "en": "Thank you",                     "exampleEs": "Muchas gracias.",                             "exampleEn": "Thank you very much." },
+        { "es": "De nada",                       "en": "You’re welcome",                "exampleEs": "—Gracias. —De nada.",                        "exampleEn": "“Thanks.” “You’re welcome.”" },
+        { "es": "Perdón / Disculpa",             "en": "Sorry; excuse me",              "exampleEs": "Perdón, no entiendo.",                        "exampleEn": "Sorry, I don’t understand." },
+        { "es": "No hablo mucho español",        "en": "I don’t speak much Spanish",    "exampleEs": "Lo siento, no hablo mucho español.",          "exampleEn": "Sorry, I don’t speak much Spanish." },
+        { "es": "¿Puedes hablar más despacio?",  "en": "Can you speak more slowly?",    "exampleEs": "Por favor, ¿puedes hablar más despacio?",     "exampleEn": "Please, can you speak more slowly?" },
+        { "es": "¿Cuánto cuesta?",              "en": "How much does it cost?",        "exampleEs": "¿Cuánto cuesta este café?",                   "exampleEn": "How much is this coffee?" },
+        { "es": "¿Dónde está el baño?",          "en": "Where is the bathroom?",        "exampleEs": "Perdón, ¿dónde está el baño?",                "exampleEn": "Excuse me, where is the bathroom?" },
+        { "es": "Mucho gusto",                   "en": "Nice to meet you",              "exampleEs": "Hola, soy Ana. Mucho gusto.",                 "exampleEn": "Hi, I’m Ana. Nice to meet you." },
+        { "es": "Hasta luego",                   "en": "See you later",                 "exampleEs": "Adiós, hasta luego.",                         "exampleEn": "Bye, see you later." },
+        { "es": "Nos vemos",                     "en": "See you",                       "exampleEs": "Vale, nos vemos mañana.",                     "exampleEn": "Okay, see you tomorrow." }
+      ]
+    },
+
+    {
+      "id": "verbs-beginner-2",
+      "difficultyId": "beginner",
+      "topicId": "verbs",
+      "levelIndex": 2,
+      "name": "Beginner verbs · Level 2",
+      "description": "More everyday verbs to build your base.",
+      "cards": [
+        { "es": "llamarse", "en": "to be called, to be named", "exampleEs": "¿Cómo te llamas?", "exampleEn": "What is your name?" },
+        { "es": "trabajar", "en": "to work", "exampleEs": "Trabajo en una oficina.", "exampleEn": "I work in an office." },
+        { "es": "estudiar", "en": "to study", "exampleEs": "Estudio español todos los días.", "exampleEn": "I study Spanish every day." },
+        { "es": "tomar", "en": "to take; to drink", "exampleEs": "Tomamos un café después del trabajo.", "exampleEn": "We have a coffee after work." },
+        { "es": "llegar", "en": "to arrive", "exampleEs": "Llego tarde a veces.", "exampleEn": "I arrive late sometimes." },
+        { "es": "empezar", "en": "to start; to begin", "exampleEs": "La clase empieza a las nueve.", "exampleEn": "The class starts at nine." },
+        { "es": "volver", "en": "to return; to come back", "exampleEs": "Vuelvo a casa tarde.", "exampleEn": "I come back home late." },
+        { "es": "quedar", "en": "to stay; to meet up", "exampleEs": "Quedamos con amigos el sábado.", "exampleEn": "We meet up with friends on Saturday." },
+        { "es": "viajar", "en": "to travel", "exampleEs": "Viajo mucho por trabajo.", "exampleEn": "I travel a lot for work." },
+        { "es": "caminar", "en": "to walk", "exampleEs": "Camino al trabajo todos los días.", "exampleEn": "I walk to work every day." },
+        { "es": "abrir", "en": "to open", "exampleEs": "¿Puedes abrir la ventana?", "exampleEn": "Can you open the window?" },
+        { "es": "cerrar", "en": "to close", "exampleEs": "Cierra la puerta, por favor.", "exampleEn": "Close the door, please." },
+        { "es": "escribir", "en": "to write", "exampleEs": "Escribo un correo electrónico.", "exampleEn": "I am writing an email." },
+        { "es": "escuchar", "en": "to listen", "exampleEs": "Escucho música en el coche.", "exampleEn": "I listen to music in the car." },
+        { "es": "mirar", "en": "to look at; to watch", "exampleEs": "Miramos una película esta noche.", "exampleEn": "We’re watching a movie tonight." },
+        { "es": "comprar", "en": "to buy", "exampleEs": "Compro pan en la tienda.", "exampleEn": "I buy bread at the store." },
+        { "es": "pagar", "en": "to pay", "exampleEs": "Pago en efectivo.", "exampleEn": "I pay in cash." },
+        { "es": "dormir", "en": "to sleep", "exampleEs": "Duermo ocho horas cada noche.", "exampleEn": "I sleep eight hours every night." },
+        { "es": "jugar", "en": "to play (a game or sport)", "exampleEs": "Los niños juegan en el parque.", "exampleEn": "The kids play in the park." },
+        { "es": "sentir", "en": "to feel", "exampleEs": "Me siento muy bien hoy.", "exampleEn": "I feel very good today." }
+      ]
+    },
+
+    {
+      "id": "everyday-nouns-beginner-2",
+      "difficultyId": "beginner",
+      "topicId": "everyday-nouns",
+      "levelIndex": 2,
+      "name": "Beginner nouns · Level 2",
+      "description": "More common everyday nouns for beginners.",
+      "cards": [
+        { "es": "el teléfono", "en": "phone", "exampleEs": "No encuentro mi teléfono.", "exampleEn": "I can't find my phone." },
+        { "es": "la mesa", "en": "table", "exampleEs": "La comida está en la mesa.", "exampleEn": "The food is on the table." },
+        { "es": "la silla", "en": "chair", "exampleEs": "Hay una silla libre aquí.", "exampleEn": "There is a free chair here." },
+        { "es": "el ordenador / la computadora", "en": "computer", "exampleEs": "Trabajo con el ordenador todo el día.", "exampleEn": "I work with the computer all day." },
+        { "es": "el café", "en": "coffee", "exampleEs": "Tomamos un café juntos.", "exampleEn": "We have a coffee together." },
+        { "es": "el té", "en": "tea", "exampleEs": "Prefiero el té sin azúcar.", "exampleEn": "I prefer tea without sugar." },
+        { "es": "la cerveza", "en": "beer", "exampleEs": "Una cerveza fría, por favor.", "exampleEn": "A cold beer, please." },
+        { "es": "el pan", "en": "bread", "exampleEs": "Compro pan fresco cada mañana.", "exampleEn": "I buy fresh bread every morning." },
+        { "es": "la ropa", "en": "clothes", "exampleEs": "Tengo mucha ropa en la maleta.", "exampleEn": "I have a lot of clothes in the suitcase." },
+        { "es": "el zapato", "en": "shoe", "exampleEs": "Estos zapatos son cómodos.", "exampleEn": "These shoes are comfortable." },
+        { "es": "la tienda", "en": "shop; store", "exampleEs": "La tienda cierra a las ocho.", "exampleEn": "The store closes at eight." },
+        { "es": "la estación", "en": "station", "exampleEs": "Nos vemos en la estación.", "exampleEn": "We’ll meet at the station." },
+        { "es": "el hotel", "en": "hotel", "exampleEs": "El hotel está cerca del centro.", "exampleEn": "The hotel is near the center." },
+        { "es": "el parque", "en": "park", "exampleEs": "Hay muchos niños en el parque.", "exampleEn": "There are many children in the park." },
+        { "es": "la playa", "en": "beach", "exampleEs": "Pasamos el día en la playa.", "exampleEn": "We spend the day at the beach." },
+        { "es": "el aeropuerto", "en": "airport", "exampleEs": "Llegamos tarde al aeropuerto.", "exampleEn": "We arrived late at the airport." },
+        { "es": "el hospital", "en": "hospital", "exampleEs": "El hospital está lejos de aquí.", "exampleEn": "The hospital is far from here." },
+        { "es": "el correo electrónico", "en": "email", "exampleEs": "Te envío el correo electrónico hoy.", "exampleEn": "I’ll send you the email today." },
+        { "es": "la llamada", "en": "call (phone call)", "exampleEs": "Tengo una llamada importante.", "exampleEn": "I have an important call." },
+        { "es": "la cita", "en": "appointment; date", "exampleEs": "Tengo una cita con el médico.", "exampleEn": "I have an appointment with the doctor." }
+      ]
+    },
+
+    {
+      "id": "adjectives-beginner-2",
+      "difficultyId": "beginner",
+      "topicId": "adjectives",
+      "levelIndex": 2,
+      "name": "Beginner adjectives · Level 2",
+      "description": "Extra adjectives for describing situations.",
+      "cards": [
+        { "es": "lento / lenta", "en": "slow", "exampleEs": "El internet es muy lento hoy.", "exampleEn": "The internet is very slow today." },
+        { "es": "rápido / rápida", "en": "fast", "exampleEs": "El tren es muy rápido.", "exampleEn": "The train is very fast." },
+        { "es": "limpio / limpia", "en": "clean", "exampleEs": "La habitación está limpia.", "exampleEn": "The room is clean." },
+        { "es": "sucio / sucia", "en": "dirty", "exampleEs": "El baño está sucio.", "exampleEn": "The bathroom is dirty." },
+        { "es": "corto / corta", "en": "short", "exampleEs": "Es un viaje corto.", "exampleEn": "It’s a short trip." },
+        { "es": "largo / larga", "en": "long", "exampleEs": "Es una película larga.", "exampleEn": "It’s a long movie." },
+        { "es": "caliente", "en": "hot; warm", "exampleEs": "El café está muy caliente.", "exampleEn": "The coffee is very hot." },
+        { "es": "frío / fría", "en": "cold", "exampleEs": "El agua está fría.", "exampleEn": "The water is cold." },
+        { "es": "listo / lista", "en": "ready; smart", "exampleEs": "Estoy listo para salir.", "exampleEn": "I am ready to go." },
+        { "es": "enfermo / enferma", "en": "sick; ill", "exampleEs": "Hoy estoy enfermo y no trabajo.", "exampleEn": "Today I am sick and not working." },
+        { "es": "sano / sana", "en": "healthy", "exampleEs": "Ella está muy sana.", "exampleEn": "She is very healthy." },
+        { "es": "tranquilo / tranquila", "en": "calm; quiet", "exampleEs": "El barrio es muy tranquilo.", "exampleEn": "The neighborhood is very quiet." },
+        { "es": "nervioso / nerviosa", "en": "nervous", "exampleEs": "Estoy nerviosa antes del examen.", "exampleEn": "I am nervous before the exam." },
+        { "es": "cerca", "en": "near", "exampleEs": "El restaurante está cerca.", "exampleEn": "The restaurant is near." },
+        { "es": "lejos", "en": "far", "exampleEs": "Mi familia vive lejos.", "exampleEn": "My family lives far away." }
+      ]
+    },
+
+    {
+      "id": "phrases-beginner-2",
+      "difficultyId": "beginner",
+      "topicId": "phrases",
+      "levelIndex": 2,
+      "name": "Beginner phrases · Level 2",
+      "description": "Everyday questions and survival phrases.",
+      "cards": [
+        { "es": "¿Qué tal?", "en": "How are things?; How’s it going?", "exampleEs": "Hola, ¿qué tal?", "exampleEn": "Hi, how’s it going?" },
+        { "es": "¿Cómo te llamas?", "en": "What is your name?", "exampleEs": "Hola, ¿cómo te llamas?", "exampleEn": "Hi, what is your name?" },
+        { "es": "Me llamo …", "en": "My name is …", "exampleEs": "Me llamo Laura.", "exampleEn": "My name is Laura." },
+        { "es": "¿De dónde eres?", "en": "Where are you from?", "exampleEs": "¿De dónde eres?", "exampleEn": "Where are you from?" },
+        { "es": "Soy de …", "en": "I am from …", "exampleEs": "Soy de Holanda.", "exampleEn": "I am from the Netherlands." },
+        { "es": "No pasa nada", "en": "It’s okay; no worries", "exampleEs": "Tranquilo, no pasa nada.", "exampleEn": "Relax, it’s okay." },
+        { "es": "Está bien", "en": "It’s fine; okay", "exampleEs": "Si llegas tarde, está bien.", "exampleEn": "If you arrive late, it’s fine." },
+        { "es": "No hay problema", "en": "No problem", "exampleEs": "No hay problema, puedo esperar.", "exampleEn": "No problem, I can wait." },
+        { "es": "¿Puedes ayudarme?", "en": "Can you help me?", "exampleEs": "Perdón, ¿puedes ayudarme?", "exampleEn": "Excuse me, can you help me?" },
+        { "es": "Un momento, por favor", "en": "One moment, please", "exampleEs": "Un momento, por favor, ahora vengo.", "exampleEn": "One moment, please, I’ll be right back." },
+        { "es": "No lo sé", "en": "I don’t know", "exampleEs": "Lo siento, no lo sé.", "exampleEn": "I’m sorry, I don’t know." },
+        { "es": "No importa", "en": "It doesn’t matter", "exampleEs": "No te preocupes, no importa.", "exampleEn": "Don’t worry, it doesn’t matter." },
+        { "es": "Tengo hambre", "en": "I’m hungry", "exampleEs": "Después del trabajo tengo mucha hambre.", "exampleEn": "After work I am very hungry." },
+        { "es": "Tengo sed", "en": "I’m thirsty", "exampleEs": "Hace calor y tengo sed.", "exampleEn": "It’s hot and I’m thirsty." },
+        { "es": "Estoy perdido / perdida", "en": "I’m lost", "exampleEs": "Perdón, estoy perdido, ¿me puedes ayudar?", "exampleEn": "Excuse me, I’m lost, can you help me?" }
+      ]
+    },
+
+    {
+      "id": "verbs-beginner-3",
+      "difficultyId": "beginner",
+      "topicId": "verbs",
+      "levelIndex": 3,
+      "name": "Beginner verbs · Level 3",
+      "description": "Extra beginner verbs to expand your range.",
+      "cards": [
+        { "es": "aceptar", "en": "to accept", "exampleEs": "Acepto tu invitación.", "exampleEn": "I accept your invitation." },
+        { "es": "ayudar", "en": "to help", "exampleEs": "Te puedo ayudar con esto.", "exampleEn": "I can help you with this." },
+        { "es": "bailar", "en": "to dance", "exampleEs": "Bailamos toda la noche.", "exampleEn": "We danced all night." },
+        { "es": "cambiar", "en": "to change", "exampleEs": "Quiero cambiar mi rutina.", "exampleEn": "I want to change my routine." },
+        { "es": "cuidar", "en": "to take care of", "exampleEs": "Cuido a mi hermano pequeño.", "exampleEn": "I take care of my little brother." },
+        { "es": "descansar", "en": "to rest", "exampleEs": "Necesito descansar un poco.", "exampleEn": "I need to rest a bit." },
+        { "es": "encontrar", "en": "to find", "exampleEs": "No encuentro mis llaves.", "exampleEn": "I can’t find my keys." },
+        { "es": "entrar", "en": "to enter", "exampleEs": "Entramos en el edificio.", "exampleEn": "We enter the building." },
+        { "es": "evitar", "en": "to avoid", "exampleEs": "Intento evitar el azúcar.", "exampleEn": "I try to avoid sugar." },
+        { "es": "ganar", "en": "to win; to earn", "exampleEs": "Ella gana bien en su trabajo.", "exampleEn": "She earns well at her job." },
+        { "es": "imaginar", "en": "to imagine", "exampleEs": "Imagina un futuro mejor.", "exampleEn": "Imagine a better future." },
+        { "es": "mejorar", "en": "to improve", "exampleEs": "Quiero mejorar mi español.", "exampleEn": "I want to improve my Spanish." },
+        { "es": "negar", "en": "to deny", "exampleEs": "Él niega todo.", "exampleEn": "He denies everything." },
+        { "es": "ofrecer", "en": "to offer", "exampleEs": "Te ofrezco mi ayuda.", "exampleEn": "I offer you my help." },
+        { "es": "probar", "en": "to try; to taste", "exampleEs": "¿Quieres probar este plato?", "exampleEn": "Do you want to try this dish?" },
+        { "es": "recordar", "en": "to remember", "exampleEs": "No recuerdo su nombre.", "exampleEn": "I don’t remember his name." },
+        { "es": "romper", "en": "to break", "exampleEs": "Casi rompo mi teléfono.", "exampleEn": "I almost broke my phone." },
+        { "es": "subir", "en": "to go up; to upload", "exampleEs": "Subo las fotos al móvil.", "exampleEn": "I upload the photos to my phone." },
+        { "es": "tirar", "en": "to throw away", "exampleEs": "Tiro la basura todas las noches.", "exampleEn": "I throw out the trash every night." },
+        { "es": "visitar", "en": "to visit", "exampleEs": "Visito a mis padres los domingos.", "exampleEn": "I visit my parents on Sundays." }
+      ]
+    },
+
+    {
+      "id": "everyday-nouns-beginner-3",
+      "difficultyId": "beginner",
+      "topicId": "everyday-nouns",
+      "levelIndex": 3,
+      "name": "Beginner nouns · Level 3",
+      "description": "Travel and daily-life nouns for beginners.",
+      "cards": [
+        { "es": "el bolso", "en": "bag; purse", "exampleEs": "Mi bolso está en la mesa.", "exampleEn": "My bag is on the table." },
+        { "es": "la llave", "en": "key", "exampleEs": "Perdí mis llaves.", "exampleEn": "I lost my keys." },
+        { "es": "el pasaporte", "en": "passport", "exampleEs": "Mi pasaporte está en la maleta.", "exampleEn": "My passport is in the suitcase." },
+        { "es": "la maleta", "en": "suitcase", "exampleEs": "Hago la maleta esta noche.", "exampleEn": "I'm packing my suitcase tonight." },
+        { "es": "el mensaje", "en": "message", "exampleEs": "Te envío un mensaje luego.", "exampleEn": "I'll send you a message later." },
+        { "es": "el vecino / la vecina", "en": "neighbor", "exampleEs": "Mi vecina es muy amable.", "exampleEn": "My neighbor is very kind." },
+        { "es": "la oficina", "en": "office", "exampleEs": "La oficina está en el centro.", "exampleEn": "The office is downtown." },
+        { "es": "la entrada", "en": "entrance; ticket", "exampleEs": "La entrada cuesta cinco euros.", "exampleEn": "The ticket costs five euros." },
+        { "es": "la salida", "en": "exit", "exampleEs": "La salida está por allí.", "exampleEn": "The exit is over there." },
+        { "es": "el asiento", "en": "seat", "exampleEs": "Este asiento está libre.", "exampleEn": "This seat is free." },
+        { "es": "el clima", "en": "climate; weather", "exampleEs": "El clima aquí es muy suave.", "exampleEn": "The climate here is very mild." },
+        { "es": "la piscina", "en": "swimming pool", "exampleEs": "La piscina abre a las diez.", "exampleEn": "The pool opens at ten." },
+        { "es": "el postre", "en": "dessert", "exampleEs": "El postre está delicioso.", "exampleEn": "The dessert is delicious." },
+        { "es": "la factura", "en": "bill; invoice", "exampleEs": "¿Puedes traerme la factura?", "exampleEn": "Can you bring me the bill?" },
+        { "es": "el paquete", "en": "package", "exampleEs": "Recibí un paquete hoy.", "exampleEn": "I received a package today." },
+        { "es": "el ruido", "en": "noise", "exampleEs": "Hay mucho ruido afuera.", "exampleEn": "There is a lot of noise outside." },
+        { "es": "la luz", "en": "light; electricity", "exampleEs": "No hay luz en mi casa.", "exampleEn": "There is no power in my house." },
+        { "es": "la postal", "en": "postcard", "exampleEs": "Te envío una postal desde España.", "exampleEn": "I’m sending you a postcard from Spain." },
+        { "es": "el periódico", "en": "newspaper", "exampleEs": "Leo el periódico cada mañana.", "exampleEn": "I read the newspaper every morning." },
+        { "es": "la boca", "en": "mouth", "exampleEs": "Me duele la boca.", "exampleEn": "My mouth hurts." }
+      ]
+    },
+
+    {
+      "id": "adjectives-beginner-3",
+      "difficultyId": "beginner",
+      "topicId": "adjectives",
+      "levelIndex": 3,
+      "name": "Beginner adjectives · Level 3",
+      "description": "Stronger beginner adjectives and opposites.",
+      "cards": [
+        { "es": "abierto / abierta", "en": "open", "exampleEs": "La tienda está abierta.", "exampleEn": "The store is open." },
+        { "es": "cerrado / cerrada", "en": "closed", "exampleEs": "El museo está cerrado.", "exampleEn": "The museum is closed." },
+        { "es": "fuerte", "en": "strong", "exampleEs": "Tengo un café muy fuerte.", "exampleEn": "I have a very strong coffee." },
+        { "es": "débil", "en": "weak", "exampleEs": "Mi señal de wifi es débil.", "exampleEn": "My wifi signal is weak." },
+        { "es": "caro / costoso", "en": "expensive", "exampleEs": "Ese reloj es muy costoso.", "exampleEn": "That watch is very expensive." },
+        { "es": "barato / económico", "en": "cheap; affordable", "exampleEs": "Este hotel es económico.", "exampleEn": "This hotel is affordable." },
+        { "es": "seguro / segura", "en": "safe", "exampleEs": "El barrio es muy seguro.", "exampleEn": "The neighborhood is very safe." },
+        { "es": "peligroso / peligrosa", "en": "dangerous", "exampleEs": "Esa calle es peligrosa de noche.", "exampleEn": "That street is dangerous at night." },
+        { "es": "duro / dura", "en": "hard; tough", "exampleEs": "El pan está muy duro.", "exampleEn": "The bread is very hard." },
+        { "es": "suave", "en": "soft; gentle", "exampleEs": "Esta manta es muy suave.", "exampleEn": "This blanket is very soft." },
+        { "es": "profundo / profunda", "en": "deep", "exampleEs": "El agua es muy profunda aquí.", "exampleEn": "The water is very deep here." },
+        { "es": "superficial", "en": "shallow; superficial", "exampleEs": "El lago es superficial en esta parte.", "exampleEn": "The lake is shallow in this part." },
+        { "es": "ocupado / atareado", "en": "busy", "exampleEs": "Estoy muy atareado esta semana.", "exampleEn": "I’m very busy this week." },
+        { "es": "vacío / vacía", "en": "empty", "exampleEs": "El restaurante está vacío.", "exampleEn": "The restaurant is empty." },
+        { "es": "lleno / llena", "en": "full", "exampleEs": "El tren está lleno.", "exampleEn": "The train is full." }
+      ]
+    },
+
+    {
+      "id": "phrases-beginner-3",
+      "difficultyId": "beginner",
+      "topicId": "phrases",
+      "levelIndex": 3,
+      "name": "Beginner phrases · Level 3",
+      "description": "Time, opinions, and practical phrases.",
+      "cards": [
+        { "es": "¿Qué sucede?", "en": "What’s happening?", "exampleEs": "Hola, ¿qué sucede aquí?", "exampleEn": "Hi, what’s happening here?" },
+        { "es": "¿Qué significa?", "en": "What does it mean?", "exampleEs": "¿Qué significa esta palabra?", "exampleEn": "What does this word mean?" },
+        { "es": "No tengo idea", "en": "I have no idea", "exampleEs": "Lo siento, no tengo idea.", "exampleEn": "Sorry, I have no idea." },
+        { "es": "¿Puedes repetirlo?", "en": "Can you repeat it?", "exampleEs": "Perdón, ¿puedes repetirlo?", "exampleEn": "Sorry, can you repeat it?" },
+        { "es": "Estoy de acuerdo", "en": "I agree", "exampleEs": "Sí, estoy de acuerdo contigo.", "exampleEn": "Yes, I agree with you." },
+        { "es": "No estoy seguro / segura", "en": "I’m not sure", "exampleEs": "No estoy seguro de la dirección.", "exampleEn": "I’m not sure about the direction." },
+        { "es": "Depende", "en": "It depends", "exampleEs": "¿Vamos mañana? Depende.", "exampleEn": "Are we going tomorrow? It depends." },
+        { "es": "¿Qué recomiendas?", "en": "What do you recommend?", "exampleEs": "¿Qué recomiendas comer aquí?", "exampleEn": "What do you recommend to eat here?" },
+        { "es": "Tengo prisa", "en": "I’m in a hurry", "exampleEs": "Lo siento, tengo prisa.", "exampleEn": "Sorry, I’m in a hurry." },
+        { "es": "No tengo tiempo", "en": "I don’t have time", "exampleEs": "Hoy no tengo tiempo.", "exampleEn": "I don’t have time today." },
+        { "es": "Estoy ocupado / ocupada", "en": "I’m busy", "exampleEs": "No puedo ahora, estoy ocupado.", "exampleEn": "I can’t now, I’m busy." },
+        { "es": "¿Hay Wi-Fi?", "en": "Is there Wi-Fi?", "exampleEs": "Perdón, ¿hay Wi-Fi aquí?", "exampleEn": "Excuse me, is there Wi-Fi here?" },
+        { "es": "¿Aceptan tarjeta?", "en": "Do you accept card?", "exampleEs": "¿Aceptan tarjeta de crédito?", "exampleEn": "Do you accept credit card?" },
+        { "es": "Solo estoy mirando", "en": "I’m just looking", "exampleEs": "Gracias, solo estoy mirando.", "exampleEn": "Thank you, I’m just looking." },
+        { "es": "Disculpe, fue un error", "en": "Sorry, it was a mistake", "exampleEs": "Disculpe, fue un error mío.", "exampleEn": "Sorry, it was my mistake." }
+      ]
+    },
+
+    {
+      "id": "verbs-basic-1",
+      "difficultyId": "basic",
+      "topicId": "verbs",
+      "levelIndex": 1,
+      "name": "Basic verbs · Level 1",
+      "description": "Useful everyday verbs in common forms.",
+      "cards": [
+        {
+          "es": "yo conduzco",
+          "en": "I drive",
+          "exampleEs": "Yo conduzco al trabajo todos los días.",
+          "exampleEn": "I drive to work every day."
+        },
+        {
+          "es": "tú sigues",
+          "en": "you follow",
+          "exampleEs": "¿Tú sigues las instrucciones?",
+          "exampleEn": "Do you follow the instructions?"
+        },
+        {
+          "es": "crecer",
+          "en": "to grow",
+          "exampleEs": "Las plantas crecen rápido en verano.",
+          "exampleEn": "Plants grow fast in summer."
+        },
+        {
+          "es": "perder",
+          "en": "to lose",
+          "exampleEs": "Siempre pierdo mis llaves.",
+          "exampleEn": "I always lose my keys."
+        },
+        {
+          "es": "prometer",
+          "en": "to promise",
+          "exampleEs": "Te prometo que voy a ir.",
+          "exampleEn": "I promise you I will go."
+        },
+        {
+          "es": "arder",
+          "en": "to burn (figurative or literal)",
+          "exampleEs": "La luz arde toda la noche.",
+          "exampleEn": "The light burns all night."
+        },
+        {
+          "es": "manejar",
+          "en": "to handle; to drive (LatAm)",
+          "exampleEs": "¿Puedes manejar esta situación?",
+          "exampleEn": "Can you handle this situation?"
+        },
+        {
+          "es": "tú eliges",
+          "en": "you choose",
+          "exampleEs": "Tú eliges el restaurante.",
+          "exampleEn": "You choose the restaurant."
+        },
+        {
+          "es": "resolver",
+          "en": "to solve",
+          "exampleEs": "Intento resolver el problema.",
+          "exampleEn": "I am trying to solve the problem."
+        },
+        {
+          "es": "yo supongo",
+          "en": "I suppose",
+          "exampleEs": "Yo supongo que es verdad.",
+          "exampleEn": "I suppose it’s true."
+        },
+        {
+          "es": "insistir",
+          "en": "to insist",
+          "exampleEs": "Insisto en pagar la cena.",
+          "exampleEn": "I insist on paying for dinner."
+        },
+        {
+          "es": "yo aparezco",
+          "en": "I appear",
+          "exampleEs": "Aparezco en la foto.",
+          "exampleEn": "I appear in the photo."
+        },
+        {
+          "es": "lograr",
+          "en": "to achieve",
+          "exampleEs": "Quiero lograr mis metas.",
+          "exampleEn": "I want to achieve my goals."
+        },
+        {
+          "es": "tú sonríes",
+          "en": "you smile",
+          "exampleEs": "Siempre sonríes en las fotos.",
+          "exampleEn": "You always smile in photos."
+        },
+        {
+          "es": "negarse",
+          "en": "to refuse",
+          "exampleEs": "Me niego a aceptar eso.",
+          "exampleEn": "I refuse to accept that."
+        },
+        {
+          "es": "yo dirijo",
+          "en": "I direct / manage",
+          "exampleEs": "Dirijo un pequeño equipo.",
+          "exampleEn": "I manage a small team."
+        },
+        {
+          "es": "imaginarse",
+          "en": "to imagine",
+          "exampleEs": "¿Puedes imaginarte viviendo aquí?",
+          "exampleEn": "Can you imagine living here?"
+        },
+        {
+          "es": "interrumpir",
+          "en": "to interrupt",
+          "exampleEs": "Perdón, no quiero interrumpir.",
+          "exampleEn": "Sorry, I don’t want to interrupt."
+        },
+        {
+          "es": "depender",
+          "en": "to depend",
+          "exampleEs": "Depende del clima.",
+          "exampleEn": "It depends on the weather."
+        },
+        {
+          "es": "yo traduzco",
+          "en": "I translate",
+          "exampleEs": "Yo traduzco documentos.",
+          "exampleEn": "I translate documents."
+        }
+      ]
+    },
+    {
+      "id": "everyday-nouns-basic-1",
+      "difficultyId": "basic",
+      "topicId": "everyday-nouns",
+      "levelIndex": 1,
+      "name": "Basic nouns · Level 1",
+      "description": "Everyday abstract and practical nouns.",
+      "cards": [
+        {
+          "es": "el archivo",
+          "en": "file",
+          "exampleEs": "No encuentro el archivo.",
+          "exampleEn": "I can’t find the file."
+        },
+        {
+          "es": "la factura",
+          "en": "invoice",
+          "exampleEs": "La factura llega mañana.",
+          "exampleEn": "The invoice arrives tomorrow."
+        },
+        {
+          "es": "el vecino",
+          "en": "neighbor",
+          "exampleEs": "Mi vecino es muy amable.",
+          "exampleEn": "My neighbor is very friendly."
+        },
+        {
+          "es": "la reunión",
+          "en": "meeting",
+          "exampleEs": "La reunión empieza a las dos.",
+          "exampleEn": "The meeting starts at two."
+        },
+        {
+          "es": "el proyecto",
+          "en": "project",
+          "exampleEs": "El proyecto es difícil.",
+          "exampleEn": "The project is difficult."
+        },
+        {
+          "es": "la ventaja",
+          "en": "advantage",
+          "exampleEs": "Tiene muchas ventajas.",
+          "exampleEn": "It has many advantages."
+        },
+        {
+          "es": "el inconveniente",
+          "en": "drawback",
+          "exampleEs": "Ese es el único inconveniente.",
+          "exampleEn": "That’s the only drawback."
+        },
+        {
+          "es": "la solicitud",
+          "en": "application; request",
+          "exampleEs": "Envié la solicitud hoy.",
+          "exampleEn": "I sent the application today."
+        },
+        {
+          "es": "el desempeño",
+          "en": "performance",
+          "exampleEs": "Su desempeño fue excelente.",
+          "exampleEn": "His performance was excellent."
+        },
+        {
+          "es": "el propósito",
+          "en": "purpose",
+          "exampleEs": "Ese es el propósito principal.",
+          "exampleEn": "That is the main purpose."
+        },
+        {
+          "es": "la prioridad",
+          "en": "priority",
+          "exampleEs": "Esa es mi prioridad ahora.",
+          "exampleEn": "That’s my priority now."
+        },
+        {
+          "es": "la condición",
+          "en": "condition",
+          "exampleEs": "La condición es necesaria.",
+          "exampleEn": "The condition is necessary."
+        },
+        {
+          "es": "el desarrollo",
+          "en": "development",
+          "exampleEs": "Es un desarrollo importante.",
+          "exampleEn": "It's an important development."
+        },
+        {
+          "es": "la conclusión",
+          "en": "conclusion",
+          "exampleEs": "Llegamos a una conclusión.",
+          "exampleEn": "We reached a conclusion."
+        },
+        {
+          "es": "el enfoque",
+          "en": "focus; approach",
+          "exampleEs": "Cambio mi enfoque.",
+          "exampleEn": "I’m changing my focus."
+        },
+        {
+          "es": "la propuesta",
+          "en": "proposal",
+          "exampleEs": "Aceptamos la propuesta.",
+          "exampleEn": "We accepted the proposal."
+        },
+        {
+          "es": "la etapa",
+          "en": "stage; phase",
+          "exampleEs": "Estamos en la última etapa.",
+          "exampleEn": "We’re in the final stage."
+        },
+        {
+          "es": "la evidencia",
+          "en": "evidence",
+          "exampleEs": "No hay evidencia suficiente.",
+          "exampleEn": "There's not enough evidence."
+        },
+        {
+          "es": "el progreso",
+          "en": "progress",
+          "exampleEs": "Hay mucho progreso.",
+          "exampleEn": "There is a lot of progress."
+        },
+        {
+          "es": "el desafío",
+          "en": "challenge",
+          "exampleEs": "Es un desafío enorme.",
+          "exampleEn": "It’s a huge challenge."
+        }
+      ]
+    },
+    {
+      "id": "adjectives-basic-1",
+      "difficultyId": "basic",
+      "topicId": "adjectives",
+      "levelIndex": 1,
+      "name": "Basic adjectives · Level 1",
+      "description": "Descriptive adjectives for nuance and precision.",
+      "cards": [
+        {
+          "es": "apropiado / apropiada",
+          "en": "appropriate",
+          "exampleEs": "Es un comentario apropiado.",
+          "exampleEn": "It’s an appropriate comment."
+        },
+        {
+          "es": "meticuloso / meticulosa",
+          "en": "meticulous",
+          "exampleEs": "Ella es muy meticulosa.",
+          "exampleEn": "She is very meticulous."
+        },
+        {
+          "es": "coherente",
+          "en": "coherent",
+          "exampleEs": "El argumento es coherente.",
+          "exampleEn": "The argument is coherent."
+        },
+        {
+          "es": "suficiente",
+          "en": "sufficient",
+          "exampleEs": "No es suficiente por ahora.",
+          "exampleEn": "It’s not enough for now."
+        },
+        {
+          "es": "preciso / precisa",
+          "en": "precise",
+          "exampleEs": "Necesito una medida precisa.",
+          "exampleEn": "I need an exact measurement."
+        },
+        {
+          "es": "profundo / profunda",
+          "en": "deep",
+          "exampleEs": "Es un análisis profundo.",
+          "exampleEn": "It’s a deep analysis."
+        },
+        {
+          "es": "relevante",
+          "en": "relevant",
+          "exampleEs": "La información es relevante.",
+          "exampleEn": "The information is relevant."
+        },
+        {
+          "es": "fiable",
+          "en": "reliable",
+          "exampleEs": "Es una fuente fiable.",
+          "exampleEn": "It’s a reliable source."
+        },
+        {
+          "es": "sorprendente",
+          "en": "surprising",
+          "exampleEs": "El resultado fue sorprendente.",
+          "exampleEn": "The result was surprising."
+        },
+        {
+          "es": "alentador / alentadora",
+          "en": "encouraging",
+          "exampleEs": "Es una señal alentadora.",
+          "exampleEn": "It’s an encouraging sign."
+        },
+        {
+          "es": "deseable",
+          "en": "desirable",
+          "exampleEs": "Es una cualidad deseable.",
+          "exampleEn": "It’s a desirable quality."
+        },
+        {
+          "es": "consistente",
+          "en": "consistent",
+          "exampleEs": "Los datos son consistentes.",
+          "exampleEn": "The data is consistent."
+        },
+        {
+          "es": "inevitable",
+          "en": "inevitable",
+          "exampleEs": "Es un cambio inevitable.",
+          "exampleEn": "It’s an inevitable change."
+        },
+        {
+          "es": "constante",
+          "en": "constant",
+          "exampleEs": "Hay presión constante.",
+          "exampleEn": "There is constant pressure."
+        },
+        {
+          "es": "limitado / limitada",
+          "en": "limited",
+          "exampleEs": "El tiempo es limitado.",
+          "exampleEn": "Time is limited."
+        }
+      ]
+    },
+    {
+      "id": "phrases-basic-1",
+      "difficultyId": "basic",
+      "topicId": "phrases",
+      "levelIndex": 1,
+      "name": "Basic phrases · Level 1",
+      "description": "Nuanced phrases for everyday conversations.",
+      "cards": [
+        {
+          "es": "Estoy de acuerdo hasta cierto punto",
+          "en": "I agree to a certain extent",
+          "exampleEs": "Estoy de acuerdo hasta cierto punto, pero…",
+          "exampleEn": "I agree to a certain extent, but…"
+        },
+        {
+          "es": "No puedo garantizarlo",
+          "en": "I can’t guarantee it",
+          "exampleEs": "No puedo garantizarlo todavía.",
+          "exampleEn": "I can't guarantee it yet."
+        },
+        {
+          "es": "Eso requiere tiempo",
+          "en": "That requires time",
+          "exampleEs": "Aprender un idioma requiere tiempo.",
+          "exampleEn": "Learning a language requires time."
+        },
+        {
+          "es": "No tengo una respuesta clara",
+          "en": "I don't have a clear answer",
+          "exampleEs": "Lo siento, no tengo una respuesta clara.",
+          "exampleEn": "Sorry, I don't have a clear answer."
+        },
+        {
+          "es": "No estoy completamente seguro",
+          "en": "I’m not entirely sure",
+          "exampleEs": "No estoy completamente seguro de eso.",
+          "exampleEn": "I’m not entirely sure about that."
+        },
+        {
+          "es": "Voy a intentarlo de nuevo",
+          "en": "I’m going to try again",
+          "exampleEs": "Tranquilo, voy a intentarlo de nuevo.",
+          "exampleEn": "Don’t worry, I’ll try again."
+        },
+        {
+          "es": "Eso me parece razonable",
+          "en": "That seems reasonable",
+          "exampleEs": "Sí, eso me parece razonable.",
+          "exampleEn": "Yes, that seems reasonable."
+        },
+        {
+          "es": "¿Cuál sería la mejor opción?",
+          "en": "What would be the best option?",
+          "exampleEs": "¿Cuál sería la mejor opción aquí?",
+          "exampleEn": "What's the best option here?"
+        },
+        {
+          "es": "No quiero apresurarme",
+          "en": "I don’t want to rush",
+          "exampleEs": "No quiero apresurarme con esto.",
+          "exampleEn": "I don't want to rush this."
+        },
+        {
+          "es": "Es más complicado de lo que parece",
+          "en": "It’s more complicated than it seems",
+          "exampleEs": "Créeme, es más complicado de lo que parece.",
+          "exampleEn": "Believe me, it's more complicated than it seems."
+        },
+        {
+          "es": "Estoy dispuesto a considerar alternativas",
+          "en": "I’m willing to consider alternatives",
+          "exampleEs": "Estoy dispuesto a considerar alternativas si es necesario.",
+          "exampleEn": "I'm open to alternatives if needed."
+        },
+        {
+          "es": "No había pensado en eso",
+          "en": "I hadn’t thought of that",
+          "exampleEs": "Interesante… no había pensado en eso.",
+          "exampleEn": "Interesting… I hadn’t thought of that."
+        },
+        {
+          "es": "Tiene sus ventajas y desventajas",
+          "en": "It has pros and cons",
+          "exampleEs": "Como todo, tiene sus ventajas y desventajas.",
+          "exampleEn": "Like everything, it has its pros and cons."
+        },
+        {
+          "es": "Agradezco tu sinceridad",
+          "en": "I appreciate your honesty",
+          "exampleEs": "Agradezco tu sinceridad.",
+          "exampleEn": "I appreciate your honesty."
+        },
+        {
+          "es": "Déjame pensarlo un poco",
+          "en": "Let me think about it a bit",
+          "exampleEs": "Déjame pensarlo un poco esta noche.",
+          "exampleEn": "Let me think it over tonight."
+        }
+      ]
+    },
+    {
+      "id": "verbs-basic-2",
+      "difficultyId": "basic",
+      "topicId": "verbs",
+      "levelIndex": 2,
+      "name": "Basic verbs · Level 2",
+      "description": "Useful everyday verbs in common forms.",
+      "cards": [
+        {
+          "es": "yo conduzco",
+          "en": "I drive",
+          "exampleEs": "Conduzco mejor por la mañana.",
+          "exampleEn": "I drive better in the morning."
+        },
+        {
+          "es": "tú prefieres",
+          "en": "you prefer",
+          "exampleEs": "¿Prefieres café o té?",
+          "exampleEn": "Do you prefer coffee or tea?"
+        },
+        {
+          "es": "romperse",
+          "en": "to break (itself)",
+          "exampleEs": "Se me rompió el vaso.",
+          "exampleEn": "My glass broke."
+        },
+        {
+          "es": "yo produzco",
+          "en": "I produce",
+          "exampleEs": "Produzco contenido digital.",
+          "exampleEn": "I produce digital content."
+        },
+        {
+          "es": "avanzar",
+          "en": "to advance; to move forward",
+          "exampleEs": "Avanzamos rápidamente.",
+          "exampleEn": "We move forward quickly."
+        },
+        {
+          "es": "yo obedezco",
+          "en": "I obey",
+          "exampleEs": "Obedezco las reglas.",
+          "exampleEn": "I obey the rules."
+        },
+        {
+          "es": "confiar",
+          "en": "to trust",
+          "exampleEs": "Confío en ti.",
+          "exampleEn": "I trust you."
+        },
+        {
+          "es": "tú te ríes",
+          "en": "you laugh",
+          "exampleEs": "Siempre te ríes conmigo.",
+          "exampleEn": "You always laugh with me."
+        },
+        {
+          "es": "acercarse",
+          "en": "to approach",
+          "exampleEs": "Me acerco a la puerta.",
+          "exampleEn": "I approach the door."
+        },
+        {
+          "es": "apoyar",
+          "en": "to support",
+          "exampleEs": "Te apoyo en todo.",
+          "exampleEn": "I support you in everything."
+        },
+        {
+          "es": "sugerir",
+          "en": "to suggest",
+          "exampleEs": "Sugiero otra solución.",
+          "exampleEn": "I suggest another solution."
+        },
+        {
+          "es": "yo traduzco",
+          "en": "I translate",
+          "exampleEs": "Traduzco textos técnicos.",
+          "exampleEn": "I translate technical texts."
+        },
+        {
+          "es": "proteger",
+          "en": "to protect",
+          "exampleEs": "Protejo mis datos.",
+          "exampleEn": "I protect my data."
+        },
+        {
+          "es": "evaluar",
+          "en": "to evaluate",
+          "exampleEs": "Evaluamos la situación.",
+          "exampleEn": "We evaluate the situation."
+        },
+        {
+          "es": "tú decides",
+          "en": "you decide",
+          "exampleEs": "Tú decides qué hacer.",
+          "exampleEn": "You decide what to do."
+        },
+        {
+          "es": "yo conduzco",
+          "en": "I drive",
+          "exampleEs": "Conduzco rápido pero con cuidado.",
+          "exampleEn": "I drive fast but carefully."
+        },
+        {
+          "es": "yo escojo",
+          "en": "I choose",
+          "exampleEs": "Escojo la opción más fácil.",
+          "exampleEn": "I choose the easiest option."
+        },
+        {
+          "es": "tardar",
+          "en": "to take time",
+          "exampleEs": "Tardo diez minutos.",
+          "exampleEn": "It takes me ten minutes."
+        },
+        {
+          "es": "defender",
+          "en": "to defend",
+          "exampleEs": "Defiendo mi punto de vista.",
+          "exampleEn": "I defend my point of view."
+        },
+        {
+          "es": "discutir",
+          "en": "to argue; to discuss",
+          "exampleEs": "No quiero discutir más.",
+          "exampleEn": "I don’t want to argue anymore."
+        }
+      ]
+    },
+    {
+      "id": "everyday-nouns-basic-2",
+      "difficultyId": "basic",
+      "topicId": "everyday-nouns",
+      "levelIndex": 2,
+      "name": "Basic nouns · Level 2",
+      "description": "Everyday abstract and practical nouns.",
+      "cards": [
+        {
+          "es": "la capacidad",
+          "en": "capacity; ability",
+          "exampleEs": "Tiene una gran capacidad.",
+          "exampleEn": "He has great capacity."
+        },
+        {
+          "es": "la decisión final",
+          "en": "final decision",
+          "exampleEs": "Esa es la decisión final.",
+          "exampleEn": "That is the final decision."
+        },
+        {
+          "es": "el informe",
+          "en": "report",
+          "exampleEs": "Leí el informe.",
+          "exampleEn": "I read the report."
+        },
+        {
+          "es": "el compromiso",
+          "en": "commitment",
+          "exampleEs": "Tengo un compromiso.",
+          "exampleEn": "I have a commitment."
+        },
+        {
+          "es": "la advertencia",
+          "en": "warning",
+          "exampleEs": "Ignoró la advertencia.",
+          "exampleEn": "He ignored the warning."
+        },
+        {
+          "es": "el intento",
+          "en": "attempt",
+          "exampleEs": "Fue un intento sólido.",
+          "exampleEn": "It was a solid attempt."
+        },
+        {
+          "es": "la alternativa",
+          "en": "alternative",
+          "exampleEs": "Buscamos alternativas.",
+          "exampleEn": "We are looking for alternatives."
+        },
+        {
+          "es": "el argumento",
+          "en": "argument",
+          "exampleEs": "Su argumento es fuerte.",
+          "exampleEn": "His argument is strong."
+        },
+        {
+          "es": "la perspectiva",
+          "en": "perspective",
+          "exampleEs": "Me gusta tu perspectiva.",
+          "exampleEn": "I like your perspective."
+        },
+        {
+          "es": "la conclusión lógica",
+          "en": "logical conclusion",
+          "exampleEs": "Llegamos a una conclusión lógica.",
+          "exampleEn": "We reached a logical conclusion."
+        },
+        {
+          "es": "la tendencia",
+          "en": "trend",
+          "exampleEs": "Es una tendencia creciente.",
+          "exampleEn": "It’s a growing trend."
+        },
+        {
+          "es": "la incertidumbre",
+          "en": "uncertainty",
+          "exampleEs": "Hay mucha incertidumbre.",
+          "exampleEn": "There is much uncertainty."
+        },
+        {
+          "es": "la precisión",
+          "en": "accuracy",
+          "exampleEs": "La precisión es importante.",
+          "exampleEn": "Accuracy is important."
+        },
+        {
+          "es": "el beneficio",
+          "en": "benefit",
+          "exampleEs": "Tiene muchos beneficios.",
+          "exampleEn": "It has many benefits."
+        },
+        {
+          "es": "la aplicación",
+          "en": "app",
+          "exampleEs": "Uso esta aplicación todos los días.",
+          "exampleEn": "I use this app every day."
+        },
+        {
+          "es": "el servicio",
+          "en": "service",
+          "exampleEs": "El servicio aquí es bueno.",
+          "exampleEn": "The service here is good."
+        },
+        {
+          "es": "la decisión",
+          "en": "decision",
+          "exampleEs": "Fue una decisión difícil.",
+          "exampleEn": "It was a difficult decision."
+        },
+        {
+          "es": "la tarjeta",
+          "en": "card",
+          "exampleEs": "¿Puedo pagar con tarjeta?",
+          "exampleEn": "Can I pay with card?"
+        },
+        {
+          "es": "el teclado",
+          "en": "keyboard",
+          "exampleEs": "Mi teclado no funciona.",
+          "exampleEn": "My keyboard doesn’t work."
+        },
+        {
+          "es": "el cargador",
+          "en": "charger",
+          "exampleEs": "No tengo mi cargador.",
+          "exampleEn": "I don't have my charger."
+        }
+      ]
+    },
+    {
+      "id": "adjectives-basic-2",
+      "difficultyId": "basic",
+      "topicId": "adjectives",
+      "levelIndex": 2,
+      "name": "Basic adjectives · Level 2",
+      "description": "Descriptive adjectives for nuance and precision.",
+      "cards": [
+        {
+          "es": "preciso / precisa",
+          "en": "precise",
+          "exampleEs": "Necesito un dato preciso.",
+          "exampleEn": "I need a precise fact."
+        },
+        {
+          "es": "eficiente",
+          "en": "efficient",
+          "exampleEs": "Es un sistema eficiente.",
+          "exampleEn": "It's an efficient system."
+        },
+        {
+          "es": "arriesgado / arriesgada",
+          "en": "risky",
+          "exampleEs": "Es un plan arriesgado.",
+          "exampleEn": "It's a risky plan."
+        },
+        {
+          "es": "inevitable",
+          "en": "inevitable",
+          "exampleEs": "Es una consecuencia inevitable.",
+          "exampleEn": "It's an inevitable consequence."
+        },
+        {
+          "es": "considerable",
+          "en": "considerable",
+          "exampleEs": "Hay una mejora considerable.",
+          "exampleEn": "There's a considerable improvement."
+        },
+        {
+          "es": "excepcional",
+          "en": "exceptional",
+          "exampleEs": "Tu trabajo es excepcional.",
+          "exampleEn": "Your work is exceptional."
+        },
+        {
+          "es": "complejo / compleja",
+          "en": "complex",
+          "exampleEs": "Es un tema complejo.",
+          "exampleEn": "It’s a complex topic."
+        },
+        {
+          "es": "razonable",
+          "en": "reasonable",
+          "exampleEs": "Es una petición razonable.",
+          "exampleEn": "It's a reasonable request."
+        },
+        {
+          "es": "insuficiente",
+          "en": "insufficient",
+          "exampleEs": "La evidencia es insuficiente.",
+          "exampleEn": "The evidence is insufficient."
+        },
+        {
+          "es": "indiscutible",
+          "en": "undeniable",
+          "exampleEs": "Es un hecho indiscutible.",
+          "exampleEn": "It's an undeniable fact."
+        },
+        {
+          "es": "relevante",
+          "en": "relevant",
+          "exampleEs": "La información es relevante.",
+          "exampleEn": "The information is relevant."
+        },
+        {
+          "es": "previo / previa",
+          "en": "previous",
+          "exampleEs": "La reunión previa terminó tarde.",
+          "exampleEn": "The previous meeting ended late."
+        },
+        {
+          "es": "detallado / detallada",
+          "en": "detailed",
+          "exampleEs": "Es un informe detallado.",
+          "exampleEn": "It's a detailed report."
+        },
+        {
+          "es": "apto / apta",
+          "en": "suitable",
+          "exampleEs": "No es apto para niños.",
+          "exampleEn": "It's not suitable for children."
+        },
+        {
+          "es": "intermedio / intermedia",
+          "en": "intermediate",
+          "exampleEs": "Es un nivel intermedio.",
+          "exampleEn": "It's an intermediate level."
+        }
+      ]
+    },
+    {
+      "id": "phrases-basic-2",
+      "difficultyId": "basic",
+      "topicId": "phrases",
+      "levelIndex": 2,
+      "name": "Basic phrases · Level 2",
+      "description": "Nuanced phrases for everyday conversations.",
+      "cards": [
+        {
+          "es": "Si te soy sincero…",
+          "en": "If I'm being honest…",
+          "exampleEs": "Si te soy sincero, no me convence.",
+          "exampleEn": "If I'm honest, I’m not convinced."
+        },
+        {
+          "es": "No es lo ideal",
+          "en": "It’s not ideal",
+          "exampleEs": "La situación no es lo ideal.",
+          "exampleEn": "The situation is not ideal."
+        },
+        {
+          "es": "Lo tendré en cuenta",
+          "en": "I’ll take it into account",
+          "exampleEs": "Gracias, lo tendré en cuenta.",
+          "exampleEn": "Thanks, I’ll take it into account."
+        },
+        {
+          "es": "¿Cuál sería tu recomendación?",
+          "en": "What would your recommendation be?",
+          "exampleEs": "¿Cuál sería tu recomendación en este caso?",
+          "exampleEn": "What would your recommendation be here?"
+        },
+        {
+          "es": "No tengo motivos para dudar",
+          "en": "I have no reason to doubt",
+          "exampleEs": "No tengo motivos para dudar de ti.",
+          "exampleEn": "I have no reason to doubt you."
+        },
+        {
+          "es": "Estoy dispuesto a negociar",
+          "en": "I’m willing to negotiate",
+          "exampleEs": "Estoy dispuesto a negociar si hace falta.",
+          "exampleEn": "I'm willing to negotiate if needed."
+        },
+        {
+          "es": "Déjame verificarlo",
+          "en": "Let me check it",
+          "exampleEs": "Déjame verificarlo primero.",
+          "exampleEn": "Let me check it first."
+        },
+        {
+          "es": "No llegué a esa conclusión",
+          "en": "I didn’t reach that conclusion",
+          "exampleEs": "No llegué a esa conclusión todavía.",
+          "exampleEn": "I haven't reached that conclusion yet."
+        },
+        {
+          "es": "Eso supera mis expectativas",
+          "en": "That exceeds my expectations",
+          "exampleEs": "¡Wow! Eso supera mis expectativas.",
+          "exampleEn": "Wow! That exceeds my expectations."
+        },
+        {
+          "es": "¿Me das un consejo?",
+          "en": "Can you give me some advice?",
+          "exampleEs": "¿Me das un consejo sobre eso?",
+          "exampleEn": "Can you give me some advice on that?"
+        },
+        {
+          "es": "Fue sin querer",
+          "en": "It was unintentional",
+          "exampleEs": "Perdón, fue sin querer.",
+          "exampleEn": "Sorry, it was unintentional."
+        },
+        {
+          "es": "No era mi intención",
+          "en": "It wasn’t my intention",
+          "exampleEs": "Lo siento, no era mi intención.",
+          "exampleEn": "Sorry, it wasn't my intention."
+        },
+        {
+          "es": "Estoy intentando mejorar",
+          "en": "I’m trying to improve",
+          "exampleEs": "Estoy intentando mejorar mi español.",
+          "exampleEn": "I’m trying to improve my Spanish."
+        },
+        {
+          "es": "Voy a pensarlo",
+          "en": "I’ll think about it",
+          "exampleEs": "Gracias, voy a pensarlo.",
+          "exampleEn": "Thanks, I’ll think about it."
+        },
+        {
+          "es": "¿Qué propones?",
+          "en": "What do you propose?",
+          "exampleEs": "¿Qué propones hacer?",
+          "exampleEn": "What do you propose we do?"
+        }
+      ]
+    },
+    {
+      "id": "verbs-basic-3",
+      "difficultyId": "basic",
+      "topicId": "verbs",
+      "levelIndex": 3,
+      "name": "Basic verbs · Level 3",
+      "description": "Useful everyday verbs in common forms.",
+      "cards": [
+        {
+          "es": "yo mantengo",
+          "en": "I maintain",
+          "exampleEs": "Mantengo mi rutina cada día.",
+          "exampleEn": "I maintain my routine every day."
+        },
+        {
+          "es": "tú adviertes",
+          "en": "you warn",
+          "exampleEs": "Siempre adviertes a tus amigos.",
+          "exampleEn": "You always warn your friends."
+        },
+        {
+          "es": "fingir",
+          "en": "to pretend",
+          "exampleEs": "Ella finge estar bien.",
+          "exampleEn": "She pretends to be okay."
+        },
+        {
+          "es": "yo merezco",
+          "en": "I deserve",
+          "exampleEs": "Merezco un descanso.",
+          "exampleEn": "I deserve a break."
+        },
+        {
+          "es": "reconocer",
+          "en": "to recognize",
+          "exampleEs": "No reconozco este lugar.",
+          "exampleEn": "I don’t recognize this place."
+        },
+        {
+          "es": "tú convences",
+          "en": "you convince",
+          "exampleEs": "Siempre convences a todos.",
+          "exampleEn": "You always convince everyone."
+        },
+        {
+          "es": "aparecer",
+          "en": "to appear",
+          "exampleEs": "El sol aparece temprano.",
+          "exampleEn": "The sun appears early."
+        },
+        {
+          "es": "yo obedezco",
+          "en": "I obey",
+          "exampleEs": "Obedezco a mis padres.",
+          "exampleEn": "I obey my parents."
+        },
+        {
+          "es": "avergonzarse",
+          "en": "to be embarrassed",
+          "exampleEs": "Me avergüenzo fácilmente.",
+          "exampleEn": "I get embarrassed easily."
+        },
+        {
+          "es": "yo conduzco",
+          "en": "I drive",
+          "exampleEs": "Conduzco con cuidado.",
+          "exampleEn": "I drive carefully."
+        },
+        {
+          "es": "exigir",
+          "en": "to demand",
+          "exampleEs": "Exijo una explicación.",
+          "exampleEn": "I demand an explanation."
+        },
+        {
+          "es": "convivir",
+          "en": "to live together",
+          "exampleEs": "Convivimos bien.",
+          "exampleEn": "We live together well."
+        },
+        {
+          "es": "yo me arrepiento",
+          "en": "I regret",
+          "exampleEs": "Me arrepiento de eso.",
+          "exampleEn": "I regret that."
+        },
+        {
+          "es": "tú perteneces",
+          "en": "you belong",
+          "exampleEs": "Perteneces aquí.",
+          "exampleEn": "You belong here."
+        },
+        {
+          "es": "probar",
+          "en": "to try; to test",
+          "exampleEs": "Debemos probar otra cosa.",
+          "exampleEn": "We need to try something else."
+        },
+        {
+          "es": "yo desaparezco",
+          "en": "I disappear",
+          "exampleEs": "Desaparezco por un rato.",
+          "exampleEn": "I disappear for a while."
+        },
+        {
+          "es": "repartir",
+          "en": "to distribute",
+          "exampleEs": "Repartimos las tareas.",
+          "exampleEn": "We distribute the tasks."
+        },
+        {
+          "es": "desear",
+          "en": "to wish; to desire",
+          "exampleEs": "Deseo descansar.",
+          "exampleEn": "I wish to rest."
+        },
+        {
+          "es": "tú influyes",
+          "en": "you influence",
+          "exampleEs": "Influyes mucho en él.",
+          "exampleEn": "You influence him a lot."
+        },
+        {
+          "es": "yo establezco",
+          "en": "I establish",
+          "exampleEs": "Establezco nuevas reglas.",
+          "exampleEn": "I establish new rules."
+        }
+      ]
+    },
+    {
+      "id": "everyday-nouns-basic-3",
+      "difficultyId": "basic",
+      "topicId": "everyday-nouns",
+      "levelIndex": 3,
+      "name": "Basic nouns · Level 3",
+      "description": "Everyday abstract and practical nouns.",
+      "cards": [
+        {
+          "es": "el desafío",
+          "en": "challenge",
+          "exampleEs": "Es un gran desafío.",
+          "exampleEn": "It’s a big challenge."
+        },
+        {
+          "es": "la duda",
+          "en": "doubt",
+          "exampleEs": "Tengo una duda.",
+          "exampleEn": "I have a doubt."
+        },
+        {
+          "es": "el resumen",
+          "en": "summary",
+          "exampleEs": "Escribe un resumen corto.",
+          "exampleEn": "Write a short summary."
+        },
+        {
+          "es": "la confianza",
+          "en": "trust",
+          "exampleEs": "La confianza es importante.",
+          "exampleEn": "Trust is important."
+        },
+        {
+          "es": "el esfuerzo",
+          "en": "effort",
+          "exampleEs": "Vale la pena el esfuerzo.",
+          "exampleEn": "The effort is worth it."
+        },
+        {
+          "es": "la meta",
+          "en": "goal",
+          "exampleEs": "Mi meta es mejorar.",
+          "exampleEn": "My goal is to improve."
+        },
+        {
+          "es": "el requisito",
+          "en": "requirement",
+          "exampleEs": "Es un requisito básico.",
+          "exampleEn": "It’s a basic requirement."
+        },
+        {
+          "es": "la herramienta",
+          "en": "tool",
+          "exampleEs": "Uso muchas herramientas.",
+          "exampleEn": "I use many tools."
+        },
+        {
+          "es": "el pensamiento",
+          "en": "thought",
+          "exampleEs": "Tu pensamiento es interesante.",
+          "exampleEn": "Your thought is interesting."
+        },
+        {
+          "es": "la ventaja competitiva",
+          "en": "competitive advantage",
+          "exampleEs": "Tenemos una ventaja competitiva.",
+          "exampleEn": "We have a competitive advantage."
+        },
+        {
+          "es": "el compromiso",
+          "en": "commitment",
+          "exampleEs": "Tengo un compromiso hoy.",
+          "exampleEn": "I have a commitment today."
+        },
+        {
+          "es": "el intento",
+          "en": "attempt",
+          "exampleEs": "Fue un intento valiente.",
+          "exampleEn": "It was a brave attempt."
+        },
+        {
+          "es": "el archivo",
+          "en": "file",
+          "exampleEs": "Abre el archivo.",
+          "exampleEn": "Open the file."
+        },
+        {
+          "es": "la revisión",
+          "en": "review",
+          "exampleEs": "Necesito una revisión final.",
+          "exampleEn": "I need a final review."
+        },
+        {
+          "es": "el acuerdo",
+          "en": "agreement",
+          "exampleEs": "Firmamos un acuerdo.",
+          "exampleEn": "We signed an agreement."
+        },
+        {
+          "es": "la discusión",
+          "en": "discussion",
+          "exampleEs": "Tuvimos una discusión larga.",
+          "exampleEn": "We had a long discussion."
+        },
+        {
+          "es": "el reto",
+          "en": "challenge",
+          "exampleEs": "Me gusta un buen reto.",
+          "exampleEn": "I like a good challenge."
+        },
+        {
+          "es": "el consejo",
+          "en": "advice",
+          "exampleEs": "Gracias por tu consejo.",
+          "exampleEn": "Thanks for your advice."
+        },
+        {
+          "es": "la opción",
+          "en": "option",
+          "exampleEs": "Esa es la mejor opción.",
+          "exampleEn": "That’s the best option."
+        },
+        {
+          "es": "la paciencia",
+          "en": "patience",
+          "exampleEs": "Necesitas paciencia.",
+          "exampleEn": "You need patience."
+        }
+      ]
+    },
+    {
+      "id": "adjectives-basic-3",
+      "difficultyId": "basic",
+      "topicId": "adjectives",
+      "levelIndex": 3,
+      "name": "Basic adjectives · Level 3",
+      "description": "Descriptive adjectives for nuance and precision.",
+      "cards": [
+        {
+          "es": "avanzado / avanzada",
+          "en": "advanced",
+          "exampleEs": "Es un nivel avanzado.",
+          "exampleEn": "It’s an advanced level."
+        },
+        {
+          "es": "preparado / preparada",
+          "en": "prepared",
+          "exampleEs": "Estoy preparado para todo.",
+          "exampleEn": "I am prepared for anything."
+        },
+        {
+          "es": "impresionante",
+          "en": "impressive",
+          "exampleEs": "Tu trabajo es impresionante.",
+          "exampleEn": "Your work is impressive."
+        },
+        {
+          "es": "constante",
+          "en": "constant",
+          "exampleEs": "Tengo dolor constante.",
+          "exampleEn": "I have constant pain."
+        },
+        {
+          "es": "fiable",
+          "en": "reliable",
+          "exampleEs": "Es un coche muy fiable.",
+          "exampleEn": "It’s a very reliable car."
+        },
+        {
+          "es": "insuficiente",
+          "en": "insufficient",
+          "exampleEs": "La evidencia es insuficiente.",
+          "exampleEn": "The evidence is insufficient."
+        },
+        {
+          "es": "lógico / lógica",
+          "en": "logical",
+          "exampleEs": "Es una conclusión lógica.",
+          "exampleEn": "It’s a logical conclusion."
+        },
+        {
+          "es": "temporal",
+          "en": "temporary",
+          "exampleEs": "Es una solución temporal.",
+          "exampleEn": "It’s a temporary solution."
+        },
+        {
+          "es": "definitivo / definitiva",
+          "en": "definitive",
+          "exampleEs": "No es una respuesta definitiva.",
+          "exampleEn": "It’s not a definitive answer."
+        },
+        {
+          "es": "variable",
+          "en": "variable",
+          "exampleEs": "El clima es muy variable.",
+          "exampleEn": "The weather is very variable."
+        },
+        {
+          "es": "destacado / destacada",
+          "en": "remarkable",
+          "exampleEs": "Es un logro destacado.",
+          "exampleEn": "It’s a remarkable achievement."
+        },
+        {
+          "es": "moderado / moderada",
+          "en": "moderate",
+          "exampleEs": "Tiene una velocidad moderada.",
+          "exampleEn": "It has a moderate speed."
+        },
+        {
+          "es": "obvio / obvia",
+          "en": "obvious",
+          "exampleEs": "Es muy obvio.",
+          "exampleEn": "It’s very obvious."
+        },
+        {
+          "es": "firme",
+          "en": "firm; steady",
+          "exampleEs": "Tengo una opinión firme.",
+          "exampleEn": "I have a firm opinion."
+        },
+        {
+          "es": "compatible",
+          "en": "compatible",
+          "exampleEs": "No es compatible con mi móvil.",
+          "exampleEn": "It’s not compatible with my phone."
+        }
+      ]
+    },
+    {
+      "id": "phrases-basic-3",
+      "difficultyId": "basic",
+      "topicId": "phrases",
+      "levelIndex": 3,
+      "name": "Basic phrases · Level 3",
+      "description": "Nuanced phrases for everyday conversations.",
+      "cards": [
+        {
+          "es": "¿Puedes repetirlo?",
+          "en": "Can you repeat it?",
+          "exampleEs": "Perdón, ¿puedes repetirlo?",
+          "exampleEn": "Sorry, can you repeat it?"
+        },
+        {
+          "es": "Estoy de acuerdo",
+          "en": "I agree",
+          "exampleEs": "Sí, estoy de acuerdo contigo.",
+          "exampleEn": "Yes, I agree with you."
+        },
+        {
+          "es": "No estoy seguro / segura",
+          "en": "I’m not sure",
+          "exampleEs": "No estoy seguro de la dirección.",
+          "exampleEn": "I’m not sure about the direction."
+        },
+        {
+          "es": "Depende",
+          "en": "It depends",
+          "exampleEs": "¿Vamos mañana? Depende.",
+          "exampleEn": "Are we going tomorrow? It depends."
+        },
+        {
+          "es": "¿Qué recomiendas?",
+          "en": "What do you recommend?",
+          "exampleEs": "¿Qué recomiendas comer aquí?",
+          "exampleEn": "What do you recommend to eat here?"
+        },
+        {
+          "es": "Tengo prisa",
+          "en": "I’m in a hurry",
+          "exampleEs": "Lo siento, tengo prisa.",
+          "exampleEn": "Sorry, I’m in a hurry."
+        },
+        {
+          "es": "No tengo tiempo",
+          "en": "I don’t have time",
+          "exampleEs": "Hoy no tengo tiempo.",
+          "exampleEn": "I don’t have time today."
+        },
+        {
+          "es": "Estoy ocupado / ocupada",
+          "en": "I’m busy",
+          "exampleEs": "No puedo ahora, estoy ocupado.",
+          "exampleEn": "I can’t now, I’m busy."
+        },
+        {
+          "es": "¿Hay Wi-Fi?",
+          "en": "Is there Wi-Fi?",
+          "exampleEs": "Perdón, ¿hay Wi-Fi aquí?",
+          "exampleEn": "Excuse me, is there Wi-Fi here?"
+        },
+        {
+          "es": "¿Aceptan tarjeta?",
+          "en": "Do you accept card?",
+          "exampleEs": "¿Aceptan tarjeta de crédito?",
+          "exampleEn": "Do you accept credit card?"
+        },
+        {
+          "es": "Solo estoy mirando",
+          "en": "I’m just looking",
+          "exampleEs": "Gracias, solo estoy mirando.",
+          "exampleEn": "Thank you, I’m just looking."
+        },
+        {
+          "es": "Disculpe, fue un error",
+          "en": "Sorry, it was a mistake",
+          "exampleEs": "Disculpe, fue un error mío.",
+          "exampleEn": "Sorry, it was my mistake."
+        },
+        {
+          "es": "No fue mi mejor día",
+          "en": "It wasn’t my best day",
+          "exampleEs": "Perdón, no fue mi mejor día.",
+          "exampleEn": "Sorry, it wasn’t my best day."
+        },
+        {
+          "es": "Eso no me sorprende",
+          "en": "That doesn’t surprise me",
+          "exampleEs": "La verdad, eso no me sorprende.",
+          "exampleEn": "Honestly, that doesn’t surprise me."
+        },
+        {
+          "es": "Haz lo que puedas",
+          "en": "Do what you can",
+          "exampleEs": "Solo haz lo que puedas.",
+          "exampleEn": "Just do what you can."
+        }
+      ]
+    },
+{
+  "id": "verbs-proficient-1",
+  "difficultyId": "proficient",
+  "topicId": "verbs",
+  "levelIndex": 1,
+  "name": "Proficient verbs · Level 1",
+  "description": "Higher-frequency, nuanced verbs for intermediate learners.",
+  "cards": [
+    { "es": "ahondar", "en": "to delve into; go deeper",
+      "exampleEs": "Quiero ahondar en este tema.",
+      "exampleEn": "I want to delve deeper into this topic." },
+
+    { "es": "aprovechar", "en": "to take advantage of; make the most of",
+      "exampleEs": "Debemos aprovechar la oportunidad.",
+      "exampleEn": "We should take advantage of the opportunity." },
+
+    { "es": "respaldar", "en": "to support; back up",
+      "exampleEs": "La evidencia respalda tu teoría.",
+      "exampleEn": "The evidence supports your theory." },
+
+    { "es": "gestionar", "en": "to manage; handle",
+      "exampleEs": "Gestiono varios proyectos a la vez.",
+      "exampleEn": "I manage several projects at once." },
+
+    { "es": "carecer de", "en": "to lack",
+      "exampleEs": "El argumento carece de lógica.",
+      "exampleEn": "The argument lacks logic." },
+
+    { "es": "abordar", "en": "to tackle; address",
+      "exampleEs": "Necesitamos abordar este problema ya.",
+      "exampleEn": "We need to address this issue now." },
+
+    { "es": "plantear", "en": "to pose; to put forward",
+      "exampleEs": "Planteó una pregunta difícil.",
+      "exampleEn": "He posed a difficult question." },
+
+    { "es": "suscitar", "en": "to provoke; to raise",
+      "exampleEs": "El comentario suscitó debate.",
+      "exampleEn": "The comment sparked debate." },
+
+    { "es": "derivar de", "en": "to derive from",
+      "exampleEs": "El problema deriva de una mala gestión.",
+      "exampleEn": "The problem derives from poor management." },
+
+    { "es": "prescindir de", "en": "to do without; disregard",
+      "exampleEs": "Podemos prescindir de ese paso.",
+      "exampleEn": "We can do without that step." }
+  ]
+},
+{
+  "id": "everyday-nouns-proficient-1",
+  "difficultyId": "proficient",
+  "topicId": "everyday-nouns",
+  "levelIndex": 1,
+  "name": "Proficient nouns · Level 1",
+  "description": "More abstract, academic, and professional nouns.",
+  "cards": [
+    { "es": "la incertidumbre", "en": "uncertainty",
+      "exampleEs": "La incertidumbre afecta nuestras decisiones.",
+      "exampleEn": "Uncertainty affects our decisions." },
+
+    { "es": "el matiz", "en": "nuance; subtle distinction",
+      "exampleEs": "Ese matiz cambia el significado.",
+      "exampleEn": "That nuance changes the meaning." },
+
+    { "es": "la trayectoria", "en": "trajectory; professional path",
+      "exampleEs": "Tiene una trayectoria admirable.",
+      "exampleEn": "He has an admirable career path." },
+
+    { "es": "el criterio", "en": "criterion; judgement",
+      "exampleEs": "Usamos varios criterios para evaluar.",
+      "exampleEn": "We use several criteria to evaluate." },
+
+    { "es": "la conducta", "en": "behavior, conduct",
+      "exampleEs": "Su conducta fue inapropiada.",
+      "exampleEn": "His behavior was inappropriate." },
+
+    { "es": "el rendimiento", "en": "performance; output",
+      "exampleEs": "El rendimiento del equipo mejoró.",
+      "exampleEn": "The team’s performance improved." },
+
+    { "es": "el ámbito", "en": "field; area; environment",
+      "exampleEs": "Trabajo en el ámbito educativo.",
+      "exampleEn": "I work in the educational field." },
+
+    { "es": "la iniciativa", "en": "initiative",
+      "exampleEs": "Aprecio tu iniciativa.",
+      "exampleEn": "I appreciate your initiative." },
+
+    { "es": "el fundamento", "en": "foundation; basis",
+      "exampleEs": "Su crítica carece de fundamento.",
+      "exampleEn": "His critique lacks foundation." },
+
+    { "es": "el planteamiento", "en": "approach; proposal; outline",
+      "exampleEs": "El planteamiento inicial fue cambiado.",
+      "exampleEn": "The initial outline was changed." }
+  ]
+},
+{
+  "id": "adjectives-proficient-1",
+  "difficultyId": "proficient",
+  "topicId": "adjectives",
+  "levelIndex": 1,
+  "name": "Proficient adjectives · Level 1",
+  "description": "Higher-level descriptive adjectives.",
+  "cards": [
+    { "es": "sutil", "en": "subtle",
+      "exampleEs": "Hay una diferencia sutil.",
+      "exampleEn": "There is a subtle difference." },
+
+    { "es": "rotundo / rotunda", "en": "resounding; emphatic",
+      "exampleEs": "Dio un no rotundo.",
+      "exampleEn": "He gave a resounding no." },
+
+    { "es": "pertinente", "en": "relevant; appropriate",
+      "exampleEs": "Tu comentario es muy pertinente.",
+      "exampleEn": "Your comment is very relevant." },
+
+    { "es": "ambiguo / ambigua", "en": "ambiguous",
+      "exampleEs": "El mensaje es ambiguo.",
+      "exampleEn": "The message is ambiguous." },
+
+    { "es": "inequívoco / inequívoca", "en": "unequivocal",
+      "exampleEs": "La evidencia es inequívoca.",
+      "exampleEn": "The evidence is unequivocal." },
+
+    { "es": "precario / precaria", "en": "precarious",
+      "exampleEs": "La situación es precaria.",
+      "exampleEn": "The situation is precarious." },
+
+    { "es": "coherente", "en": "coherent",
+      "exampleEs": "Su explicación fue coherente.",
+      "exampleEn": "His explanation was coherent." },
+
+    { "es": "transparente", "en": "transparent",
+      "exampleEs": "Queremos un proceso más transparente.",
+      "exampleEn": "We want a more transparent process." },
+
+    { "es": "riguroso / rigurosa", "en": "rigorous; strict",
+      "exampleEs": "El análisis fue riguroso.",
+      "exampleEn": "The analysis was rigorous." },
+
+    { "es": "eficaz", "en": "effective",
+      "exampleEs": "Es una estrategia muy eficaz.",
+      "exampleEn": "It is a very effective strategy." }
+  ]
+},
+{
+  "id": "phrases-proficient-1",
+  "difficultyId": "proficient",
+  "topicId": "phrases",
+  "levelIndex": 1,
+  "name": "Proficient phrases · Level 1",
+  "description": "More thoughtful, nuanced conversation phrases.",
+  "cards": [
+    { "es": "A primera vista", "en": "At first glance",
+      "exampleEs": "A primera vista parece fácil.",
+      "exampleEn": "At first glance it seems easy." },
+
+    { "es": "En teoría sí, pero en práctica no", 
+      "en": "In theory yes, but not in practice",
+      "exampleEs": "En teoría sí, pero en práctica no funciona.",
+      "exampleEn": "In theory yes, but in practice it doesn’t work." },
+
+    { "es": "Hasta cierto punto", "en": "To some extent",
+      "exampleEs": "Estoy de acuerdo hasta cierto punto.",
+      "exampleEn": "I agree to some extent." },
+
+    { "es": "No necesariamente", "en": "Not necessarily",
+      "exampleEs": "Eso no es necesariamente verdad.",
+      "exampleEn": "That’s not necessarily true." },
+
+    { "es": "A falta de una mejor opción", "en": "For lack of a better option",
+      "exampleEs": "Lo acepté a falta de una mejor opción.",
+      "exampleEn": "I accepted it for lack of a better option." },
+
+    { "es": "Si no me equivoco", "en": "If I'm not mistaken",
+      "exampleEs": "Si no me equivoco, ya lo vimos.",
+      "exampleEn": "If I’m not mistaken, we already saw that." },
+
+    { "es": "Correcto hasta cierto punto", "en": "Correct up to a point",
+      "exampleEs": "Tu argumento es correcto hasta cierto punto.",
+      "exampleEn": "Your argument is correct up to a point." },
+
+    { "es": "En cualquier caso", "en": "In any case",
+      "exampleEs": "En cualquier caso, seguimos adelante.",
+      "exampleEn": "In any case, we move forward." },
+
+    { "es": "Por lo que entiendo", "en": "From what I understand",
+      "exampleEs": "Por lo que entiendo, no habrá cambios.",
+      "exampleEn": "From what I understand, there won’t be changes." },
+
+    { "es": "No tengo razones para dudar", "en": "I have no reason to doubt",
+      "exampleEs": "No tengo razones para dudar de ti.",
+      "exampleEn": "I have no reason to doubt you." }
+  ]
+},
+{
+  "id": "verbs-proficient-2",
+  "difficultyId": "proficient",
+  "topicId": "verbs",
+  "levelIndex": 2,
+  "name": "Proficient verbs · Level 2",
+  "description": "More advanced verbs with abstract usage.",
+  "cards": [
+    { "es": "sopesar", "en": "to weigh; consider carefully",
+      "exampleEs": "Debemos sopesar los pros y contras.",
+      "exampleEn": "We must weigh the pros and cons." },
+
+    { "es": "concretar", "en": "to specify; to finalize",
+      "exampleEs": "Necesitamos concretar los detalles.",
+      "exampleEn": "We need to finalize the details." },
+
+    { "es": "reiterar", "en": "to reiterate; repeat firmly",
+      "exampleEs": "Quiero reiterar mi punto.",
+      "exampleEn": "I want to reiterate my point." },
+
+    { "es": "modificar", "en": "to modify",
+      "exampleEs": "Debemos modificar el plan.",
+      "exampleEn": "We need to modify the plan." },
+
+    { "es": "conceder", "en": "to grant; to concede",
+      "exampleEs": "Concedo que tienes razón.",
+      "exampleEn": "I concede that you're right." },
+
+    { "es": "perjudicar", "en": "to harm; damage",
+      "exampleEs": "Eso puede perjudicar el proyecto.",
+      "exampleEn": "That can harm the project." },
+
+    { "es": "fundamentar", "en": "to base; to support",
+      "exampleEs": "Debes fundamentar tu argumento.",
+      "exampleEn": "You must support your argument." },
+
+    { "es": "incidir en", "en": "to influence; affect deeply",
+      "exampleEs": "Esto incide en el resultado final.",
+      "exampleEn": "This affects the final result." },
+
+    { "es": "destacar", "en": "to highlight; emphasize",
+      "exampleEs": "Quiero destacar este punto.",
+      "exampleEn": "I want to emphasize this point." },
+
+    { "es": "anticipar", "en": "to anticipate",
+      "exampleEs": "Anticipo una reacción positiva.",
+      "exampleEn": "I anticipate a positive reaction." }
+  ]
+},
+{
+  "id": "everyday-nouns-proficient-2",
+  "difficultyId": "proficient",
+  "topicId": "everyday-nouns",
+  "levelIndex": 2,
+  "name": "Proficient nouns · Level 2",
+  "description": "Abstract nouns used in opinions, work, and analysis.",
+  "cards": [
+    { "es": "la repercusión", "en": "repercussion; impact",
+      "exampleEs": "La decisión tuvo gran repercusión.",
+      "exampleEn": "The decision had a big impact." },
+
+    { "es": "la postura", "en": "stance; position",
+      "exampleEs": "Su postura es firme.",
+      "exampleEn": "His stance is firm." },
+
+    { "es": "el desafío intelectual", "en": "intellectual challenge",
+      "exampleEs": "Es un verdadero desafío intelectual.",
+      "exampleEn": "It's a real intellectual challenge." },
+
+    { "es": "la coherencia", "en": "coherence",
+      "exampleEs": "Su argumento carece de coherencia.",
+      "exampleEn": "His argument lacks coherence." },
+
+    { "es": "el trasfondo", "en": "background; underlying context",
+      "exampleEs": "Necesitas entender el trasfondo.",
+      "exampleEn": "You need to understand the background." },
+
+    { "es": "la prioridad", "en": "priority",
+      "exampleEs": "La seguridad es la prioridad.",
+      "exampleEn": "Safety is the priority." },
+
+    { "es": "la viabilidad", "en": "feasibility",
+      "exampleEs": "Analizamos la viabilidad del proyecto.",
+      "exampleEn": "We analyzed the feasibility of the project." },
+
+    { "es": "el indicador", "en": "indicator; metric",
+      "exampleEs": "Este indicador es importante.",
+      "exampleEn": "This indicator is important." },
+
+    { "es": "la discrepancia", "en": "discrepancy",
+      "exampleEs": "Hay una discrepancia en los datos.",
+      "exampleEn": "There’s a discrepancy in the data." },
+
+    { "es": "el precedente", "en": "precedent",
+      "exampleEs": "Esto sienta un precedente.",
+      "exampleEn": "This sets a precedent." }
+  ]
+},
+{
+  "id": "adjectives-proficient-2",
+  "difficultyId": "proficient",
+  "topicId": "adjectives",
+  "levelIndex": 2,
+  "name": "Proficient adjectives · Level 2",
+  "description": "More complex descriptors used in nuanced Spanish.",
+  "cards": [
+    { "es": "minucioso / minuciosa", "en": "thorough; meticulous",
+      "exampleEs": "Hicieron un análisis minucioso.",
+      "exampleEn": "They made a thorough analysis." },
+
+    { "es": "ambiguo / ambigua", "en": "ambiguous",
+      "exampleEs": "El texto es demasiado ambiguo.",
+      "exampleEn": "The text is too ambiguous." },
+
+    { "es": "drástico / drástica", "en": "drastic",
+      "exampleEs": "Tomaron medidas drásticas.",
+      "exampleEn": "They took drastic measures." },
+
+    { "es": "sostenible", "en": "sustainable",
+      "exampleEs": "Buscamos una solución sostenible.",
+      "exampleEn": "We are seeking a sustainable solution." },
+
+    { "es": "imparcial", "en": "impartial; unbiased",
+      "exampleEs": "Necesitamos una opinión imparcial.",
+      "exampleEn": "We need an impartial opinion." },
+
+    { "es": "ineficaz", "en": "ineffective",
+      "exampleEs": "Ese método es ineficaz.",
+      "exampleEn": "That method is ineffective." },
+
+    { "es": "enriquecedor / enriquecedora", "en": "enriching",
+      "exampleEs": "Fue una experiencia enriquecedora.",
+      "exampleEn": "It was an enriching experience." },
+
+    { "es": "prudente", "en": "wise; cautious",
+      "exampleEs": "Es una decisión prudente.",
+      "exampleEn": "It’s a wise decision." },
+
+    { "es": "inconcluso / inconclusa", "en": "inconclusive",
+      "exampleEs": "Los resultados fueron inconclusos.",
+      "exampleEn": "The results were inconclusive." },
+
+    { "es": "prioritario / prioritaria", "en": "priority (adj.)",
+      "exampleEs": "Es un asunto prioritario.",
+      "exampleEn": "It’s a priority matter." }
+  ]
+},
+{
+  "id": "phrases-proficient-2",
+  "difficultyId": "proficient",
+  "topicId": "phrases",
+  "levelIndex": 2,
+  "name": "Proficient phrases · Level 2",
+  "description": "High-level conversational and analytical expressions.",
+  "cards": [
+    { "es": "A largo plazo", "en": "In the long run",
+      "exampleEs": "A largo plazo será beneficioso.",
+      "exampleEn": "In the long run it will be beneficial." },
+
+    { "es": "No es tan sencillo como parece", "en": "It's not as simple as it seems",
+      "exampleEs": "Créeme, no es tan sencillo como parece.",
+      "exampleEn": "Believe me, it’s not as simple as it seems." },
+
+    { "es": "En última instancia", "en": "Ultimately",
+      "exampleEs": "En última instancia, tú decides.",
+      "exampleEn": "Ultimately, you decide." },
+
+    { "es": "Hasta donde entiendo", "en": "As far as I understand",
+      "exampleEs": "Hasta donde entiendo, no hay problema.",
+      "exampleEn": "As far as I understand, there’s no problem." },
+
+    { "es": "Es cuestionable", "en": "It’s debatable/questionable",
+      "exampleEs": "Ese argumento es cuestionable.",
+      "exampleEn": "That argument is questionable." },
+
+    { "es": "Por decirlo de alguna manera", "en": "So to speak",
+      "exampleEs": "Es, por decirlo de alguna manera, inesperado.",
+      "exampleEn": "It is, so to speak, unexpected." },
+
+    { "es": "No tengo elementos suficientes", "en": "I don’t have enough information",
+      "exampleEs": "No tengo elementos suficientes para opinar.",
+      "exampleEn": "I don’t have enough information to give an opinion." },
+
+    { "es": "Eso está por verse", "en": "That remains to be seen",
+      "exampleEs": "Si funcionará o no está por verse.",
+      "exampleEn": "Whether it will work remains to be seen." },
+
+    { "es": "Tiene sentido hasta cierto punto", "en": "It makes sense to a point",
+      "exampleEs": "Tiene sentido hasta cierto punto, pero falta algo.",
+      "exampleEn": "It makes sense to a point, but something is missing." },
+
+    { "es": "No puedo afirmarlo con certeza", "en": "I can't say it for certain",
+      "exampleEs": "No puedo afirmarlo con certeza aún.",
+      "exampleEn": "I can't say it for certain yet." }
+  ]
+},
+{
+  "id": "verbs-proficient-3",
+  "difficultyId": "proficient",
+  "topicId": "verbs",
+  "levelIndex": 3,
+  "name": "Proficient verbs · Level 3",
+  "description": "Advanced verbs used in debates, work, and formal speech.",
+  "cards": [
+    { "es": "ahorrar", "en": "to save (money, resources)",
+      "exampleEs": "Necesito ahorrar más este año.",
+      "exampleEn": "I need to save more this year." },
+
+    { "es": "profundizar", "en": "to deepen; go further into",
+      "exampleEs": "Quiero profundizar en el tema.",
+      "exampleEn": "I want to go deeper into the subject." },
+
+    { "es": "contradecir", "en": "to contradict",
+      "exampleEs": "No intento contradecirte.",
+      "exampleEn": "I'm not trying to contradict you." },
+
+    { "es": "imponer", "en": "to impose",
+      "exampleEs": "No quiero imponer mis ideas.",
+      "exampleEn": "I don’t want to impose my ideas." },
+
+    { "es": "recaer en", "en": "to fall back into; relapse",
+      "exampleEs": "Recae en viejos hábitos.",
+      "exampleEn": "He falls back into old habits." },
+
+    { "es": "matizar", "en": "to qualify; add nuance",
+      "exampleEs": "Permíteme matizar lo que dije.",
+      "exampleEn": "Let me clarify/nuance what I said." },
+
+    { "es": "indagar", "en": "to investigate; inquire",
+      "exampleEs": "La policía sigue indagando.",
+      "exampleEn": "The police continue investigating." },
+
+    { "es": "rectificar", "en": "to correct; rectify",
+      "exampleEs": "Quiero rectificar mi error.",
+      "exampleEn": "I want to correct my mistake." },
+
+    { "es": "impulsar", "en": "to drive; boost; propel",
+      "exampleEs": "Queremos impulsar el crecimiento.",
+      "exampleEn": "We want to boost growth." },
+
+    { "es": "mitigar", "en": "to mitigate; reduce impact",
+      "exampleEs": "Buscan mitigar los efectos.",
+      "exampleEn": "They seek to mitigate the effects." }
+  ]
+},
+{
+  "id": "everyday-nouns-proficient-3",
+  "difficultyId": "proficient",
+  "topicId": "everyday-nouns",
+  "levelIndex": 3,
+  "name": "Proficient nouns · Level 3",
+  "description": "High-level nouns used in discussion, business, analysis.",
+  "cards": [
+    { "es": "la perspectiva", "en": "perspective",
+      "exampleEs": "Tu perspectiva es interesante.",
+      "exampleEn": "Your perspective is interesting." },
+
+    { "es": "la premisa", "en": "premise",
+      "exampleEs": "La premisa es incorrecta.",
+      "exampleEn": "The premise is incorrect." },
+
+    { "es": "la variable", "en": "variable (noun)",
+      "exampleEs": "Hay muchas variables en juego.",
+      "exampleEn": "There are many variables involved." },
+
+    { "es": "el compromiso", "en": "commitment; compromise",
+      "exampleEs": "Llegamos a un compromiso.",
+      "exampleEn": "We reached a compromise." },
+
+    { "es": "la conclusión", "en": "conclusion",
+      "exampleEs": "La conclusión no es clara.",
+      "exampleEn": "The conclusion is not clear." },
+
+    { "es": "la evidencia", "en": "evidence",
+      "exampleEs": "La evidencia es insuficiente.",
+      "exampleEn": "The evidence is insufficient." },
+
+    { "es": "el enfoque", "en": "approach; focus",
+      "exampleEs": "Me gusta tu enfoque.",
+      "exampleEn": "I like your approach." },
+
+    { "es": "la hipótesis", "en": "hypothesis",
+      "exampleEs": "Formaron una nueva hipótesis.",
+      "exampleEn": "They formed a new hypothesis." },
+
+    { "es": "el rendimiento", "en": "performance; output",
+      "exampleEs": "El rendimiento ha mejorado.",
+      "exampleEn": "Performance has improved." },
+
+    { "es": "la prioridad", "en": "priority",
+      "exampleEs": "Definamos la prioridad.",
+      "exampleEn": "Let’s define the priority." }
+  ]
+},
+{
+  "id": "adjectives-proficient-3",
+  "difficultyId": "proficient",
+  "topicId": "adjectives",
+  "levelIndex": 3,
+  "name": "Proficient adjectives · Level 3",
+  "description": "Sophisticated adjectives used in analysis and debate.",
+  "cards": [
+    { "es": "formidable", "en": "formidable; impressive",
+      "exampleEs": "Es un reto formidable.",
+      "exampleEn": "It’s a formidable challenge." },
+
+    { "es": "discreto / discreta", "en": "discreet; low-key",
+      "exampleEs": "Tiene un estilo muy discreto.",
+      "exampleEn": "He has a very discreet style." },
+
+    { "es": "denso / densa", "en": "dense; heavy",
+      "exampleEs": "El texto es muy denso.",
+      "exampleEn": "The text is very dense." },
+
+    { "es": "minucioso / minuciosa", "en": "meticulous; detailed",
+      "exampleEs": "Hizo un estudio minucioso.",
+      "exampleEn": "He did a meticulous study." },
+
+    { "es": "delicado / delicada", "en": "delicate; sensitive",
+      "exampleEs": "Es un tema delicado.",
+      "exampleEn": "It’s a delicate topic." },
+
+    { "es": "relevante", "en": "relevant",
+      "exampleEs": "La información es relevante.",
+      "exampleEn": "The information is relevant." },
+
+    { "es": "contradictorio / contradictoria", "en": "contradictory",
+      "exampleEs": "Los datos son contradictorios.",
+      "exampleEn": "The data is contradictory." },
+
+    { "es": "fundamental", "en": "fundamental; crucial",
+      "exampleEs": "Es un punto fundamental.",
+      "exampleEn": "It’s a fundamental point." },
+
+    { "es": "inevitable", "en": "inevitable",
+      "exampleEs": "Era un cambio inevitable.",
+      "exampleEn": "It was an inevitable change." },
+
+    { "es": "radical", "en": "radical; extreme",
+      "exampleEs": "Propuso un cambio radical.",
+      "exampleEn": "He proposed a radical change." }
+  ]
+},
+{
+  "id": "phrases-proficient-3",
+  "difficultyId": "proficient",
+  "topicId": "phrases",
+  "levelIndex": 3,
+  "name": "Proficient phrases · Level 3",
+  "description": "Advanced conversational and analytical expressions.",
+  "cards": [
+    { "es": "Para ser sincero…", "en": "To be honest…",
+      "exampleEs": "Para ser sincero, no lo entiendo.",
+      "exampleEn": "To be honest, I don’t understand it." },
+
+    { "es": "Eso es debatible", "en": "That's debatable",
+      "exampleEs": "Bueno… eso es debatible.",
+      "exampleEn": "Well… that’s debatable." },
+
+    { "es": "No es tan evidente", "en": "It's not that obvious",
+      "exampleEs": "No es tan evidente como crees.",
+      "exampleEn": "It’s not as obvious as you think." },
+
+    { "es": "A mi parecer", "en": "In my view",
+      "exampleEs": "A mi parecer, deberíamos esperar.",
+      "exampleEn": "In my view, we should wait." },
+
+    { "es": "No puedo asegurarlo", "en": "I can’t guarantee it",
+      "exampleEs": "No puedo asegurarlo todavía.",
+      "exampleEn": "I can't guarantee it yet." },
+
+    { "es": "En esencia", "en": "In essence",
+      "exampleEs": "En esencia, estamos de acuerdo.",
+      "exampleEn": "In essence, we agree." },
+
+    { "es": "Sinceramente, lo dudo", "en": "Honestly, I doubt it",
+      "exampleEs": "Sinceramente, lo dudo mucho.",
+      "exampleEn": "Honestly, I doubt it a lot." },
+
+    { "es": "No está del todo claro", "en": "It’s not entirely clear",
+      "exampleEs": "No está del todo claro qué pasará.",
+      "exampleEn": "It's not entirely clear what will happen." },
+
+    { "es": "Si no me equivoco…", "en": "If I'm not mistaken…",
+      "exampleEs": "Si no me equivoco, ya hablamos de eso.",
+      "exampleEn": "If I'm not mistaken, we already talked about that." },
+
+    { "es": "Estoy tratando de entenderlo", "en": "I'm trying to understand it",
+      "exampleEs": "Es complicado, pero estoy tratando de entenderlo.",
+      "exampleEn": "It's complicated, but I'm trying to understand it." }
+  ]
+}
+  ]
+}
