@@ -142,7 +142,6 @@
       border-radius: 99px;
       border: var(--card-border);
       overflow-x: auto;
-      justify-content: space-between;
     }
 
     .nav-tab {
@@ -169,8 +168,6 @@
       font-weight: 600;
       box-shadow: 0 2px 10px rgba(34, 197, 94, 0.3);
     }
-    .nav-tab[data-panel="words"] { display: none; /* Hide old Words tab */ }
-
 
     /* --- Panels --- */
     .panel-container {
@@ -266,6 +263,7 @@
     .toggle-ex-btn:hover { border-color: var(--accent); color: var(--accent); }
 
     /* Words Manager */
+    .word-manager-container { max-height: 400px; overflow-y: auto; margin-top: 10px; }
     .filter-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .filter-input { flex: 1; min-width: 120px; padding: 8px; font-size: 13px; }
     .word-list { display: flex; flex-direction: column; gap: 6px; }
@@ -357,9 +355,9 @@
         <p class="deck-description" id="headerDesc">Select a difficulty to begin.</p>
       </div>
       <div class="stats-row">
-        <div class="stat-pill accent" onclick="openWordsTab('known')">Known: <strong id="statKnown">0</strong></div>
-        <div class="stat-pill danger" onclick="openWordsTab('learning')">Learning: <strong id="statLearning">0</strong></div>
-        <div class="stat-pill" onclick="openWordsTab('all')">Total: <strong id="statTotal">0</strong></div>
+        <div class="stat-pill accent" onclick="openSettingsWithFilter('known')">Known: <strong id="statKnown">0</strong></div>
+        <div class="stat-pill danger" onclick="openSettingsWithFilter('learning')">Learning: <strong id="statLearning">0</strong></div>
+        <div class="stat-pill" onclick="openSettingsWithFilter('all')">Total: <strong id="statTotal">0</strong></div>
       </div>
     </div>
 
@@ -457,8 +455,8 @@
 
     <div id="panel-settings" class="panel">
       
-      <div class="setting-group" id="settingsWordManager">
-        <div class="setting-header">Word Manager & Stats</div>
+      <div class="setting-group">
+        <div class="setting-header">All Words Manager</div>
         <div class="filter-bar">
          <select id="filterStatus" class="input-answer filter-input" onchange="renderWordList()">
            <option value="all">All Status</option>
@@ -469,13 +467,12 @@
            <option value="all">All Categories</option>
          </select>
          <select id="filterSort" class="input-answer filter-input" onchange="renderWordList()">
-            <option value="diff">Sort: Strength</option>
+            <option value="diff">Sort: Difficulty</option>
             <option value="az">Sort: A-Z (ES)</option>
          </select>
        </div>
-       <div id="wordListContainer" class="word-list">
+       <div id="wordListContainer" class="word-list word-manager-container">
           </div>
-       <button class="btn-action primary" onclick="renderWordList(true)" style="width:100%; margin-top:10px;">Refresh Word List</button>
       </div>
 
       <div class="setting-group">
@@ -503,17 +500,6 @@
         <div class="toggle-row">
           <button class="toggle-btn active" data-group="mode" data-val="reveal">Self Check</button>
           <button class="toggle-btn" data-group="mode" data-val="type">Type Answer</button>
-        </div>
-      </div>
-
-      <div class="setting-group">
-        <div class="setting-header">Game Rules</div>
-        <div class="setting-check-btn" id="btnToggleKnownOnce" onclick="toggleSetting('knownOnce')">
-           <span>Limit Mastered words to 2 appearances</span>
-           <span class="status-icon">○</span>
-        </div>
-        <div style="font-size:11px; color:var(--text-muted); margin-top:4px; line-height:1.4">
-          Mastered words (Score ≥ 4) will appear a maximum of 2 times per session.
         </div>
       </div>
 
@@ -546,18 +532,18 @@
  * APP LOGIC
  */
 const STATE = {
-  decksRaw: [], 
-  activeDecks: [], 
-  customCards: {}, 
-  progress: {}, 
-  blacklist: new Set(), 
+  decksRaw: [], // Loaded from JSON
+  activeDecks: [], // Flattened list
+  customCards: {}, // { topicId: [cards] } 
+  progress: {}, // { cardId: { score, seen, ... } }
+  blacklist: new Set(), // Deleted card IDs
   
-  // SESSION CONTROL - NEW
-  sessionCounters: new Map(), // Stores { uid: { seenCount: N, struggledCount: M } }
-  lastCardUid: null, 
-  revealTime: 0, 
+  // Session State
+  sessionData: {}, // { uid: { count: 0, struggle: false, postStruggleCount: 0 } }
   sessionStats: { correctFirst: 0, struggle: 0 },
   struggleList: [], 
+  lastCardUid: null,
+  revealTime: 0,
   
   // Navigation
   view: 'root', 
@@ -573,8 +559,7 @@ const STATE = {
   direction: 'es-en',
   mode: 'reveal',
   includeCustom: true,
-  onlyCustom: false,
-  knownOnce: false // Now controls Max 2 appearances
+  onlyCustom: false
 };
 
 // --- INIT ---
@@ -594,11 +579,8 @@ async function loadRemoteData() {
     if(!res.ok) throw new Error("404");
     const json = await res.json();
     STATE.decksRaw = json;
-    
     STATE.activeDecks = json.decks.map(d => ({ ...d, cards: [...d.cards] }));
-    
     injectCustomCards();
-    
     renderDecks();
   } catch (e) {
     document.getElementById('deckGrid').innerHTML = `<div style="padding:20px; color:#fca5a5">Error loading decks.json. Ensure file exists and is accessible.</div>`;
@@ -615,18 +597,17 @@ function loadLocalData() {
   const black = localStorage.getItem('sf_blacklist');
   if(black) STATE.blacklist = new Set(JSON.parse(black));
   
+  // Load settings
   const settings = JSON.parse(localStorage.getItem('sf_settings') || '{}');
   if(settings.dir) changeToggle('dir', settings.dir);
   if(settings.mode) changeToggle('mode', settings.mode);
   
   STATE.includeCustom = settings.includeCustom !== false;
   STATE.onlyCustom = settings.onlyCustom === true;
-  STATE.knownOnce = settings.knownOnce === true;
   if(settings.selDiff) STATE.selDiff = settings.selDiff;
 
   updateCheckUI('includeCustom', STATE.includeCustom);
   updateCheckUI('onlyCustom', STATE.onlyCustom);
-  updateCheckUI('knownOnce', STATE.knownOnce);
 }
 
 function saveData() {
@@ -639,7 +620,6 @@ function saveData() {
     mode: STATE.mode,
     includeCustom: STATE.includeCustom,
     onlyCustom: STATE.onlyCustom,
-    knownOnce: STATE.knownOnce,
     selDiff: STATE.selDiff
   };
   localStorage.setItem('sf_settings', JSON.stringify(settings));
@@ -664,12 +644,14 @@ function renderDecks() {
   domGrid.innerHTML = '';
   domBread.innerHTML = '';
   
+  // 1. Root: Select Difficulty
   if(!STATE.selDiff) {
     domHeaderDesc.textContent = "Select your difficulty level.";
     if(!STATE.decksRaw.difficulties) return;
     STATE.decksRaw.difficulties.forEach(diff => {
       const el = createCard(diff.label, "Difficulty", () => {
         STATE.selDiff = diff.id;
+        STATE.view = 'level';
         saveData();
         renderDecks();
       });
@@ -678,13 +660,16 @@ function renderDecks() {
     return;
   }
 
+  // 2. Levels
   const diffObj = STATE.decksRaw.difficulties.find(d => d.id === STATE.selDiff);
   if(STATE.selDiff && !STATE.selLevel) {
     domHeaderDesc.textContent = `Select a level in ${diffObj.label}.`;
     addBreadcrumb("Difficulties", () => { STATE.selDiff = null; renderDecks(); });
     
+    // Find levels
     const levels = new Set(STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff).map(d => d.levelIndex));
     [...levels].sort().forEach(lvl => {
+      // Check Completion
       const isComplete = checkLevelComplete(STATE.selDiff, lvl);
       
       const el = createCard(`Level ${lvl}`, `${diffObj.label}`, () => {
@@ -698,16 +683,20 @@ function renderDecks() {
     return;
   }
 
+  // 3. Decks
   if(STATE.selDiff && STATE.selLevel) {
     domHeaderDesc.textContent = `Pick a topic to study.`;
     addBreadcrumb("Difficulties", () => { STATE.selDiff = null; STATE.selLevel = null; renderDecks(); });
     addBreadcrumb(`Level ${STATE.selLevel}`, () => { STATE.selLevel = null; renderDecks(); });
     
+    // Filter decks
     const decks = STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel);
     
+    // Calculate Mix Deck Count
     let mixCount = 0;
     decks.forEach(d => { mixCount += getPlayableCount(d); });
     
+    // Add Mix Deck Option
     const mixEl = createCard("⚡ Mix All Topics", `${mixCount} cards`, () => {
        startSession(null, true); 
     });
@@ -715,6 +704,7 @@ function renderDecks() {
     domGrid.appendChild(mixEl);
 
     decks.forEach(d => {
+      // Get Topic Name
       const topic = STATE.decksRaw.topics.find(t => t.id === d.topicId);
       const label = topic ? topic.label : d.name;
       const count = getPlayableCount(d);
@@ -730,9 +720,7 @@ function renderDecks() {
 function checkLevelComplete(diffId, levelIdx) {
   const decks = STATE.activeDecks.filter(d => d.difficultyId === diffId && d.levelIndex === levelIdx);
   if(decks.length === 0) return false;
-  
-  let totalBase = 0;
-  let masteredBase = 0;
+  let totalBase = 0, masteredBase = 0;
   
   decks.forEach(d => {
     d.cards.forEach(c => {
@@ -743,7 +731,6 @@ function checkLevelComplete(diffId, levelIdx) {
       if(score >= 4) masteredBase++;
     });
   });
-  
   return totalBase > 0 && totalBase === masteredBase;
 }
 
@@ -776,7 +763,7 @@ function getPlayableCount(deck) {
 // --- GAME LOGIC ---
 function startSession(deckId, isMix = false) {
   STATE.currentDeckId = deckId;
-  STATE.sessionCounters = new Map();
+  STATE.sessionData = {}; // Clear session counts
   STATE.lastCardUid = null;
   STATE.isStruggleMode = false;
   STATE.sessionStats = { correctFirst: 0, struggle: 0 };
@@ -797,11 +784,8 @@ function startSession(deckId, isMix = false) {
 
 function startPracticeStruggle() {
   if(STATE.struggleList.length === 0) return;
-  
   STATE.isStruggleMode = true;
-  STATE.sessionCounters = new Map();
   STATE.lastCardUid = null;
-  
   document.getElementById('overlay').style.display = 'none';
   nextCard();
 }
@@ -814,6 +798,7 @@ function nextCard() {
       d.cards.forEach(c => {
          const uid = getCardId(d.id, c);
          if(STATE.struggleList.includes(uid)) {
+           // Basic validation to prevent infinite loops if something weird happens
            pool.push({ ...c, _realDeckId: d.id, _uid: uid });
          }
       });
@@ -822,27 +807,28 @@ function nextCard() {
     pool = getPoolFromCurrentSession();
   }
   
-  // CHECK DECK COMPLETION (NEW RULE)
-  // Check if ALL words in the pool are marked as MASTERED (Score >= 4)
-  const nonMasteredCount = pool.filter(c => (STATE.progress[c._uid] || {}).score < 4).length;
-  if (!STATE.isStruggleMode && nonMasteredCount === 0) {
-      showDeckComplete();
-      return;
-  }
-  
+  // Filter Pool based on NEW RULES (2x Limit)
   const playable = pool.filter(c => {
-    const score = (STATE.progress[c._uid] || {}).score || 0;
-    const counters = STATE.sessionCounters.get(c._uid) || { seenCount: 0, struggledCount: 0 };
-    
-    // 1. No Repeats
+    // 2. No Repeats (if possible)
     if(pool.length > 1 && c._uid === STATE.lastCardUid) return false;
     
-    // 2. Limit Mastered Words (Score >= 4) to 2 appearances
-    if (score >= 4 && counters.seenCount >= 2) return false;
+    if(STATE.isStruggleMode) return true; // In struggle mode, just go until done
+
+    // Session Limit Logic
+    const score = (STATE.progress[c._uid] || {}).score || 0;
+    const sData = STATE.sessionData[c._uid] || { count: 0, struggle: false, postCount: 0 };
     
-    // 3. Limit Improved Struggled Words (Score 3) to 2 more appearances (Total 3, since 1st appearance after struggle sets it to 3)
-    // Score 3 implies improved after struggle. If seen 2 more times (total 3), filter it out.
-    if (score === 3 && counters.seenCount >= 3) return false;
+    // Mastered Words (Score >= 4)
+    if(score >= 4) {
+       // If never struggled this session, max 2 views
+       if(!sData.struggle) {
+         if(sData.count >= 2) return false; 
+       } else {
+         // If struggled this session, max 2 views AFTER struggle
+         if(sData.postCount >= 2) return false;
+       }
+    }
+    // Learning Words (Score < 4) - Keep showing until mastered or session ends
     
     return true;
   });
@@ -852,16 +838,11 @@ function nextCard() {
     return;
   }
   
+  // Simple Random
   const card = playable[Math.floor(Math.random() * playable.length)];
   
   STATE.currentCard = card;
   STATE.lastCardUid = card._uid;
-  
-  // Initialize session counters for this card if new
-  const currentCounter = STATE.sessionCounters.get(card._uid) || { seenCount: 0, struggledCount: 0 };
-  currentCounter.seenCount++;
-  STATE.sessionCounters.set(card._uid, currentCounter);
-  
   renderGameCard();
 }
 
@@ -888,7 +869,6 @@ function renderGameCard() {
   const c = STATE.currentCard;
   const isEs = STATE.direction === 'es-en';
   
-  // Reset UI
   document.getElementById('gameReveal').style.display = 'none';
   document.getElementById('gameControlsJudge').style.display = 'none';
   document.getElementById('gameControlsNext').style.display = 'none';
@@ -921,14 +901,13 @@ function renderGameCard() {
 }
 
 function showAnswer(force = false) {
-  STATE.revealTime = Date.now();
+  STATE.revealTime = Date.now(); 
   
   if(STATE.mode === 'type' && !force) {
     const input = document.getElementById('gameInput');
     const val = input.value.trim().toLowerCase();
     const isEs = STATE.direction === 'es-en';
     const target = (isEs ? STATE.currentCard.en : STATE.currentCard.es).toLowerCase();
-    
     const clean = str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     
     if(clean(val) === clean(target)) {
@@ -953,42 +932,43 @@ function showAnswer(force = false) {
 }
 
 function markCard(success) {
-  const c = STATE.currentCard;
-  const uid = c._uid;
+  const uid = STATE.currentCard._uid;
   if(!STATE.progress[uid]) STATE.progress[uid] = { score: 0, seen: 0 };
-  const prevScore = STATE.progress[uid].score;
-  const counters = STATE.sessionCounters.get(uid); // Already incremented seenCount in nextCard
-
+  if(!STATE.sessionData[uid]) STATE.sessionData[uid] = { count: 0, struggle: false, postCount: 0 };
+  
   STATE.progress[uid].seen++;
   const diff = Date.now() - STATE.revealTime;
-  
-  // SESSION STATS & STRUGGLE LIST MANAGEMENT
-  if(STATE.progress[uid].seen === 1) STATE.sessionStats.correctFirst = success ? STATE.sessionStats.correctFirst + 1 : STATE.sessionStats.correctFirst;
-  if(!success) STATE.sessionStats.struggle++;
-  if(!success) {
-      if(!STATE.struggleList.includes(uid)) STATE.struggleList.push(uid);
-      counters.struggledCount = 0; // Reset improvement tracking if failed
-  }
 
-  // LONG-TERM SCORE LOGIC
+  // Session Tracking
+  STATE.sessionData[uid].count++;
+  if(STATE.sessionData[uid].struggle) STATE.sessionData[uid].postCount++;
+
   if(success) {
-      // Promotion/Mastery
-      if(diff <= 3000) {
-          STATE.progress[uid].score = 4; // Mastered (Fast)
-      } else {
-          // Slow success: promote to 3 or 4 if almost there, otherwise 3 (Review needed)
-          if(prevScore === 3 || prevScore === 4) STATE.progress[uid].score = 4;
-          else STATE.progress[uid].score = 3;
-          
-          // Mark improvement after struggle (Rule 2 setup)
-          if (prevScore < 3) counters.struggledCount++;
-      }
+     if(STATE.sessionData[uid].count === 1) STATE.sessionStats.correctFirst++;
+     
+     // TIME LOGIC
+     if(diff <= 3000) {
+       STATE.progress[uid].score = 4;
+     } else {
+       // >3s: Set to 3 (Review Needed) unless already mastered
+       if(STATE.progress[uid].score < 4) STATE.progress[uid].score = 3; 
+       if(!STATE.struggleList.includes(uid)) STATE.struggleList.push(uid);
+     }
+     
+     // If struggle mode, remove from list if correct
+     if(STATE.isStruggleMode) {
+        STATE.struggleList = STATE.struggleList.filter(id => id !== uid);
+     }
+
   } else {
-      // Demotion/Struggle
-      STATE.progress[uid].score = Math.max(0, prevScore - 1);
+     // Still Learning
+     STATE.progress[uid].score = Math.max(0, STATE.progress[uid].score - 1);
+     STATE.sessionData[uid].struggle = true;
+     STATE.sessionData[uid].postCount = 0; // Reset recovery count
+     STATE.sessionStats.struggle++;
+     if(!STATE.struggleList.includes(uid)) STATE.struggleList.push(uid);
   }
   
-  STATE.sessionCounters.set(uid, counters);
   saveData();
   updateStats();
   nextCard();
@@ -997,7 +977,7 @@ function markCard(success) {
 function showDeckComplete() {
   document.getElementById('overlay').style.display = 'flex';
   document.getElementById('resCorrect').textContent = STATE.sessionStats.correctFirst;
-  document.getElementById('resStruggle').textContent = STATE.struggleList.length; 
+  document.getElementById('resStruggle').textContent = STATE.sessionStats.struggle; 
   
   const btnStruggle = document.getElementById('btnPracticeStruggle');
   if(STATE.struggleList.length > 0) {
@@ -1008,7 +988,6 @@ function showDeckComplete() {
   }
   
   launchConfetti();
-  renderDecks(); // Update deck completion visual
 }
 
 function closeOverlay() {
@@ -1034,11 +1013,10 @@ function deleteCurrentCard() {
   const c = STATE.currentCard;
   
   if(c._custom) {
-    const deck = STATE.activeDecks.find(d => d.id === c._realDeckId);
-    if(deck && STATE.customCards[deck.topicId]) {
-      const arr = STATE.customCards[deck.topicId];
-      const idx = arr.findIndex(x => x.es === c.es && x.en === c.en);
-      if(idx > -1) arr.splice(idx, 1);
+    const topicCards = STATE.customCards[STATE.activeDecks.find(d => d.id === c._realDeckId).topicId];
+    if(topicCards) {
+      const idx = topicCards.findIndex(x => x.es === c.es && x.en === c.en);
+      if(idx > -1) topicCards.splice(idx, 1);
     }
   } 
   
@@ -1049,23 +1027,18 @@ function deleteCurrentCard() {
 }
 
 // --- WORDS MANAGER UI ---
-
-function openWordsTab(filter) {
-  switchPanel('settings'); // Open settings panel
+function openSettingsWithFilter(filter) {
+  switchPanel('settings');
   document.getElementById('filterStatus').value = filter || 'all';
   renderWordList();
 }
 
-function renderWordList(forceRefresh=false) {
+function renderWordList() {
   const container = document.getElementById('wordListContainer');
   const fStatus = document.getElementById('filterStatus').value;
   const fTopic = document.getElementById('filterTopic').value;
   const fSort = document.getElementById('filterSort').value;
   
-  if (!forceRefresh && container.innerHTML !== '') {
-    // Only re-render if needed, otherwise rely on the button at the bottom of settings
-  }
-
   container.innerHTML = 'Loading...';
 
   const allCardsMap = new Map();
@@ -1080,7 +1053,7 @@ function renderWordList(forceRefresh=false) {
 
        if(fTopic !== 'all' && d.topicId !== fTopic) return;
        
-       allCardsMap.set(uid, { ...c, _topicId: d.topicId, _deckName: d.name, _score: score, _uid: uid });
+       allCardsMap.set(uid, { ...c, _deckName: d.name, _score: score, _uid: uid });
     });
   });
   
@@ -1112,7 +1085,7 @@ function renderWordList(forceRefresh=false) {
           <span style="font-weight:400; color:var(--text-muted)">— ${c.en}</span>
         </div>
         <div class="word-sub">
-          ${STATE.decksRaw.topics.find(t=>t.id===c._topicId)?.label || 'General'}
+          ${c._deckName}
           ${c._custom ? '<span class="word-tag">Custom</span>' : ''}
         </div>
       </div>
@@ -1136,7 +1109,7 @@ function deleteWordByUid(uid) {
   if(!confirm("Permanently delete word?")) return;
   STATE.blacklist.add(uid);
   saveData();
-  renderWordList(true);
+  renderWordList(); 
   updateStats();
 }
 
@@ -1323,6 +1296,7 @@ function bindEvents() {
 
 // Start
 init();
+
 </script>
 </body>
 </html>
