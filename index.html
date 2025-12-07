@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <title>Spanish Flashcards – Level Trainer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#020617" />
+  <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Spanish Flashcards" />
+  <meta name="apple-mobile-web-app-title" content="Spanish Cards" />
 
   <link
     rel="stylesheet"
@@ -18,2687 +17,1001 @@
 
   <style>
     :root {
-      --bg: #020617;
-      --bg-alt: #020617;
+      --bg-gradient: radial-gradient(circle at top left, #1e293b, #0f172a 60%, #020617);
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: 1px solid rgba(148, 163, 184, 0.15);
       --accent: #22c55e;
-      --accent-soft: rgba(34, 197, 94, 0.14);
-      --text-main: #f9fafb;
-      --text-muted: #9ca3af;
-      --card-bg: #020617;
-      --border-subtle: rgba(148, 163, 184, 0.35);
-      --danger: #f97373;
-      --danger-soft: rgba(239, 68, 68, 0.18);
-      --radius-lg: 20px;
-      --shadow-soft: 0 22px 55px rgba(15, 23, 42, 0.95);
+      --accent-hover: #16a34a;
+      --accent-soft: rgba(34, 197, 94, 0.15);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --danger-soft: rgba(239, 68, 68, 0.15);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      max-width: 100%;
-      overflow-x: hidden;
-    }
-
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
     body {
       margin: 0;
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
-        "SF Pro Text", "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top left, #111827, #020617 55%, #020617);
+      font-family: "Inter", system-ui, sans-serif;
+      background: var(--bg-gradient);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
-      align-items: stretch;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 10px; 
     }
 
+    /* --- App Container --- */
     .app {
-      display: flex;
-      flex-direction: column;
       width: 100%;
-      max-width: 960px;
-      margin: 8px auto;
-      border-radius: 26px;
-      background: radial-gradient(circle at top left, #020617, #020617 40%, #020617);
-      border: 1px solid rgba(148, 163, 184, 0.45);
+      max-width: 800px;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: var(--card-border);
+      border-radius: var(--radius-lg);
       box-shadow: var(--shadow-soft);
       overflow: hidden;
-      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 85vh;
     }
 
+    /* --- Header --- */
     .app-header {
-      padding: 18px 18px 10px;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
-      background: radial-gradient(circle at top left, #020617, #020617);
-      position: relative;
-      z-index: 10;
+      padding: 20px;
+      border-bottom: var(--card-border);
+      background: rgba(15, 23, 42, 0.8);
     }
 
     .header-top {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
       align-items: flex-start;
-      margin-bottom: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 16px;
     }
 
-    .logo-block {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .logo-title {
-      font-weight: 600;
-      letter-spacing: 0.09em;
-      font-size: 11px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .logo-main {
-      font-size: 22px;
+    .logo-block h1 {
+      margin: 0;
+      font-size: 20px;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      letter-spacing: -0.02em;
     }
 
     .logo-pill {
-      font-size: 11px;
+      font-size: 10px;
       text-transform: uppercase;
       background: var(--accent-soft);
-      border-radius: 999px;
-      padding: 2px 8px;
-      color: #bbf7d0;
-      border: 1px solid rgba(34, 197, 94, 0.45);
+      border-radius: 99px;
+      padding: 3px 8px;
+      color: #86efac;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(34, 197, 94, 0.3);
     }
 
     .deck-description {
-      margin-top: 2px;
+      margin: 4px 0 0 0;
       font-size: 13px;
       color: var(--text-muted);
-      max-width: 340px;
+      line-height: 1.4;
     }
 
-    .stats {
+    /* Stats Pills */
+    .stats-row {
       display: flex;
-      flex-wrap: wrap;
       gap: 6px;
-      justify-content: flex-end;
+      flex-wrap: wrap;
     }
-
     .stat-pill {
       font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      color: var(--text-muted);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(15, 23, 42, 0.95);
-    }
-
-    .stat-pill strong {
-      color: var(--text-main);
-      font-weight: 600;
-    }
-
-    .stat-pill--accent {
-      border-color: rgba(34, 197, 94, 0.85);
-      background: var(--accent-soft);
-      color: #bbf7d0;
-    }
-
-    .stat-pill--danger {
-      border-color: rgba(239, 68, 68, 0.9);
-      background: var(--danger-soft);
-      color: #fecaca;
-    }
-
-    /* Top nav with icons */
-    .top-nav {
-      margin-top: 10px;
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .top-nav-btn {
-      flex: 1 1 0;
-      min-width: 0;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.95);
-      color: var(--text-main);
-      font-size: 13px;
-      padding: 7px 10px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: background 0.15s ease, border-color 0.15s ease,
-        transform 0.08s ease, box-shadow 0.1s ease;
-      white-space: nowrap;
-    }
-
-    .top-nav-btn span.label {
-      font-size: 12px;
-    }
-
-    .top-nav-btn.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #052e16;
-      box-shadow: 0 0 0 1px rgba(22, 163, 74, 0.45);
-      font-weight: 600;
-    }
-
-    .top-nav-btn:hover {
-      transform: translateY(-0.5px);
-      border-color: rgba(248, 250, 252, 0.85);
-    }
-
-    .top-panels {
-      margin-top: 10px;
-    }
-
-    .top-panel {
-      border-radius: 18px;
-      border: 1px dashed rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.96);
-      padding: 10px 12px;
-      margin-bottom: 8px;
-      display: none;
-    }
-
-    .top-panel.active {
-      display: block;
-    }
-
-    .panel-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Deck Nav / Breadcrumbs */
-    .deck-nav-header {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    
-    .nav-back-btn {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      border-radius: 99px;
       padding: 4px 10px;
-      font-size: 11px;
+      border-radius: 99px;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(148, 163, 184, 0.2);
       color: var(--text-muted);
-      cursor: pointer;
       display: inline-flex;
-      align-items: center;
       gap: 4px;
     }
-    .nav-back-btn:hover {
-      color: var(--text-main);
-      background: rgba(255,255,255,0.1);
-    }
+    .stat-pill strong { color: var(--text-main); font-weight: 600; }
+    .stat-pill.accent { border-color: rgba(34, 197, 94, 0.4); color: #bbf7d0; background: rgba(34, 197, 94, 0.1); }
+    .stat-pill.danger { border-color: rgba(239, 68, 68, 0.4); color: #fecaca; background: rgba(239, 68, 68, 0.1); }
 
-    /* Deck list in panel */
-    .deck-list {
+    /* --- Navigation Tabs --- */
+    .nav-tabs {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .deck-item {
-      flex: 1 1 calc(50% - 6px);
-      min-width: 140px;
-      border-radius: 12px;
-      padding: 8px 10px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      transition: background 0.15s ease, border-color 0.15s ease,
-        transform 0.1s ease;
-      font-size: 13px;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-    }
-
-    .deck-item:hover {
-      background: rgba(15, 23, 42, 0.98);
-      border-color: rgba(148, 163, 184, 0.9);
-      transform: translateY(-1px);
-    }
-
-    .deck-item.active {
-      background: radial-gradient(circle at top left, #22c55e26, #020617);
-      border-color: var(--accent);
-    }
-
-    .deck-name {
-      font-weight: 600;
-    }
-
-    .deck-meta {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-    
-    .loading-msg {
-      font-size: 13px;
-      color: var(--text-muted);
-      padding: 10px;
-      text-align: center;
-    }
-
-    /* Session settings panel */
-    .settings-box {
-      display: flex;
-      flex-direction: column;
       gap: 8px;
-      font-size: 12px;
-      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.6);
+      padding: 4px;
+      border-radius: 99px;
+      border: var(--card-border);
     }
 
-    .settings-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .settings-row span.label {
-      font-size: 12px;
-      color: var(--text-main);
-    }
-
-    .pill-toggle {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      padding: 2px;
-      background: #020617;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      gap: 4px;
-      font-size: 11px;
-    }
-
-    .pill-toggle button {
+    .nav-tab {
+      flex: 1;
       border: none;
-      outline: none;
       background: transparent;
       color: var(--text-muted);
-      padding: 3px 8px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-size: 11px;
-      transition: background 0.15s ease, color 0.15s ease;
-      white-space: nowrap;
-    }
-
-    .pill-toggle button.active {
-      background: var(--accent);
-      color: #052e16;
-      font-weight: 600;
-    }
-
-    .reset-btn {
-      margin-top: 4px;
-      font-size: 11px;
-      padding: 6px 8px;
-      background: rgba(248, 250, 252, 0.02);
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      color: var(--text-muted);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .reset-btn:hover {
-      background: rgba(239, 68, 68, 0.12);
-      border-color: var(--danger);
-      color: #fecaca;
-    }
-
-    /* Add-card panel */
-    .add-card {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 12px;
-    }
-
-    .add-card-info {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .add-card form {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 6px 10px;
-      margin-top: 4px;
-    }
-
-    .add-card label {
-      font-size: 11px;
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .add-card input,
-    .add-card select,
-    .add-card textarea {
-      background: rgba(15, 23, 42, 0.98);
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      padding: 10px 12px;
-      color: var(--text-main);
-      font-size: 16px;
-      /* >=16px to avoid mobile zoom */
-      outline: none;
-      width: 100%;
-    }
-
-    .add-card textarea {
-      border-radius: 14px;
-      min-height: 60px;
-      resize: vertical;
-    }
-
-    .add-card input::placeholder,
-    .add-card textarea::placeholder {
-      color: #6b7280;
-    }
-
-    .add-card input:focus,
-    .add-card select:focus,
-    .add-card textarea:focus {
-      border-color: var(--accent);
-    }
-
-    .add-card-actions {
-      grid-column: 1 / -1;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
-
-    .add-feedback {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .add-card-examples,
-    .add-card-examples-fields {
-      grid-column: 1 / -1;
-    }
-
-    .add-card-examples-fields {
-      display: none;
-      gap: 6px 10px;
-      margin-top: 4px;
-    }
-
-    .add-card-examples-fields label textarea {
-      width: 100%;
-    }
-
-    .btn-lg {
-      padding: 10px 18px;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    /* Words panel (view/edit/delete) */
-    .words-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-      font-size: 12px;
-      flex-wrap: wrap;
-    }
-
-    .words-deck-select {
-      background: rgba(15, 23, 42, 0.98);
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      padding: 7px 11px;
-      color: var(--text-main);
-      font-size: 12px;
-      outline: none;
-    }
-
-    .words-deck-select:focus {
-      border-color: var(--accent);
-    }
-
-    .words-list {
-      max-height: 260px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .word-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-      padding: 6px 8px;
-      border-radius: 12px;
-      border: 1px solid rgba(30, 64, 175, 0.4);
-      background: rgba(15, 23, 42, 0.96);
-    }
-
-    .word-row-main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .word-row-line {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .word-row-line span.label {
-      font-size: 11px;
-      color: var(--text-muted);
-      min-width: 36px;
-    }
-
-    .word-input {
-      flex: 1;
-      background: rgba(15, 23, 42, 0.98);
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      padding: 7px 10px;
-      font-size: 14px;
-      color: var(--text-main);
-      outline: none;
-    }
-
-    .word-input:focus {
-      border-color: var(--accent);
-    }
-
-    .word-row-deck {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .word-row-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .btn-xs {
-      padding: 5px 8px;
-      font-size: 11px;
-    }
-
-    .words-empty {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    /* Main / game area */
-    .main {
-      padding: 14px 18px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      background: radial-gradient(circle at top left, #020617, #020617);
-      position: relative;
-      z-index: 1;
-    }
-
-    .card-shell {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 640px;
-      min-height: 260px;
-      border-radius: 26px;
-      background: var(--card-bg);
-      border: 1px solid rgba(148, 163, 184, 0.55);
-      padding: 22px 22px 18px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(
-        circle at top left,
-        rgba(56, 189, 248, 0.18),
-        transparent 58%
-      );
-      pointer-events: none;
-    }
-
-    .card-inner {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      justify-content: space-between;
-    }
-
-    .card-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-deck-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--text-muted);
-    }
-
-    .card-sub-label {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .card-body {
-      margin-top: 16px;
-      margin-bottom: 16px;
-    }
-
-    .card-front-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.22em;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    .card-front-text {
-      font-size: 40px;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      color: var(--text-main);
-      word-wrap: break-word;
-    }
-
-    .card-back {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px dashed rgba(148, 163, 184, 0.6);
-    }
-
-    .card-back-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    .card-back-main {
-      font-size: 22px;
+      padding: 8px 12px;
+      border-radius: 99px;
+      font-size: 13px;
       font-weight: 500;
-      margin-bottom: 6px;
-      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .nav-tab:hover { color: var(--text-main); background: rgba(255,255,255,0.03); }
+    .nav-tab.active {
+      background: var(--accent);
+      color: #022c22;
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(34, 197, 94, 0.3);
     }
 
-    .card-back-example {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .card-back-example span {
-      display: block;
-      margin-top: 2px;
-    }
-
-    .typed-answer {
-      margin-top: 12px;
+    /* --- Panels --- */
+    .panel-container {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      position: relative;
     }
+    .panel { display: none; padding: 20px; animation: fadeIn 0.2s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    .typed-answer input {
-      background: rgba(15, 23, 42, 0.98);
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.75);
-      padding: 10px 14px;
-      color: var(--text-main);
-      font-size: 18px;
-      /* >=16px to avoid mobile zoom */
-      outline: none;
-      width: 100%;
-    }
-
-    .typed-answer input::placeholder {
-      color: #6b7280;
-    }
-
-    .typed-answer input:focus {
-      border-color: var(--accent);
-    }
-
-    .typed-feedback {
-      font-size: 12px;
-      min-height: 16px;
-      color: var(--text-muted);
-    }
-
-    .card-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-top: 8px;
-    }
-
-    .hint {
-      font-size: 11px;
-      color: var(--text-muted);
-      max-width: 260px;
-    }
-
-    .card-primary-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: flex-end;
-    }
-    /* Make the three main buttons equal width */
-    .card-primary-actions .btn-main {
-      flex: 1 1 0;
-      justify-content: center;
-    }
-
-    /* Delete-current-card button anchored to the left */
-    .card-delete-current-btn {
-      margin-right: auto;
-      opacity: 0.8;
-    }
-
-    .card-delete-current-btn:hover {
-      opacity: 1;
-    }
-
-    .btn {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.96);
-      color: var(--text-main);
-      font-size: 13px;
-      padding: 8px 14px;
+    /* Decks Grid */
+    .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .deck-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: var(--radius-sm);
+      padding: 16px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s ease, border-color 0.15s ease,
-        transform 0.08s ease;
-      white-space: nowrap;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
+    .deck-card:hover { background: rgba(30, 41, 59, 0.9); border-color: rgba(148, 163, 184, 0.3); transform: translateY(-2px); }
+    .deck-card.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.05); }
+    .deck-title { font-weight: 600; font-size: 14px; }
+    .deck-count { font-size: 12px; color: var(--text-muted); }
 
-    .btn-ghost {
-      background: transparent;
+    /* Breadcrumbs */
+    .breadcrumbs { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .back-btn {
+      background: transparent; border: 1px solid rgba(148, 163, 184, 0.3);
+      color: var(--text-muted); padding: 4px 10px; border-radius: 99px;
+      font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;
     }
+    .back-btn:hover { border-color: var(--text-muted); color: var(--text-main); }
+    .crumb-text { font-size: 13px; color: var(--text-muted); }
 
-    .btn-accent {
-      background: var(--accent);
-      border-color: #22c55e;
-      color: #052e16;
-      font-weight: 600;
+    /* Settings */
+    .setting-group { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(148,163,184,0.1); }
+    .setting-group:last-child { border-bottom: none; }
+    .setting-header { font-size: 13px; color: var(--text-main); margin-bottom: 8px; font-weight: 500; }
+    .toggle-row { display: flex; gap: 4px; background: rgba(15,23,42,0.4); padding: 3px; border-radius: 99px; width: fit-content; border: 1px solid rgba(148,163,184,0.1); }
+    .toggle-btn {
+      border: none; background: transparent; color: var(--text-muted);
+      padding: 6px 12px; border-radius: 99px; font-size: 12px; cursor: pointer; transition: 0.2s;
     }
+    .toggle-btn.active { background: var(--accent); color: #022c22; font-weight: 600; }
 
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.16);
-      border-color: var(--danger);
-      color: #fecaca;
-    }
-
-    .btn:hover {
-      transform: translateY(-0.5px);
-      border-color: rgba(248, 250, 252, 0.85);
-    }
-
-    .btn:active {
-      transform: translateY(1px) scale(0.98);
-    }
-
-    .btn:disabled {
-      opacity: 0.55;
-      cursor: default;
-      transform: none;
-    }
-
-    .session-controls {
+    /* Add Card Form */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: span 2; }
+    label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    input, textarea, select {
+      background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(148, 163, 184, 0.2);
+      color: var(--text-main); padding: 12px; border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 15px; outline: none; transition: 0.2s;
       width: 100%;
-      max-width: 640px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      font-size: 12px;
-      flex-wrap: wrap;
     }
-
-    .session-left,
-    .session-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); background: rgba(15, 23, 42, 0.8); }
+    .btn-submit {
+      width: 100%; background: var(--accent); color: #022c22; border: none;
+      padding: 14px; border-radius: var(--radius-sm); font-weight: 600; font-size: 15px;
+      cursor: pointer; margin-top: 12px;
     }
+    .btn-submit:hover { background: var(--accent-hover); }
 
-    .session-info {
-      font-size: 12px;
-      color: var(--text-muted);
+    /* Game Card */
+    .game-area {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
     }
-
-    .badge {
-      padding: 2px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      font-size: 11px;
-      color: var(--text-muted);
-      background: rgba(15, 23, 42, 0.96);
+    .flashcard {
+      width: 100%; max-width: 500px; min-height: 280px;
+      background: var(--bg-gradient);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      position: relative; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.5);
     }
+    .card-meta { display: flex; justify-content: space-between; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 20px; }
+    .card-main { text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .label-lang { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .word-text { font-size: 36px; font-weight: 700; color: var(--text-main); margin-bottom: 20px; line-height: 1.2; }
+    .reveal-section { border-top: 1px dashed rgba(148,163,184,0.2); padding-top: 20px; margin-top: 10px; animation: fadeIn 0.3s ease; }
+    .reveal-text { font-size: 24px; font-weight: 500; color: #bae6fd; margin-bottom: 8px; }
+    .examples { font-size: 14px; color: var(--text-muted); font-style: italic; line-height: 1.5; }
 
-    /* Stats panel below game */
-    .stats-bar {
-      width: 100%;
-      max-width: 640px;
-      margin: 8px auto 0;
-      display: flex;
-      justify-content: flex-start;
+    /* Game Actions */
+    .action-row { display: flex; gap: 8px; width: 100%; max-width: 500px; }
+    .btn-action {
+      flex: 1; border: 1px solid rgba(148,163,184,0.2); background: rgba(30,41,59,0.5);
+      color: var(--text-main); padding: 12px; border-radius: 99px; font-size: 14px;
+      cursor: pointer; transition: 0.2s; font-weight: 500;
     }
+    .btn-action:hover { background: rgba(30,41,59,0.8); transform: translateY(-1px); }
+    .btn-action.primary { background: var(--text-main); color: #020617; font-weight: 600; border: none; }
+    .btn-action.primary:hover { background: #e2e8f0; }
+    .btn-action.success { background: var(--accent); color: #064e3b; border: none; font-weight: 600; }
+    .btn-action.danger { background: rgba(239,68,68,0.2); color: #fca5a5; border-color: rgba(239,68,68,0.5); }
+    .btn-action.ghost { background: transparent; border-color: transparent; color: var(--text-muted); font-size: 12px; flex: 0; white-space: nowrap; }
+    .btn-action.ghost:hover { color: var(--danger); }
 
-    .stats-panel {
-      width: 100%;
-      max-width: 640px;
-      margin: 8px auto 0;
-      border-radius: 18px;
-      border: 1px dashed rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.96);
-      padding: 10px 12px;
-      font-size: 12px;
-      display: none;
+    .input-answer {
+      width: 100%; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.3);
+      padding: 14px; border-radius: 99px; color: white; font-size: 16px; text-align: center;
+      margin-bottom: 10px; outline: none;
     }
+    .input-answer:focus { border-color: var(--accent); }
 
-    .stats-panel-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
+    /* Overlay */
+    .overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.9); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .overlay-content { background: #1e293b; padding: 30px; border-radius: var(--radius-lg); text-align: center; max-width: 90%; width: 400px; border: 1px solid rgba(148,163,184,0.2); }
 
-    .stats-panel-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    /* Deck-complete overlay + confetti */
-    .deck-complete-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.78);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 60;
-    }
-
-    .deck-complete-card {
-      background: radial-gradient(circle at top left, #020617, #020617 40%);
-      border-radius: 24px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      box-shadow: var(--shadow-soft);
-      padding: 18px 20px 16px;
-      max-width: 380px;
-      width: 90%;
-    }
-
-    .deck-complete-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .deck-complete-text {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    .deck-complete-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .confetti-container {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 80;
-    }
-
-    .confetti-piece {
-      position: absolute;
-      width: 8px;
-      height: 14px;
-      opacity: 0.9;
-      border-radius: 2px;
-      animation: confetti-fall 2.8s linear forwards;
-    }
-
-    @keyframes confetti-fall {
-      to {
-        transform: translate3d(0, 110vh, 0) rotateZ(360deg);
-        opacity: 0;
-      }
-    }
-
-    /* Responsive */
-    @media (max-width: 880px) {
-      .app {
-        border-radius: 0;
-        margin: 0;
-      }
-
-      .card {
-        padding: 18px 18px 16px;
-        min-height: 230px;
-      }
-
-      .card-front-text {
-        font-size: 32px;
-      }
-
-      .add-card form {
-        grid-template-columns: 1fr;
-      }
-
-      .add-card-examples-fields {
-        display: none;
-      }
-    }
-
-    @media (max-width: 540px) {
-      .header-top {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .deck-description {
-        max-width: 100%;
-      }
-
-      .stats {
-        justify-content: flex-start;
-      }
-
-      .card-front-text {
-        font-size: 28px;
-      }
-
-      .session-controls {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .top-nav-btn span.label {
-        font-size: 11px;
-      }
+    @media (max-width: 600px) {
+      .app { min-height: 100vh; border-radius: 0; border: none; }
+      .flashcard { min-height: 240px; padding: 20px; }
+      .word-text { font-size: 28px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: span 1; }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="app-header">
-      <div class="header-top">
-        <div class="logo-block">
-          <div class="logo-title">Spanish trainer</div>
-          <div class="logo-main">
-            FlashCards
-            <span class="logo-pill">Level Up</span>
-          </div>
-          <p class="deck-description" id="deckDescription">
-            Select Difficulty &gt; Level &gt; Topic to begin.
-          </p>
-        </div>
-        <div class="stats">
-          <div class="stat-pill stat-pill--accent">
-            Session cards: <strong id="statSessionSeen">0</strong>
-          </div>
-          <div class="stat-pill">
-            Knew it: <strong id="statSessionKnew">0</strong>
-          </div>
-          <div class="stat-pill stat-pill--danger">
-            Still learning: <strong id="statSessionLearning">0</strong>
-          </div>
-          <div class="stat-pill">
-            Total words: <strong id="statTotalWords">0</strong>
-          </div>
-        </div>
+
+<div class="app">
+  <header class="app-header">
+    <div class="header-top">
+      <div class="logo-block">
+        <h1>Spanish Flashcards <span class="logo-pill">PRO</span></h1>
+        <p class="deck-description" id="headerDesc">Select a difficulty to begin.</p>
       </div>
-
-      <div class="top-nav" id="topNav">
-        <button class="top-nav-btn active" data-panel="decks">
-          📚 <span class="label">Decks</span>
-        </button>
-        <button class="top-nav-btn" data-panel="session">
-          🎯 <span class="label">Session</span>
-        </button>
-        <button class="top-nav-btn" data-panel="add">
-          ➕ <span class="label">Add word</span>
-        </button>
-        <button class="top-nav-btn" data-panel="words">
-          📝 <span class="label">Words</span>
-        </button>
+      <div class="stats-row">
+        <div class="stat-pill accent">Known: <strong id="statKnown">0</strong></div>
+        <div class="stat-pill danger">Learning: <strong id="statLearning">0</strong></div>
+        <div class="stat-pill">Total: <strong id="statTotal">0</strong></div>
       </div>
+    </div>
 
-      <div class="top-panels">
-        <div class="top-panel active" id="panel-decks">
-          <div class="panel-title">
-            <span id="deckPanelTitle">Decks</span>
-          </div>
-          <div class="deck-list" id="deckList">
-             <div class="loading-msg">Loading decks.json...</div>
-          </div>
-        </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-panel="decks">📚 Decks</button>
+      <button class="nav-tab" data-panel="game">🎮 Play</button>
+      <button class="nav-tab" data-panel="add">➕ Add</button>
+      <button class="nav-tab" data-panel="settings">⚙️ Settings</button>
+    </div>
+  </header>
 
-        <div class="top-panel" id="panel-session">
-          <div class="panel-title">Session settings</div>
-          <div class="settings-box">
-            <div class="settings-row">
-              <span class="label">Direction</span>
-              <div class="pill-toggle" id="directionToggle">
-                <button data-direction="es-en" class="active">ES → EN</button>
-                <button data-direction="en-es">EN → ES</button>
-              </div>
-            </div>
-
-            <div class="settings-row">
-              <span class="label">Answer mode</span>
-              <div class="pill-toggle" id="answerModeToggle">
-                <button data-answer-mode="reveal" class="active">Reveal</button>
-                <button data-answer-mode="type">Type</button>
-              </div>
-            </div>
-
-            <button class="reset-btn" id="resetProgressBtn">
-              ⟲ Reset learning progress
-            </button>
-
-            <div style="font-size: 11px; margin-top: 4px;">
-              Focus mode is always on: words you’re still learning appear much more
-              often than strong ones.
-            </div>
-          </div>
-        </div>
-
-        <div class="top-panel" id="panel-add">
-          <div class="panel-title">Add your own words</div>
-          <div class="add-card">
-            <div class="add-card-info">
-              Saved locally in your browser. They’ll also be included in the
-              <strong>All decks</strong> mix.
-            </div>
-            <form id="addCardForm">
-              <label>
-                Spanish *
-                <input type="text" id="addEs" placeholder="por ejemplo: la pared" />
-              </label>
-              <label>
-                English *
-                <input type="text" id="addEn" placeholder="for example: the wall" />
-              </label>
-
-              <div class="add-card-examples">
-                <button type="button" class="btn btn-ghost btn-xs" id="toggleExamplesBtn">
-                  ➕ Add examples
-                </button>
-              </div>
-
-              <div class="add-card-examples-fields" id="exampleFields">
-                <label>
-                  Example ES
-                  <textarea
-                    id="addExampleEs"
-                    placeholder="optional sentence in Spanish"
-                  ></textarea>
-                </label>
-                <label>
-                  Example EN
-                  <textarea
-                    id="addExampleEn"
-                    placeholder="optional sentence in English"
-                  ></textarea>
-                </label>
-              </div>
-
-              <label>
-                Deck
-                <select id="addDeckSelect"></select>
-              </label>
-              <div class="add-card-actions">
-                <span class="add-feedback" id="addFeedback">
-                  Tip: Add words you meet in real life (books, series, etc.).
-                </span>
-                <button type="submit" class="btn btn-accent btn-lg">
-                  ➕ Add word
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <div class="top-panel" id="panel-words">
-          <div class="panel-title">All words</div>
-          <div class="words-controls">
-            <span>View deck:</span>
-            <select id="wordsDeckSelect" class="words-deck-select"></select>
-          </div>
-          <div class="words-list" id="wordsList"></div>
-        </div>
+  <div class="panel-container">
+    
+    <div id="panel-decks" class="panel active">
+      <div id="deckBreadcrumbs" class="breadcrumbs"></div>
+      <div id="deckGrid" class="deck-grid">
+        <div style="padding:20px; color:var(--text-muted)">Loading...</div>
       </div>
-    </header>
+    </div>
 
-    <main class="main">
-      <section class="card-shell">
-        <div class="card" id="card">
-          <div class="card-inner">
-            <div>
-              <div class="card-header-row">
-                <div class="card-deck-label" id="cardDeckLabel">All decks</div>
-                <div class="card-sub-label" id="cardStrengthLabel">
-                  New word
-                </div>
-              </div>
-
-              <div class="card-body">
-                <div class="card-front-label" id="cardFrontLabel">Spanish</div>
-                <div class="card-front-text" id="cardFrontText">
-                  Choose a deck to begin
-                </div>
-
-                <div class="typed-answer" id="typedAnswerContainer" style="display: none;">
-                  <input
-                    type="text"
-                    id="typedAnswerInput"
-                    placeholder="Type the translation and press Enter…"
-                    autocomplete="off"
-                  />
-                  <div class="typed-feedback" id="typedFeedback"></div>
-                </div>
-
-                <div class="card-back" id="cardBack" style="display: none;">
-                  <div class="card-back-label">Answer</div>
-                  <div class="card-back-main" id="cardBackMain"></div>
-                  <div class="card-back-example" id="cardBackExample"></div>
-                </div>
-              </div>
+    <div id="panel-game" class="panel">
+      <div class="game-area">
+        <div class="flashcard" id="gameCard">
+          <div class="card-meta">
+            <span id="gameDeckName">All Decks</span>
+            <span id="gameStrength">New Word</span>
+          </div>
+          
+          <div class="card-main">
+            <div class="label-lang" id="gameFrontLabel">Spanish</div>
+            <div class="word-text" id="gameFrontText">Pick a deck to start</div>
+            
+            <div id="gameInputArea" style="display:none; width:100%;">
+              <input type="text" class="input-answer" id="gameInput" placeholder="Type answer..." autocomplete="off" autocapitalize="off">
+              <div id="gameFeedback" style="font-size:13px; min-height:20px;"></div>
             </div>
 
-            <div class="card-footer">
-              <div class="hint" id="cardHint">
-                Click “Show answer” or press the spacebar.
-              </div>
-              <div class="card-primary-actions">
-                <button
-                  class="btn btn-ghost btn-xs card-delete-current-btn"
-                  id="deleteCurrentBtn"
-                  type="button"
-                >
-                  🗑 Remove card
-                </button>
-
-                <button class="btn btn-ghost btn-main" id="showAnswerBtn">
-                  👀 Show answer
-                </button>
-                <button class="btn btn-danger btn-main" id="learningBtn" disabled>
-                  🤔 Still learning
-                </button>
-                <button class="btn btn-accent btn-main" id="knewItBtn" disabled>
-                  ✅ I knew it
-                </button>
-              </div>
+            <div class="reveal-section" id="gameReveal" style="display:none">
+              <div class="label-lang" id="gameBackLabel">English</div>
+              <div class="reveal-text" id="gameBackText">...</div>
+              <div class="examples" id="gameExamples"></div>
             </div>
           </div>
         </div>
 
-        <div class="session-controls">
-          <div class="session-left">
-            <span class="session-info" id="sessionInfo">
-              Start by picking a deck. Tough words will appear more often than strong ones.
-            </span>
-          </div>
-          <div class="session-right">
-            <span class="badge" id="cardIndexBadge">—</span>
-            <button class="btn btn-ghost" id="skipBtn" disabled>
-              ⏭ Skip word
-            </button>
-          </div>
+        <div class="action-row" id="gameControlsStart">
+          <button class="btn-action ghost" id="btnDeleteCard" title="Permanently Delete">🗑 Remove</button>
+          <button class="btn-action primary" id="btnShowAnswer">Show Answer</button>
         </div>
 
-        <div class="stats-bar">
-          <button class="btn btn-ghost btn-xs" id="statsToggleBtn">📊 Stats</button>
+        <div class="action-row" id="gameControlsJudge" style="display:none">
+          <button class="btn-action danger" id="btnHard">Still Learning</button>
+          <button class="btn-action success" id="btnEasy">I Knew It</button>
         </div>
-        <div class="stats-panel" id="statsPanel">
-          <div class="stats-panel-row">
-            <div class="stat-pill stat-pill--accent">
-              Already know: <strong id="statsKnownCount">0</strong>
-            </div>
-            <div class="stat-pill">
-              Don’t know yet: <strong id="statsDontKnowCount">0</strong>
-            </div>
-            <div class="stat-pill stat-pill--danger">
-              Struggle words: <strong id="statsStruggleCount">0</strong>
-            </div>
-          </div>
-          <div class="stats-panel-actions">
-            <button class="btn btn-ghost btn-xs" id="statsExcludeKnownBtn">
-              🚫 Exclude known words this session
-            </button>
-            <button class="btn btn-danger btn-xs" id="statsDeleteKnownBtn">
-              🗑 Delete known words from file
-            </button>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <div class="deck-complete-overlay" id="deckCompleteOverlay">
-      <div class="deck-complete-card">
-        <div class="deck-complete-title" id="deckCompleteTitle">🎉 Congrats!</div>
-        <div class="deck-complete-text" id="deckCompleteText">
-          You went through every card in this deck.
-        </div>
-        <div class="deck-complete-actions">
-          <button class="btn btn-accent" id="deckCompleteStruggleBtn">
-            🔁 Practice struggle words
-          </button>
-          <button class="btn btn-ghost" id="deckCompleteCloseBtn">
-            Close
-          </button>
+        
+        <div class="action-row" id="gameControlsNext" style="display:none">
+           <button class="btn-action primary" id="btnNextCard">Next Card ➡</button>
         </div>
       </div>
     </div>
+
+    <div id="panel-add" class="panel">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Spanish Word</label>
+          <input type="text" id="addEs" placeholder="e.g. la mesa" autocapitalize="off" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>English Translation</label>
+          <input type="text" id="addEn" placeholder="e.g. the table" autocapitalize="off" autocomplete="off">
+        </div>
+        <div class="form-group full">
+          <label>Target Deck</label>
+          <select id="addDeckSelect"></select>
+        </div>
+        <div class="form-group full">
+          <label>Examples (Optional)</label>
+          <textarea id="addExEs" placeholder="Spanish example sentence..." rows="2" autocapitalize="off"></textarea>
+          <textarea id="addExEn" placeholder="English translation..." rows="2" autocapitalize="off" style="margin-top:8px"></textarea>
+        </div>
+        <div class="form-group full">
+          <button class="btn-submit" id="btnAddSubmit">Save Card</button>
+          <div id="addMsg" style="text-align:center; font-size:12px; margin-top:8px; min-height:16px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-settings" class="panel">
+      <div class="setting-group">
+        <div class="setting-header">Practice Direction</div>
+        <div class="toggle-row">
+          <button class="toggle-btn active" data-group="dir" data-val="es-en">Spanish → English</button>
+          <button class="toggle-btn" data-group="dir" data-val="en-es">English → Spanish</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-header">Answer Mode</div>
+        <div class="toggle-row">
+          <button class="toggle-btn active" data-group="mode" data-val="reveal">Self Check</button>
+          <button class="toggle-btn" data-group="mode" data-val="type">Type Answer</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-header">Custom Content</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+             <input type="checkbox" id="checkIncludeCustom" checked> Include my added words in decks
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+             <input type="checkbox" id="checkOnlyCustom"> Play ONLY my added words (ignore defaults)
+          </label>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-header">Data</div>
+        <button class="btn-action danger" id="btnResetData" style="width:100%">Reset All Progress</button>
+      </div>
+    </div>
+
   </div>
 
-  <script>
-    /******************************************************
-     * 1. DATA FETCHING & STATE
-     ******************************************************/
-    let RAW_DATA = { difficulties: [], topics: [], decks: [] };
-    let DECKS = []; // flattened/processed active decks list
-    let loaded = false;
-
-    // Navigation state
-    let selectedDifficulty = null; // id string
-    let selectedLevel = null;      // integer
-
-    /******************************************************
-     * 2. STATE & STORAGE
-     ******************************************************/
-    const STORAGE_KEY = "spanishFlashAppProgress_v1";
-    const STORAGE_CUSTOM = "spanishFlashAppCustomCards_v1";
-
-    let progressMap = {};
-    let customCardsStore = {}; 
-    // { deckId: [ card, ... ] }
-
-    let currentDeckId = null; 
-    let currentDirection = "es-en"; 
-    let currentMode = "focus"; 
-    let currentAnswerMode = "reveal";
-    let currentCardRef = null; 
-    let currentRevealed = false;
-    const sessionStats = { seen: 0, knew: 0, learning: 0 };
-    let typeAnswerChecked = false;
-    let lastTypeWasCorrect = null;
-
-    // Session filters / completion
-    let currentSessionFilter = "all"; 
-    let excludeKnownFromSession = false;
-    let sessionSeenByDeck = {}; 
-    let deckCompletionShown = {}; 
-    let lastCompletedDeckId = null;
-    let deletedInSession = {}; 
-
-    function markCardDeletedForSession(deckId, index) {
-      if (!deletedInSession[deckId]) {
-        deletedInSession[deckId] = new Set();
-      }
-      deletedInSession[deckId].add(index);
-    }
-
-    function loadProgress() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const data = JSON.parse(raw);
-        if (data && typeof data === "object") {
-          progressMap = data;
-        }
-      } catch (e) {
-        console.warn("Could not load progress:", e);
-      }
-    }
-
-    function saveProgress() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(progressMap));
-      } catch (e) {
-        console.warn("Could not save progress:", e);
-      }
-    }
-
-    function resetProgress() {
-      progressMap = {};
-      saveProgress();
-      updateStatsUI();
-      updateCardStrengthLabel(null);
-    }
-
-    function loadCustomCards() {
-      try {
-        const raw = localStorage.getItem(STORAGE_CUSTOM);
-        if (!raw) return;
-        const data = JSON.parse(raw) || {};
-        customCardsStore = data;
-      } catch (e) {
-        console.warn("Could not load custom cards:", e);
-      }
-    }
-
-    function saveCustomCards() {
-      try {
-        localStorage.setItem(STORAGE_CUSTOM, JSON.stringify(customCardsStore));
-      } catch (e) {
-        console.warn("Could not save custom cards:", e);
-      }
-    }
-
-    // When fetching data, we inject custom cards into the matching deck IDs
-    function injectCustomCards() {
-      Object.entries(customCardsStore).forEach(([deckId, cards]) => {
-        const deck = DECKS.find((d) => d.id === deckId);
-        if (!deck) return;
-        // avoid dupes if re-injecting
-        cards.forEach((card) => {
-          // Check if already in deck (simple check)
-          const exists = deck.cards.some(c => c.es === card.es && c.en === card.en && c._userAdded);
-          if(!exists) {
-            deck.cards.push(card);
-          }
-        });
-      });
-    }
-
-    function syncCustomStoreFromDecks() {
-      const nextStore = {};
-      DECKS.forEach((deck) => {
-        // Skip generated mix decks
-        if (deck.id.startsWith("mix-")) return;
-
-        deck.cards.forEach((card) => {
-          if (card._userAdded) {
-            if (!nextStore[deck.id]) nextStore[deck.id] = [];
-            nextStore[deck.id].push({
-              es: card.es,
-              en: card.en,
-              exampleEs: card.exampleEs,
-              exampleEn: card.exampleEn,
-              _userAdded: true,
-            });
-          }
-        });
-      });
-      customCardsStore = nextStore;
-      saveCustomCards();
-    }
-
-    function getCardId(deckId, index) {
-      return deckId + "::" + index;
-    }
-
-    function getCardProgress(deckId, index) {
-      const id = getCardId(deckId, index);
-      return progressMap[id] || { strength: 0, seen: 0, lastSeen: 0 };
-    }
-
-    function setCardProgress(deckId, index, update) {
-      const id = getCardId(deckId, index);
-      const prev = progressMap[id] || { strength: 0, seen: 0, lastSeen: 0 };
-      const next = { ...prev, ...update };
-      progressMap[id] = next;
-      saveProgress();
-      return next;
-    }
-
-    // Because we have specific decks now, aggregation is simpler: 
-    // Just return the progress for the current card. 
-    // If we are in a "Mix" deck, the card object has _sourceDeckId/_sourceIndex.
-    function getRealCardLocation(deckId, index) {
-      const deck = DECKS.find(d => d.id === deckId);
-      if(!deck) return null;
-      const card = deck.cards[index];
-      if(!card) return null;
-
-      if(card._sourceDeckId && typeof card._sourceIndex === 'number') {
-         return { deckId: card._sourceDeckId, index: card._sourceIndex };
-      }
-      return { deckId, index };
-    }
-
-    function getAggregatedProgress(deckId, index) {
-       const loc = getRealCardLocation(deckId, index);
-       if(!loc) return { correct: 0, wrong: 0 };
-       return getCardProgress(loc.deckId, loc.index);
-    }
-
-    /******************************************************
-     * 3. DOM references
-     ******************************************************/
-    const deckListEl = document.getElementById("deckList");
-    const deckPanelTitleEl = document.getElementById("deckPanelTitle");
-    const deckDescriptionEl = document.getElementById("deckDescription");
-    const statSessionSeenEl = document.getElementById("statSessionSeen");
-    const statSessionKnewEl = document.getElementById("statSessionKnew");
-    const statSessionLearningEl = document.getElementById("statSessionLearning");
-    const statTotalWordsEl = document.getElementById("statTotalWords");
-
-    const cardEl = document.getElementById("card");
-    const cardDeckLabelEl = document.getElementById("cardDeckLabel");
-    const cardStrengthLabelEl = document.getElementById("cardStrengthLabel");
-    const cardFrontLabelEl = document.getElementById("cardFrontLabel");
-    const cardFrontTextEl = document.getElementById("cardFrontText");
-    const cardBackEl = document.getElementById("cardBack");
-    const cardBackMainEl = document.getElementById("cardBackMain");
-    const cardBackExampleEl = document.getElementById("cardBackExample");
-    const cardHintEl = document.getElementById("cardHint");
-    const cardIndexBadgeEl = document.getElementById("cardIndexBadge");
-    const typedAnswerContainer = document.getElementById("typedAnswerContainer");
-    const typedAnswerInput = document.getElementById("typedAnswerInput");
-    const typedFeedbackEl = document.getElementById("typedFeedback");
-
-    const deleteCurrentBtn = document.getElementById("deleteCurrentBtn");
-    const showAnswerBtn = document.getElementById("showAnswerBtn");
-    const learningBtn = document.getElementById("learningBtn");
-    const knewItBtn = document.getElementById("knewItBtn");
-    const skipBtn = document.getElementById("skipBtn");
-
-    const directionToggleEl = document.getElementById("directionToggle");
-    const answerModeToggleEl = document.getElementById("answerModeToggle");
-    const resetProgressBtn = document.getElementById("resetProgressBtn");
-    const sessionInfoEl = document.getElementById("sessionInfo");
-
-    const topNavEl = document.getElementById("topNav");
-    const panelDecksEl = document.getElementById("panel-decks");
-    const panelSessionEl = document.getElementById("panel-session");
-    const panelAddEl = document.getElementById("panel-add");
-    const panelWordsEl = document.getElementById("panel-words");
-    let currentOpenPanelId = "panel-decks";
-
-    const addCardFormEl = document.getElementById("addCardForm");
-    const addDeckSelectEl = document.getElementById("addDeckSelect");
-    const addEsInputEl = document.getElementById("addEs");
-    const addEnInputEl = document.getElementById("addEn");
-    const addExampleEsInputEl = document.getElementById("addExampleEs");
-    const addExampleEnInputEl = document.getElementById("addExampleEn");
-    const addFeedbackEl = document.getElementById("addFeedback");
-    const toggleExamplesBtn = document.getElementById("toggleExamplesBtn");
-    const exampleFieldsEl = document.getElementById("exampleFields");
-
-    const wordsDeckSelectEl = document.getElementById("wordsDeckSelect");
-    const wordsListEl = document.getElementById("wordsList");
-
-    const statsToggleBtn = document.getElementById("statsToggleBtn");
-    const statsPanelEl = document.getElementById("statsPanel");
-    const statsKnownCountEl = document.getElementById("statsKnownCount");
-    const statsDontKnowCountEl = document.getElementById("statsDontKnowCount");
-    const statsStruggleCountEl = document.getElementById("statsStruggleCount");
-    const statsDeleteKnownBtn = document.getElementById("statsDeleteKnownBtn");
-    const statsExcludeKnownBtn = document.getElementById("statsExcludeKnownBtn");
-
-    const deckCompleteOverlayEl = document.getElementById("deckCompleteOverlay");
-    const deckCompleteTitleEl = document.getElementById("deckCompleteTitle");
-    const deckCompleteTextEl = document.getElementById("deckCompleteText");
-    const deckCompleteStruggleBtn = document.getElementById("deckCompleteStruggleBtn");
-    const deckCompleteCloseBtn = document.getElementById("deckCompleteCloseBtn");
-
-    /******************************************************
-     * 4. Helpers
-     ******************************************************/
-    function normalizeAnswerString(str) {
-      if (!str) return "";
-      return str
-        .toLowerCase()
-        .normalize("NFD") 
-        .replace(/[\u0300-\u036f]/g, "") 
-        .replace(/[¿?¡!.,;:()"'«»\-]/g, " ") 
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-
-    function setTopPanel(panelIdOrNull) {
-      [panelDecksEl, panelSessionEl, panelAddEl, panelWordsEl].forEach((p) => {
-        if (p) p.classList.remove("active");
-      });
-      topNavEl
-        .querySelectorAll(".top-nav-btn")
-        .forEach((btn) => btn.classList.remove("active"));
-
-      if (!panelIdOrNull) {
-        currentOpenPanelId = null;
-        return;
-      }
-
-      let panelEl = null;
-      if (panelIdOrNull === "panel-decks") panelEl = panelDecksEl;
-      else if (panelIdOrNull === "panel-session") panelEl = panelSessionEl;
-      else if (panelIdOrNull === "panel-add") panelEl = panelAddEl;
-      else if (panelIdOrNull === "panel-words") panelEl = panelWordsEl;
-
-      if (panelEl) panelEl.classList.add("active");
-      const key = panelIdOrNull.replace("panel-", "");
-      const btn = topNavEl.querySelector(`.top-nav-btn[data-panel="${key}"]`);
-      if (btn) btn.classList.add("active");
-      currentOpenPanelId = panelIdOrNull;
-    }
-
-    function computeGlobalStats() {
-      // Aggregate stats across all decks
-      let known = 0;
-      let dontKnow = 0;
-      let struggle = 0;
-      
-      DECKS.forEach(deck => {
-        // Skip generated Mix decks to avoid double counting
-        if(deck.id.startsWith("mix-")) return;
-        
-        deck.cards.forEach((card, idx) => {
-          const prog = getCardProgress(deck.id, idx);
-          const c = prog.correct || 0;
-          const w = prog.wrong || 0;
-          if (c === 0 && w === 0) {
-            dontKnow++;
-          } else if (c === 0 && w > 0) {
-            dontKnow++;
-          } else if (c > 0 && w === 0) {
-            known++;
-          } else if (c > 0 && w > 0) {
-            struggle++;
-          }
-        });
-      });
-      return { known, dontKnow, struggle };
-    }
-
-    function launchConfetti() {
-      const container = document.createElement("div");
-      container.className = "confetti-container";
-      const colors = ["#22c55e", "#38bdf8", "#facc15", "#f97316", "#a855f7"];
-      for (let i = 0; i < 120; i++) {
-        const piece = document.createElement("div");
-        piece.className = "confetti-piece";
-        piece.style.left = Math.random() * 100 + "vw";
-        piece.style.top = Math.random() * -20 + "vh";
-        piece.style.backgroundColor =
-          colors[Math.floor(Math.random() * colors.length)];
-        piece.style.animationDelay = Math.random() * 0.4 + "s";
-        piece.style.transform = `rotate(${Math.random() * 360}deg)`;
-        container.appendChild(piece);
-      }
-      document.body.appendChild(container);
-      setTimeout(() => {
-        container.remove();
-      }, 3200);
-    }
-
-    function handleDeckCompleted(deckId) {
-      const deck = DECKS.find((d) => d.id === deckId);
-      if (!deck) return;
-      lastCompletedDeckId = deckId;
-
-      let struggleCount = 0;
-      deck.cards.forEach((card, idx) => {
-          // get real location in case of mix deck
-          const loc = getRealCardLocation(deckId, idx);
-          if(!loc) return;
-          const prog = getCardProgress(loc.deckId, loc.index);
-          if ((prog.wrong || 0) > 0) struggleCount++;
-      });
-
-      deckCompleteTitleEl.textContent = "🎉 Congrats!";
-      deckCompleteTextEl.textContent =
-        struggleCount > 0
-          ? `You went through every card in "${deck.name}". Want to focus on the ${struggleCount} words you struggled with?`
-          : `You went through every card in "${deck.name}" without really struggling. Nice work!`;
-
-      deckCompleteStruggleBtn.style.display =
-        struggleCount > 0 ? "inline-flex" : "none";
-      deckCompleteOverlayEl.style.display = "flex";
-      launchConfetti();
-    }
-
-    /******************************************************
-     * 5. UI helpers for DECK HIERARCHY
-     ******************************************************/
-
-    function generateMixDeckForLevel(diffId, levelIdx) {
-      const id = `mix-${diffId}-${levelIdx}`;
-      const name = `Mix: ${diffId} Level ${levelIdx}`;
-      // Collect cards
-      const cards = [];
-      DECKS.forEach(d => {
-        if(d.id.startsWith("mix-")) return;
-        if(d.difficultyId === diffId && d.levelIndex === levelIdx) {
-          d.cards.forEach((c, idx) => {
-            cards.push({
-              ...c,
-              _sourceDeckId: d.id,
-              _sourceIndex: idx
-            });
-          });
-        }
-      });
-      return {
-        id,
-        difficultyId: diffId,
-        levelIndex: levelIdx,
-        name,
-        description: `All words from Level ${levelIdx} (${diffId}) mixed together.`,
-        cards,
-        isMix: true
-      };
-    }
-
-    function renderSelectionFlow() {
-      deckListEl.innerHTML = "";
-      
-      // STEP 1: Select Difficulty
-      if (!selectedDifficulty) {
-        deckPanelTitleEl.textContent = "Select Difficulty";
-        deckDescriptionEl.textContent = "Choose your proficiency level to filter decks.";
-        
-        RAW_DATA.difficulties.forEach(diff => {
-          const item = document.createElement("div");
-          item.className = "deck-item";
-          
-          const name = document.createElement("div");
-          name.className = "deck-name";
-          name.textContent = diff.label;
-          
-          item.appendChild(name);
-          item.addEventListener("click", () => {
-             selectedDifficulty = diff.id;
-             renderSelectionFlow();
-          });
-          deckListEl.appendChild(item);
-        });
-        return;
-      }
-
-      // STEP 2: Select Level
-      if (selectedDifficulty && !selectedLevel) {
-        const diffObj = RAW_DATA.difficulties.find(d => d.id === selectedDifficulty);
-        const diffName = diffObj ? diffObj.label : selectedDifficulty;
-
-        // Header with Back button
-        const header = document.createElement("div");
-        header.className = "deck-nav-header";
-        const back = document.createElement("button");
-        back.className = "nav-back-btn";
-        back.innerHTML = "‹ Back";
-        back.onclick = () => { selectedDifficulty = null; renderSelectionFlow(); };
-        const bread = document.createElement("span");
-        bread.style.fontSize = "12px";
-        bread.style.color = "var(--text-muted)";
-        bread.textContent = `${diffName}`;
-        header.appendChild(back);
-        header.appendChild(bread);
-        deckListEl.appendChild(header);
-
-        deckPanelTitleEl.textContent = "Select Level";
-        deckDescriptionEl.textContent = `Choose a level within ${diffName}.`;
-
-        // Find available levels in this difficulty
-        // We can just look at decks to see which levels exist
-        const levels = new Set();
-        DECKS.forEach(d => {
-          if (d.difficultyId === selectedDifficulty && !d.isMix) {
-            levels.add(d.levelIndex);
-          }
-        });
-        const sortedLevels = Array.from(levels).sort();
-
-        sortedLevels.forEach(lvl => {
-          const item = document.createElement("div");
-          item.className = "deck-item";
-          const name = document.createElement("div");
-          name.className = "deck-name";
-          name.textContent = `Level ${lvl}`;
-          item.appendChild(name);
-          item.addEventListener("click", () => {
-             selectedLevel = lvl;
-             renderSelectionFlow();
-          });
-          deckListEl.appendChild(item);
-        });
-        return;
-      }
-
-      // STEP 3: Select Deck (Topic)
-      if (selectedDifficulty && selectedLevel) {
-        const diffObj = RAW_DATA.difficulties.find(d => d.id === selectedDifficulty);
-        const diffName = diffObj ? diffObj.label : selectedDifficulty;
-
-        // Header with Back button
-        const header = document.createElement("div");
-        header.className = "deck-nav-header";
-        const back = document.createElement("button");
-        back.className = "nav-back-btn";
-        back.innerHTML = "‹ Back";
-        back.onclick = () => { selectedLevel = null; renderSelectionFlow(); };
-        const bread = document.createElement("span");
-        bread.style.fontSize = "12px";
-        bread.style.color = "var(--text-muted)";
-        bread.textContent = `${diffName} / Level ${selectedLevel}`;
-        header.appendChild(back);
-        header.appendChild(bread);
-        deckListEl.appendChild(header);
-
-        deckPanelTitleEl.textContent = "Select Topic";
-        deckDescriptionEl.textContent = "Pick a specific topic or choose the Mix deck.";
-
-        // Available decks
-        const relevantDecks = DECKS.filter(d => 
-          d.difficultyId === selectedDifficulty && 
-          d.levelIndex === selectedLevel &&
-          !d.isMix
-        );
-
-        // Generate Mix Deck for this specific combo
-        const mixDeck = generateMixDeckForLevel(selectedDifficulty, selectedLevel);
-        // Add to global DECKS if not there? 
-        // Actually, let's just use it here locally or check if in DECKS.
-        // To make "Words" view work, it's better if it's in DECKS.
-        if(!DECKS.find(d => d.id === mixDeck.id)) {
-          DECKS.unshift(mixDeck);
-        }
-        
-        // Render Mix Deck First
-        const mixItem = document.createElement("div");
-        mixItem.className = "deck-item";
-        if (currentDeckId === mixDeck.id) mixItem.classList.add("active");
-        mixItem.innerHTML = `<div class="deck-name">⚡ Mix: Level ${selectedLevel}</div><div class="deck-meta">${mixDeck.cards.length} words</div>`;
-        mixItem.addEventListener("click", () => onSelectDeck(mixDeck.id));
-        deckListEl.appendChild(mixItem);
-
-        relevantDecks.forEach(d => {
-          const item = document.createElement("div");
-          item.className = "deck-item";
-          if (currentDeckId === d.id) item.classList.add("active");
-          
-          // Get Topic Label if possible
-          const topicObj = RAW_DATA.topics.find(t => t.id === d.topicId);
-          const topicLabel = topicObj ? topicObj.label : d.name;
-
-          item.innerHTML = `
-            <div class="deck-name">${topicLabel}</div>
-            <div class="deck-meta">${d.cards.length} words</div>
-          `;
-          item.addEventListener("click", () => onSelectDeck(d.id));
-          deckListEl.appendChild(item);
-        });
-      }
-    }
-
-    function onSelectDeck(deckId) {
-       currentDeckId = deckId;
-       // Update UI highlighting
-       deckListEl.querySelectorAll(".deck-item").forEach(el => el.classList.remove("active"));
-       // Find the one clicked - hard to target without ID, so just re-render is safer
-       renderSelectionFlow();
-       
-       updateDeckDescription();
-       populateAddDeckSelect();
-       populateWordsDeckSelect();
-       renderWordsList();
-       
-       currentSessionFilter = "all";
-       sessionSeenByDeck[currentDeckId] = new Set();
-       sessionInfoEl.textContent = "New deck selected.";
-       goToNextCard();
-    }
-
-    function populateAddDeckSelect() {
-      addDeckSelectEl.innerHTML = "";
-      DECKS.forEach((deck) => {
-        if (deck.isMix) return; // Don't add to mix decks directly
-        const opt = document.createElement("option");
-        opt.value = deck.id;
-        opt.textContent = deck.name;
-        addDeckSelectEl.appendChild(opt);
-      });
-      if (currentDeckId && !currentDeckId.startsWith("mix-")) {
-        addDeckSelectEl.value = currentDeckId;
-      }
-    }
-
-    function populateWordsDeckSelect() {
-      if (!wordsDeckSelectEl) return;
-      const previous = wordsDeckSelectEl.value;
-      wordsDeckSelectEl.innerHTML = "";
-
-      const allOpt = document.createElement("option");
-      allOpt.value = "*all";
-      allOpt.textContent = "View All (Filtered by Selection)";
-      wordsDeckSelectEl.appendChild(allOpt);
-
-      DECKS.forEach((deck) => {
-        // Only show decks relevant to current selection? Or all?
-        // Let's show all but group them or just list them.
-        if(deck.isMix) return;
-        const opt = document.createElement("option");
-        opt.value = deck.id;
-        opt.textContent = deck.name;
-        wordsDeckSelectEl.appendChild(opt);
-      });
-      
-      if (previous && [...wordsDeckSelectEl.options].some((o) => o.value === previous)) {
-        wordsDeckSelectEl.value = previous;
-      } else {
-        wordsDeckSelectEl.value = "*all";
-      }
-    }
-
-    function createWordRow(row) {
-      const { deckId, index, card } = row;
-      const deck = DECKS.find((d) => d.id === deckId);
-      const rowEl = document.createElement("div");
-      rowEl.className = "word-row";
-      rowEl.dataset.deckId = deckId;
-      rowEl.dataset.index = index;
-
-      const main = document.createElement("div");
-      main.className = "word-row-main";
-
-      const line1 = document.createElement("div");
-      line1.className = "word-row-line";
-      const labelEs = document.createElement("span");
-      labelEs.className = "label";
-      labelEs.textContent = "ES";
-      const inputEs = document.createElement("input");
-      inputEs.className = "word-input";
-      inputEs.type = "text";
-      inputEs.value = card.es || "";
-      inputEs.dataset.field = "es";
-      line1.appendChild(labelEs);
-      line1.appendChild(inputEs);
-
-      const line2 = document.createElement("div");
-      line2.className = "word-row-line";
-      const labelEn = document.createElement("span");
-      labelEn.className = "label";
-      labelEn.textContent = "EN";
-      const inputEn = document.createElement("input");
-      inputEn.className = "word-input";
-      inputEn.type = "text";
-      inputEn.value = card.en || "";
-      inputEn.dataset.field = "en";
-      line2.appendChild(labelEn);
-      line2.appendChild(inputEn);
-
-      const deckLine = document.createElement("div");
-      deckLine.className = "word-row-deck";
-      deckLine.textContent = deck ? deck.name : deckId;
-
-      main.appendChild(line1);
-      main.appendChild(line2);
-      main.appendChild(deckLine);
-
-      const actions = document.createElement("div");
-      actions.className = "word-row-actions";
-      const deleteBtn = document.createElement("button");
-      deleteBtn.className = "btn btn-danger btn-xs word-delete-btn";
-      deleteBtn.textContent = "🗑";
-      actions.appendChild(deleteBtn);
-
-      rowEl.appendChild(main);
-      rowEl.appendChild(actions);
-      return rowEl;
-    }
-
-    function renderWordsList() {
-      if (!wordsListEl || !wordsDeckSelectEl) return;
-      const selected = wordsDeckSelectEl.value || "*all";
-      wordsListEl.innerHTML = "";
-
-      const rows = [];
-      if (selected === "*all") {
-        DECKS.forEach((deck) => {
-          if (deck.isMix) return;
-          deck.cards.forEach((card, index) => {
-            rows.push({ deckId: deck.id, index, card });
-          });
-        });
-      } else {
-        const deck = DECKS.find((d) => d.id === selected);
-        if (deck) {
-          deck.cards.forEach((card, index) => {
-            rows.push({ deckId: selected, index, card });
-          });
-        }
-      }
-
-      if (!rows.length) {
-        const empty = document.createElement("div");
-        empty.className = "words-empty";
-        empty.textContent = "No words found.";
-        wordsListEl.appendChild(empty);
-        return;
-      }
-
-      rows.forEach((row) => {
-        wordsListEl.appendChild(createWordRow(row));
-      });
-    }
-
-    function updateDeckDescription() {
-      if(!currentDeckId) {
-         deckDescriptionEl.textContent = "Select Difficulty > Level > Topic to begin.";
-         return;
-      }
-      const deck = DECKS.find((d) => d.id === currentDeckId);
-      deckDescriptionEl.textContent = deck
-        ? deck.description
-        : "Pick a deck above to start practicing.";
-    }
-
-    function updateStatsUI() {
-      let total = 0;
-      DECKS.forEach(d => { if(!d.isMix) total += d.cards.length; });
-      statTotalWordsEl.textContent = total;
-      
-      statSessionSeenEl.textContent = sessionStats.seen;
-      statSessionKnewEl.textContent = sessionStats.knew;
-      statSessionLearningEl.textContent = sessionStats.learning;
-      
-      if (statsKnownCountEl && statsDontKnowCountEl && statsStruggleCountEl) {
-        const global = computeGlobalStats();
-        statsKnownCountEl.textContent = global.known;
-        statsDontKnowCountEl.textContent = global.dontKnow;
-        statsStruggleCountEl.textContent = global.struggle;
-      }
-    }
-
-    function updateCardStrengthLabel(cardProgress) {
-      if (!cardProgress) {
-        cardStrengthLabelEl.textContent = "New word";
-        return;
-      }
-      const s = cardProgress.strength || 0;
-      if (s <= 0) {
-        cardStrengthLabelEl.textContent = "New word";
-      } else if (s === 1) {
-        cardStrengthLabelEl.textContent = "Learning · ☆";
-      } else if (s === 2) {
-        cardStrengthLabelEl.textContent = "Getting stronger · ☆☆";
-      } else {
-        cardStrengthLabelEl.textContent = "Strong word · ☆☆☆";
-      }
-    }
-
-    function renderCard() {
-      const deck = DECKS.find((d) => d.id === currentDeckId);
-      if (!deck || !deck.cards.length) {
-        cardFrontTextEl.textContent = "No words in this deck yet.";
-        cardDeckLabelEl.textContent = deck ? deck.name : "No deck";
-        cardBackEl.style.display = "none";
-        cardHintEl.textContent = "Add words or pick another deck.";
-        showAnswerBtn.disabled = true;
-        learningBtn.disabled = true;
-        knewItBtn.disabled = true;
-        skipBtn.disabled = true;
-        cardIndexBadgeEl.textContent = "—";
-        typedAnswerContainer.style.display = "none";
-        typedFeedbackEl.textContent = "";
-        updateCardStrengthLabel(null);
-        return;
-      }
-
-      if (!currentCardRef) {
-        const hasFilter = excludeKnownFromSession || currentSessionFilter !== "all";
-        cardFrontTextEl.textContent = hasFilter
-          ? "No cards match the current filter."
-          : "Choose a deck to begin";
-        cardDeckLabelEl.textContent = deck.name;
-        cardBackEl.style.display = "none";
-        cardHintEl.textContent = "Pick a deck above.";
-        showAnswerBtn.disabled = true;
-        learningBtn.disabled = true;
-        knewItBtn.disabled = true;
-        skipBtn.disabled = true;
-        cardIndexBadgeEl.textContent = "—";
-        typedAnswerContainer.style.display = "none";
-        typedFeedbackEl.textContent = "";
-        updateCardStrengthLabel(null);
-        return;
-      }
-
-      const { deckId, index } = currentCardRef;
-      // Resolve mix
-      const loc = getRealCardLocation(deckId, index);
-      const cardDeck = DECKS.find(d => d.id === loc.deckId);
-      const card = cardDeck.cards[loc.index];
-
-      cardDeckLabelEl.textContent = cardDeck.name;
-      const frontIsSpanish = currentDirection === "es-en";
-      cardFrontLabelEl.textContent = frontIsSpanish ? "Spanish" : "English";
-      const frontText = frontIsSpanish ? card.es : card.en;
-      const backText = frontIsSpanish ? card.en : card.es;
-
-      cardFrontTextEl.textContent = frontText;
-      cardBackMainEl.textContent = backText;
-      let exampleHtml = "";
-      if (card.exampleEs || card.exampleEn) {
-        if (frontIsSpanish) {
-          if (card.exampleEs) exampleHtml += "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
-          if (card.exampleEn) exampleHtml += "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
-        } else {
-          if (card.exampleEn) exampleHtml += "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
-          if (card.exampleEs) exampleHtml += "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
-        }
-      }
-      cardBackExampleEl.innerHTML = exampleHtml;
-      
-      const progress = getCardProgress(loc.deckId, loc.index);
-      updateCardStrengthLabel(progress);
-
-      // We show index in the current session set context essentially, 
-      // but showing raw index from deck is fine.
-      cardIndexBadgeEl.textContent = "";
-
-      if (currentAnswerMode === "reveal") {
-        typedAnswerContainer.style.display = "none";
-        typedFeedbackEl.textContent = "";
-        if (typedAnswerInput) typedAnswerInput.value = "";
-        cardBackEl.style.display = currentRevealed ? "block" : "none";
-
-        showAnswerBtn.disabled = currentRevealed;
-        showAnswerBtn.style.display = currentRevealed ? "none" : "inline-flex";
-
-        learningBtn.disabled = !currentRevealed;
-        knewItBtn.disabled = !currentRevealed;
-
-        learningBtn.style.display = currentRevealed ? "inline-flex" : "none";
-        knewItBtn.style.display = currentRevealed ? "inline-flex" : "none";
-
-        showAnswerBtn.textContent = "👀 Show answer";
-        cardHintEl.textContent = currentRevealed
-          ? "Mark if you knew it or not."
-          : "Try to recall it, then show the answer.";
-      } else {
-        // TYPE MODE
-        typedAnswerContainer.style.display = "flex";
-        cardBackEl.style.display = typeAnswerChecked ? "block" : "none";
-        learningBtn.style.display = "none";
-        knewItBtn.style.display = "none";
-
-        showAnswerBtn.disabled = false;
-        showAnswerBtn.style.display = "inline-flex";
-        showAnswerBtn.textContent = typeAnswerChecked
-          ? "Next word"
-          : "⏎ Check answer";
-
-        cardHintEl.textContent = typeAnswerChecked
-          ? 'Press "Next word" to continue, or use Skip to move on without marking.'
-          : 'Type the translation and press Enter or "Check answer".';
-      }
-      skipBtn.disabled = false;
-    }
-
-    /******************************************************
-     * 6. Card selection logic (simple spaced repetition)
-     ******************************************************/
-    function chooseNextCard() {
-      const deck = DECKS.find((d) => d.id === currentDeckId);
-      if (!deck || !deck.cards.length) {
-        currentCardRef = null;
-        return;
-      }
-
-      const now = Date.now();
-      const candidates = [];
-      deck.cards.forEach((card, idx) => {
-        // Check if deleted for session
-        // For mixed decks, we track delete on the mix deck ID itself or source?
-        // Let's track on currentDeckId for simplicity of session
-        if (deletedInSession[currentDeckId] && deletedInSession[currentDeckId].has(idx)) return;
-
-        // Resolve real stats
-        const loc = getRealCardLocation(currentDeckId, idx);
-        if(!loc) return;
-
-        const prog = getCardProgress(loc.deckId, loc.index);
-
-        // Filters
-        if (currentSessionFilter === "struggle" && (prog.wrong || 0) <= 0) return;
-        if (excludeKnownFromSession && (prog.correct || 0) > 0 && (prog.wrong || 0) === 0) return;
-
-        const ageMinutes = prog.lastSeen > 0 ? (now - prog.lastSeen) / 60000 : 9999;
-        let weight = 1 + Math.max(0, 3 - (prog.strength || 0)) * 2;
-
-        if (currentMode === "focus") {
-          if ((prog.strength || 0) <= 1) {
-            weight *= 2.2;
-          } else {
-            weight *= 0.8;
-          }
-        }
-        if (ageMinutes < 1) {
-          weight *= 0.4;
-        }
-
-        candidates.push({
-          deckId: currentDeckId,
-          index: idx,
-          weight,
-        });
-      });
-
-      if (!candidates.length) {
-        currentCardRef = null;
-        return;
-      }
-
-      const totalWeight = candidates.reduce((sum, c) => sum + c.weight, 0);
-      let rnd = Math.random() * totalWeight;
-      let chosen = candidates[0];
-      for (const c of candidates) {
-        rnd -= c.weight;
-        if (rnd <= 0) {
-          chosen = c;
-          break;
-        }
-      }
-      currentCardRef = chosen;
-    }
-
-    function goToNextCard() {
-      currentRevealed = false;
-      typeAnswerChecked = false;
-      lastTypeWasCorrect = null;
-      if (typedAnswerInput) typedAnswerInput.value = "";
-      typedFeedbackEl.textContent = "";
-      chooseNextCard();
-      renderCard();
-      if (currentAnswerMode === "type" && typedAnswerInput) {
-        setTimeout(() => typedAnswerInput.focus(), 0);
-      }
-    }
-
-    /******************************************************
-     * 7. Event handlers
-     ******************************************************/
+  <div class="overlay" id="overlay">
+    <div class="overlay-content">
+      <h2 style="margin-top:0">🎉 Deck Complete!</h2>
+      <p style="color:var(--text-muted); margin-bottom:20px;">You've cycled through all available cards.</p>
+      <button class="btn-action primary" onclick="document.getElementById('overlay').style.display='none'">Keep Practicing</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/**
+ * APP LOGIC
+ */
+const STATE = {
+  decksRaw: [], // Loaded from JSON
+  activeDecks: [], // Flattened list
+  customCards: {}, // { deckId: [cards] }
+  progress: {}, // { cardId: { strength, ... } }
+  blacklist: new Set(), // Deleted card IDs
+  
+  // Navigation
+  view: 'root', // root -> diff -> level -> decks
+  selDiff: null,
+  selLevel: null,
+  
+  // Game Config
+  currentDeckId: null,
+  currentCard: null,
+  direction: 'es-en',
+  mode: 'reveal',
+  includeCustom: true,
+  onlyCustom: false
+};
+
+// --- INIT ---
+async function init() {
+  loadLocalData();
+  await loadRemoteData();
+  bindEvents();
+  renderDecks();
+  updateStats();
+  // If we have a last played deck, auto-select it in add dropdown
+  populateAddDropdown(); 
+}
+
+// --- DATA HANDLING ---
+async function loadRemoteData() {
+  try {
+    const res = await fetch('decks.json');
+    if(!res.ok) throw new Error("404");
+    const json = await res.json();
+    STATE.decksRaw = json;
     
-    function onShowAnswer() {
-      if (!currentCardRef) return;
-      if (currentAnswerMode === "reveal") {
-        currentRevealed = true;
-        renderCard();
-      } else {
-        onAnswerButtonClick();
-      }
-    }
-
-    function onCheckTypedAnswer() {
-      if (!currentCardRef) return;
-      const { deckId, index } = currentCardRef;
-      const loc = getRealCardLocation(deckId, index);
-      const card = DECKS.find(d => d.id === loc.deckId).cards[loc.index];
-      
-      const frontIsSpanish = currentDirection === "es-en";
-      const targetRaw = frontIsSpanish ? card.en : card.es;
-      const userRaw = typedAnswerInput.value || "";
-      const userNorm = normalizeAnswerString(userRaw);
-      const targetNorm = normalizeAnswerString(targetRaw);
-
-      if (!userNorm) {
-        typedFeedbackEl.textContent = "Type something first.";
-        typedFeedbackEl.style.color = "var(--text-muted)";
-        return;
-      }
-
-      const isCorrect = userNorm === targetNorm;
-      if (isCorrect) {
-        typedFeedbackEl.textContent = "Correct!";
-        typedFeedbackEl.style.color = "#bbf7d0";
-      } else {
-        typedFeedbackEl.textContent = `Almost. Correct: ${targetRaw}`;
-        typedFeedbackEl.style.color = "#fecaca";
-      }
-
-      cardBackEl.style.display = "block";
-      typeAnswerChecked = true;
-      lastTypeWasCorrect = isCorrect;
-      showAnswerBtn.textContent = "Next word";
-      cardHintEl.textContent = 'Press "Next word" to go to the next card.';
-    }
-
-    function onTypeNext() {
-      if (!currentCardRef) return;
-      if (!typeAnswerChecked || lastTypeWasCorrect === null) {
-        goToNextCard();
-        return;
-      }
-      onMark(lastTypeWasCorrect);
-    }
-
-    function onAnswerButtonClick() {
-      if (currentAnswerMode === "reveal") {
-        onShowAnswer();
-      } else {
-        if (!typeAnswerChecked) {
-          onCheckTypedAnswer();
-        } else {
-          onTypeNext();
-        }
-      }
-    }
-
-    function onMark(known) {
-      if (!currentCardRef) return;
-      const { deckId, index } = currentCardRef;
-      
-      // Update stats on the real underlying card
-      const loc = getRealCardLocation(deckId, index);
-      const prev = getCardProgress(loc.deckId, loc.index);
-      
-      const now = Date.now();
-      let newStrength = prev.strength || 0;
-      let correct = prev.correct || 0;
-      let wrong = prev.wrong || 0;
-      let firstAnswerCorrect = typeof prev.firstAnswerCorrect === "boolean" ? prev.firstAnswerCorrect : null;
-      
-      if (known) {
-        if (newStrength < 3) newStrength += 1;
-        correct += 1;
-        if (prev.seen === 0 || prev.seen == null) {
-          firstAnswerCorrect = true;
-        }
-      } else {
-        newStrength = Math.max(0, newStrength - 1);
-        wrong += 1;
-        if (prev.seen === 0 || prev.seen == null) {
-          firstAnswerCorrect = false;
-        }
-      }
-
-      const updated = setCardProgress(loc.deckId, loc.index, {
-        strength: newStrength,
-        seen: (prev.seen || 0) + 1,
-        lastSeen: now,
-        correct,
-        wrong,
-        firstAnswerCorrect,
-      });
-      sessionStats.seen += 1;
-      if (known) sessionStats.knew += 1;
-      else sessionStats.learning += 1;
-      
-      updateStatsUI();
-      updateCardStrengthLabel(updated);
-
-      // track per-deck seen for deck completion (on the current Active Deck)
-      if (!sessionSeenByDeck[deckId]) {
-        sessionSeenByDeck[deckId] = new Set();
-      }
-      sessionSeenByDeck[deckId].add(getCardId(deckId, index));
-
-      const deck = DECKS.find((d) => d.id === deckId);
-      if (
-        deck &&
-        !deckCompletionShown[deckId] &&
-        sessionSeenByDeck[deckId].size >= deck.cards.length &&
-        deck.cards.length > 0
-      ) {
-        deckCompletionShown[deckId] = true;
-        handleDeckCompleted(deckId);
-      }
-
-      goToNextCard();
-    }
-
-    function onSkip() {
-      if (!currentCardRef) return;
-      goToNextCard();
-    }
+    // Flatten decks for easy access
+    STATE.activeDecks = json.decks.map(d => ({ ...d, cards: [...d.cards] }));
     
-    function onDeleteCurrentCard() {
-      if (!currentCardRef) return;
-      const { deckId, index } = currentCardRef;
-      const ok = confirm("Remove this card from this session?");
-      if (!ok) return;
-      markCardDeletedForSession(deckId, index);
-      currentCardRef = null;
-      goToNextCard();
+    // Inject custom cards
+    injectCustomCards();
+    
+    // Initial Render
+    renderDecks();
+  } catch (e) {
+    document.getElementById('deckGrid').innerHTML = `<div style="padding:20px; color:#fca5a5">Error loading decks.json. Ensure file exists and is accessible.</div>`;
+  }
+}
+
+function loadLocalData() {
+  const custom = localStorage.getItem('sf_custom');
+  if(custom) STATE.customCards = JSON.parse(custom);
+
+  const prog = localStorage.getItem('sf_progress');
+  if(prog) STATE.progress = JSON.parse(prog);
+
+  const black = localStorage.getItem('sf_blacklist');
+  if(black) STATE.blacklist = new Set(JSON.parse(black));
+  
+  // Load settings
+  const settings = JSON.parse(localStorage.getItem('sf_settings') || '{}');
+  if(settings.dir) changeToggle('dir', settings.dir);
+  if(settings.mode) changeToggle('mode', settings.mode);
+  if(settings.selDiff) STATE.selDiff = settings.selDiff; // Remember last diff
+  
+  STATE.includeCustom = settings.includeCustom !== false;
+  STATE.onlyCustom = settings.onlyCustom === true;
+  
+  document.getElementById('checkIncludeCustom').checked = STATE.includeCustom;
+  document.getElementById('checkOnlyCustom').checked = STATE.onlyCustom;
+}
+
+function saveData() {
+  localStorage.setItem('sf_custom', JSON.stringify(STATE.customCards));
+  localStorage.setItem('sf_progress', JSON.stringify(STATE.progress));
+  localStorage.setItem('sf_blacklist', JSON.stringify([...STATE.blacklist]));
+  
+  const settings = {
+    dir: STATE.direction,
+    mode: STATE.mode,
+    includeCustom: STATE.includeCustom,
+    onlyCustom: STATE.onlyCustom,
+    selDiff: STATE.selDiff
+  };
+  localStorage.setItem('sf_settings', JSON.stringify(settings));
+}
+
+function injectCustomCards() {
+  // Clear any previously injected custom cards from activeDecks to avoid dupes on re-run
+  // (In a real app we'd structure this cleaner, but this works for simple reload)
+  if(!STATE.activeDecks.length) return;
+  
+  // Re-load base cards logic could go here, but we simply append
+  Object.keys(STATE.customCards).forEach(deckId => {
+    const deck = STATE.activeDecks.find(d => d.id === deckId);
+    if(deck) {
+       const users = STATE.customCards[deckId];
+       // Filter out if already pushed
+       users.forEach(c => {
+         // rudimentary check
+         const exists = deck.cards.find(ex => ex.es === c.es && ex._custom);
+         if(!exists) deck.cards.push(c);
+       });
     }
+  });
+}
 
-    function onDirectionToggle(e) {
-      const btn = e.target.closest("button");
-      if (!btn) return;
-      const dir = btn.dataset.direction;
-      if (!dir || dir === currentDirection) return;
-      currentDirection = dir;
-      directionToggleEl.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      if (currentCardRef) renderCard();
-    }
+// --- DECK NAVIGATION UI ---
+const domGrid = document.getElementById('deckGrid');
+const domBread = document.getElementById('deckBreadcrumbs');
+const domHeaderDesc = document.getElementById('headerDesc');
 
-    function onAnswerModeToggle(e) {
-      const btn = e.target.closest("button");
-      if (!btn) return;
-      const mode = btn.dataset["answerMode"];
-      if (!mode || mode === currentAnswerMode) return;
-      currentAnswerMode = mode;
-      answerModeToggleEl.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      typeAnswerChecked = false;
-      lastTypeWasCorrect = null;
-      if (typedAnswerInput) typedAnswerInput.value = "";
-      typedFeedbackEl.textContent = "";
-      
-      if (currentAnswerMode === "type") {
-        sessionInfoEl.textContent = "Type mode: type translation. Accents don't matter.";
-      } else {
-        sessionInfoEl.textContent = "Reveal mode: see answer and mark if known.";
-      }
-      currentRevealed = false;
-      renderCard();
-      if (currentAnswerMode === "type" && typedAnswerInput) {
-        setTimeout(() => typedAnswerInput.focus(), 0);
-      }
-    }
-
-    function onResetProgress() {
-      if (confirm("Reset all learning progress?")) {
-        resetProgress();
-        sessionInfoEl.textContent = "Progress reset.";
-        sessionSeenByDeck = {};
-        deckCompletionShown = {};
-        goToNextCard();
-      }
-    }
-
-    function onKeyDown(e) {
-      const target = e.target;
-      const tag = target && target.tagName;
-      const isFormField = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (target && target.isContentEditable);
-      if (isFormField && target !== typedAnswerInput) return;
-
-      if (!currentCardRef) return;
-      if (currentAnswerMode === "type") {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          if (!typeAnswerChecked) onCheckTypedAnswer();
-          else onTypeNext();
-        } else if (e.key === "ArrowRight") {
-          onSkip();
-        }
-        return;
-      }
-
-      if (e.code === "Space" || e.key === " ") {
-        e.preventDefault();
-        if (!currentRevealed) onShowAnswer();
-        else onMark(true);
-      } else if (e.key === "1") {
-        onMark(false);
-      } else if (e.key === "2") {
-        onMark(true);
-      } else if (e.key === "ArrowRight") {
-        onSkip();
-      }
-    }
-
-    function onAddCardSubmit(e) {
-      e.preventDefault();
-      const es = (addEsInputEl.value || "").trim();
-      const en = (addEnInputEl.value || "").trim();
-      const exampleEs = (addExampleEsInputEl.value || "").trim();
-      const exampleEn = (addExampleEnInputEl.value || "").trim();
-      let deckId = addDeckSelectEl.value;
-
-      if (!es || !en) {
-        addFeedbackEl.textContent = "Please fill in both Spanish and English.";
-        addFeedbackEl.style.color = "#fecaca";
-        return;
-      }
-
-      if (!deckId || deckId === "all" || deckId.startsWith("mix-")) {
-        // Fallback or specific user deck? 
-        // If we are in "All", we just add to the first real deck found or "custom".
-        // Let's force user to pick one if default is invalid, 
-        // but for now default to first deck available.
-        if(DECKS.length > 0) deckId = DECKS[0].id;
-      }
-      
-      const deck = DECKS.find((d) => d.id === deckId);
-      if (!deck) {
-        addFeedbackEl.textContent = "Select a valid deck.";
-        addFeedbackEl.style.color = "#fecaca";
-        return;
-      }
-
-      const card = {
-        es, en, 
-        exampleEs: exampleEs || undefined, 
-        exampleEn: exampleEn || undefined,
-        _userAdded: true
-      };
-
-      deck.cards.push(card);
-      syncCustomStoreFromDecks();
-
-      addEsInputEl.value = "";
-      addEnInputEl.value = "";
-      addExampleEsInputEl.value = "";
-      addExampleEnInputEl.value = "";
-      addEsInputEl.focus();
-
-      addFeedbackEl.textContent = `Added to "${deck.name}".`;
-      addFeedbackEl.style.color = "#bbf7d0";
-
-      updateStatsUI();
-      // If we are in the deck we just added to (or mix of it), continue
-      if (!currentCardRef || currentDeckId === deckId) {
-        goToNextCard();
-      }
-    }
-
-    function onTopNavClick(e) {
-      const btn = e.target.closest(".top-nav-btn");
-      if (!btn) return;
-      const key = btn.dataset.panel;
-      const panelId = "panel-" + key;
-      if (currentOpenPanelId === panelId) {
-        setTopPanel(null);
-      } else {
-        setTopPanel(panelId);
-        if (panelId === "panel-words") {
-          renderWordsList();
-        }
-      }
-    }
-
-    function onWordsDeckChange() {
-      renderWordsList();
-    }
-
-    function onWordsListInput(e) {
-      const input = e.target.closest(".word-input");
-      if (!input) return;
-      const row = e.target.closest(".word-row");
-      if (!row) return;
-
-      const deckId = row.dataset.deckId;
-      const index = parseInt(row.dataset.index, 10);
-      const deck = DECKS.find((d) => d.id === deckId);
-      if (!deck || !deck.cards[index]) return;
-
-      const field = input.dataset.field;
-      if (field !== "es" && field !== "en") return;
-
-      deck.cards[index][field] = input.value;
-      syncCustomStoreFromDecks();
-      updateStatsUI();
-    }
-
-    function onWordsListClick(e) {
-      const deleteBtn = e.target.closest(".word-delete-btn");
-      if (!deleteBtn) return;
-      const row = deleteBtn.closest(".word-row");
-      if (!row) return;
-      const deckId = row.dataset.deckId;
-      const index = parseInt(row.dataset.index, 10);
-      const deck = DECKS.find((d) => d.id === deckId);
-      if (!deck || !deck.cards[index]) return;
-      const card = deck.cards[index];
-      const label = card.es || card.en || "this word";
-      if (!confirm(`Delete "${label}"?`)) return;
-
-      deck.cards.splice(index, 1);
-      syncCustomStoreFromDecks();
-      updateStatsUI();
-      renderWordsList();
-      if (currentDeckId === deckId) {
-        currentCardRef = null;
-        goToNextCard();
-      }
-    }
-
-    function deleteKnownWords() {
-      // iterate all real decks
-      DECKS.forEach(deck => {
-        if(deck.isMix) return;
-        // filter out known
-        deck.cards = deck.cards.filter((c, idx) => {
-          const prog = getCardProgress(deck.id, idx);
-          const isKnown = (prog.correct || 0) > 0 && (prog.wrong || 0) === 0;
-          return !isKnown;
-        });
+function renderDecks() {
+  domGrid.innerHTML = '';
+  domBread.innerHTML = '';
+  
+  // 1. Root: Select Difficulty
+  if(!STATE.selDiff) {
+    domHeaderDesc.textContent = "Select your difficulty level.";
+    if(!STATE.decksRaw.difficulties) return;
+    STATE.decksRaw.difficulties.forEach(diff => {
+      const el = createCard(diff.label, "Difficulty", () => {
+        STATE.selDiff = diff.id;
+        STATE.view = 'level';
+        saveData(); // Save last diff selection
+        renderDecks();
       });
-      syncCustomStoreFromDecks();
-      resetProgress();
-      sessionSeenByDeck = {};
-      deckCompletionShown = {};
-      
-      populateWordsDeckSelect();
-      renderWordsList();
-      updateStatsUI();
-      currentCardRef = null;
-      goToNextCard();
-    }
+      domGrid.appendChild(el);
+    });
+    return;
+  }
 
-    function onStatsToggle() {
-      if (!statsPanelEl) return;
-      const visible = statsPanelEl.style.display === "block";
-      statsPanelEl.style.display = visible ? "none" : "block";
-      statsToggleBtn.textContent = visible ? "📊 Stats" : "📊 Hide stats";
-      if (!visible) updateStatsUI();
-    }
-
-    function onStatsDeleteKnown() {
-      if (confirm("Delete all known words from all decks? Resets progress.")) {
-        deleteKnownWords();
-      }
-    }
-
-    function onStatsExcludeKnown() {
-      excludeKnownFromSession = !excludeKnownFromSession;
-      if (excludeKnownFromSession) {
-        statsExcludeKnownBtn.textContent = "✅ Excluding known words this session";
-      } else {
-        statsExcludeKnownBtn.textContent = "🚫 Exclude known words this session";
-      }
-      currentCardRef = null;
-      goToNextCard();
-    }
-
-    function onDeckCompletePracticeStruggle() {
-      const deckId = lastCompletedDeckId;
-      if (!deckId) return;
-      currentDeckId = deckId;
-      currentSessionFilter = "struggle";
-      excludeKnownFromSession = false;
-
-      // Ensure we are in correct state to show this deck
-      // (This might require navigating the hierarchy if we wanted to show it in the list,
-      // but strictly speaking we just need the game to run)
-      
-      deckCompleteOverlayEl.style.display = "none";
-      sessionSeenByDeck[deckId] = new Set();
-      sessionInfoEl.textContent = "Focusing on struggle words.";
-      currentCardRef = null;
-      goToNextCard();
-    }
-
-    function onDeckCompleteClose() {
-      deckCompleteOverlayEl.style.display = "none";
-      currentSessionFilter = "all";
-      sessionInfoEl.textContent = "Deck complete.";
-    }
-
-    function onToggleExamples() {
-      if (!exampleFieldsEl) return;
-      const isVisible = exampleFieldsEl.style.display === "grid" || exampleFieldsEl.style.display === "block";
-      if (isVisible) {
-        exampleFieldsEl.style.display = "none";
-        toggleExamplesBtn.textContent = "➕ Add examples";
-      } else {
-        exampleFieldsEl.style.display = "grid";
-        toggleExamplesBtn.textContent = "➖ Hide examples";
-      }
-    }
-
-    async function init() {
-      try {
-        const res = await fetch('decks.json');
-        if(!res.ok) throw new Error("Failed to load decks.json");
-        RAW_DATA = await res.json();
-        loaded = true;
-        DECKS = RAW_DATA.decks; // Initial population
-      } catch(err) {
-        console.error(err);
-        deckListEl.innerHTML = `<div style="padding:10px; color:var(--danger)">Error loading decks.json. Please ensure it is in the same folder and you are running a local server.</div>`;
-        return;
-      }
-
-      loadProgress();
-      loadCustomCards();
-      injectCustomCards(); // Put custom cards back into the loaded decks
-
-      renderSelectionFlow(); // Render Step 1
-      updateDeckDescription();
-      populateAddDeckSelect();
-      populateWordsDeckSelect();
-      renderWordsList();
-      updateStatsUI();
-
-      // Events
-      showAnswerBtn.addEventListener("click", onAnswerButtonClick);
-      learningBtn.addEventListener("click", () => onMark(false));
-      knewItBtn.addEventListener("click", () => onMark(true));
-      skipBtn.addEventListener("click", onSkip);
-
-      if (deleteCurrentBtn) {
-        deleteCurrentBtn.addEventListener("click", onDeleteCurrentCard);
-      }
-
-      directionToggleEl.addEventListener("click", onDirectionToggle);
-      answerModeToggleEl.addEventListener("click", onAnswerModeToggle);
-      resetProgressBtn.addEventListener("click", onResetProgress);
-      document.addEventListener("keydown", onKeyDown);
-
-      addCardFormEl.addEventListener("submit", onAddCardSubmit);
-      toggleExamplesBtn.addEventListener("click", onToggleExamples);
-
-      topNavEl.addEventListener("click", onTopNavClick);
-      if (wordsDeckSelectEl) {
-        wordsDeckSelectEl.addEventListener("change", onWordsDeckChange);
-      }
-      if (wordsListEl) {
-        wordsListEl.addEventListener("input", onWordsListInput);
-        wordsListEl.addEventListener("click", onWordsListClick);
-      }
-
-      if (statsToggleBtn) {
-        statsToggleBtn.addEventListener("click", onStatsToggle);
-      }
-      if (statsDeleteKnownBtn) {
-        statsDeleteKnownBtn.addEventListener("click", onStatsDeleteKnown);
-      }
-      if (statsExcludeKnownBtn) {
-        statsExcludeKnownBtn.addEventListener("click", onStatsExcludeKnown);
-      }
-
-      if (deckCompleteStruggleBtn) {
-        deckCompleteStruggleBtn.addEventListener("click", onDeckCompletePracticeStruggle);
-      }
-      if (deckCompleteCloseBtn) {
-        deckCompleteCloseBtn.addEventListener("click", onDeckCompleteClose);
-      }
-
-      setTopPanel("panel-decks");
-      sessionInfoEl.textContent = "Select a Difficulty to start.";
-    }
-
-    init();
-  </script>
-
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("./service-worker.js")
-          .catch((err) => {
-            console.log("Service worker registration failed:", err);
-          });
+  // 2. Levels
+  const diffObj = STATE.decksRaw.difficulties.find(d => d.id === STATE.selDiff);
+  if(STATE.selDiff && !STATE.selLevel) {
+    domHeaderDesc.textContent = `Select a level in ${diffObj.label}.`;
+    addBreadcrumb("Difficulties", () => { STATE.selDiff = null; renderDecks(); });
+    
+    // Find levels
+    const levels = new Set(STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff).map(d => d.levelIndex));
+    [...levels].sort().forEach(lvl => {
+      const el = createCard(`Level ${lvl}`, `${diffObj.label}`, () => {
+        STATE.selLevel = lvl;
+        renderDecks();
       });
+      domGrid.appendChild(el);
+    });
+    return;
+  }
+
+  // 3. Decks
+  if(STATE.selDiff && STATE.selLevel) {
+    domHeaderDesc.textContent = `Pick a topic to study.`;
+    addBreadcrumb("Difficulties", () => { STATE.selDiff = null; STATE.selLevel = null; renderDecks(); });
+    addBreadcrumb(`Level ${STATE.selLevel}`, () => { STATE.selLevel = null; renderDecks(); });
+    
+    // Filter decks
+    const decks = STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel);
+    
+    // Add Mix Deck Option
+    const mixEl = createCard("⚡ Mix All Topics", `Level ${STATE.selLevel}`, () => {
+       startSession(null, true); // null ID, isMix = true
+    });
+    mixEl.classList.add('active');
+    domGrid.appendChild(mixEl);
+
+    decks.forEach(d => {
+      // Get Topic Name
+      const topic = STATE.decksRaw.topics.find(t => t.id === d.topicId);
+      const label = topic ? topic.label : d.name;
+      const count = getPlayableCount(d);
+      
+      const el = createCard(label, `${count} cards`, () => {
+        startSession(d.id);
+      });
+      domGrid.appendChild(el);
+    });
+  }
+}
+
+function createCard(title, sub, onClick) {
+  const div = document.createElement('div');
+  div.className = 'deck-card';
+  div.innerHTML = `<div class="deck-title">${title}</div><div class="deck-count">${sub}</div>`;
+  div.onclick = onClick;
+  return div;
+}
+
+function addBreadcrumb(label, onClick) {
+  const btn = document.createElement('button');
+  btn.className = 'back-btn';
+  btn.innerHTML = `‹ ${label}`;
+  btn.onclick = onClick;
+  domBread.appendChild(btn);
+}
+
+function getPlayableCount(deck) {
+  // Count cards that aren't blacklisted
+  // Also respect Include/Only Custom filters
+  return deck.cards.filter(c => {
+    const id = getCardId(deck.id, c);
+    if(STATE.blacklist.has(id)) return false;
+    if(STATE.onlyCustom && !c._custom) return false;
+    if(!STATE.includeCustom && c._custom) return false;
+    return true;
+  }).length;
+}
+
+// --- GAME LOGIC ---
+function startSession(deckId, isMix = false) {
+  STATE.currentDeckId = deckId; // if isMix, this is null
+  
+  // Build Queue
+  let pool = [];
+  
+  const relevantDecks = isMix 
+    ? STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel)
+    : [STATE.activeDecks.find(d => d.id === deckId)];
+    
+  relevantDecks.forEach(d => {
+    d.cards.forEach((c, idx) => {
+      const uid = getCardId(d.id, c);
+      // FILTERS
+      if(STATE.blacklist.has(uid)) return;
+      if(STATE.onlyCustom && !c._custom) return;
+      if(!STATE.includeCustom && c._custom) return;
+
+      pool.push({
+        ...c,
+        _realDeckId: d.id,
+        _realIndex: idx,
+        _uid: uid
+      });
+    });
+  });
+  
+  if(pool.length === 0) {
+    alert("No cards available with current filters!");
+    return;
+  }
+  
+  // Switch Tab
+  switchPanel('game');
+  nextCard(pool);
+}
+
+function nextCard(pool) {
+  // Simple weighted random
+  if(!pool) pool = getPoolFromCurrentSession();
+  
+  if(pool.length === 0) {
+    document.getElementById('overlay').style.display = 'flex';
+    return;
+  }
+  
+  // Pick one
+  const card = pool[Math.floor(Math.random() * pool.length)];
+  STATE.currentCard = card;
+  renderGameCard();
+}
+
+function getPoolFromCurrentSession() {
+  // Re-build pool quickly to account for changes? 
+  // For simplicity, just reusing startSession logic or we assume we jump to next.
+  // We'll restart the session logic briefly to get a new random card.
+  // Ideally we keep a persistent queue, but stateless random is fine for flashcards.
+  let pool = [];
+  const isMix = !STATE.currentDeckId;
+  const relevantDecks = isMix 
+    ? STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel)
+    : [STATE.activeDecks.find(d => d.id === STATE.currentDeckId)];
+    
+  relevantDecks.forEach(d => {
+    d.cards.forEach((c, idx) => {
+      const uid = getCardId(d.id, c);
+      if(STATE.blacklist.has(uid)) return;
+      if(STATE.onlyCustom && !c._custom) return;
+      if(!STATE.includeCustom && c._custom) return;
+      pool.push({ ...c, _realDeckId: d.id, _realIndex: idx, _uid: uid });
+    });
+  });
+  return pool;
+}
+
+function renderGameCard() {
+  const c = STATE.currentCard;
+  const isEs = STATE.direction === 'es-en';
+  
+  // Reset UI
+  document.getElementById('gameReveal').style.display = 'none';
+  document.getElementById('gameControlsJudge').style.display = 'none';
+  document.getElementById('gameControlsNext').style.display = 'none';
+  document.getElementById('gameControlsStart').style.display = 'flex';
+  document.getElementById('btnShowAnswer').style.display = 'block';
+  document.getElementById('gameInputArea').style.display = STATE.mode === 'type' ? 'block' : 'none';
+  document.getElementById('gameInput').value = '';
+  document.getElementById('gameFeedback').textContent = '';
+  
+  // Content
+  const deckName = STATE.activeDecks.find(d => d.id === c._realDeckId)?.name || "";
+  document.getElementById('gameDeckName').textContent = deckName;
+  
+  // Progress
+  const score = (STATE.progress[c._uid] || {}).score || 0;
+  let strLabel = "New Word";
+  if(score > 0) strLabel = "Learning";
+  if(score > 3) strLabel = "Mastered";
+  document.getElementById('gameStrength').textContent = strLabel;
+  
+  document.getElementById('gameFrontLabel').textContent = isEs ? "Spanish" : "English";
+  document.getElementById('gameFrontText').textContent = isEs ? c.es : c.en;
+  
+  document.getElementById('gameBackLabel').textContent = isEs ? "English" : "Spanish";
+  document.getElementById('gameBackText').textContent = isEs ? c.en : c.es;
+  
+  // Examples
+  let ex = "";
+  if(c.exampleEs && c.exampleEn) {
+    ex = `"${c.exampleEs}"<br>"${c.exampleEn}"`;
+  }
+  document.getElementById('gameExamples').innerHTML = ex;
+}
+
+function showAnswer(force = false) {
+  // If Type mode, check answer first
+  if(STATE.mode === 'type' && !force) {
+    const input = document.getElementById('gameInput');
+    const val = input.value.trim().toLowerCase();
+    const isEs = STATE.direction === 'es-en';
+    const target = (isEs ? STATE.currentCard.en : STATE.currentCard.es).toLowerCase();
+    
+    // Simple loose match
+    // Remove punctuation
+    const clean = str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    if(clean(val) === clean(target)) {
+      document.getElementById('gameFeedback').textContent = "✅ Correct!";
+      document.getElementById('gameFeedback').style.color = "#4ade80";
+      markCard(true); // Auto-grade correct on typing
+      return; 
+    } else {
+      document.getElementById('gameFeedback').textContent = `❌ Incorrect.`;
+      document.getElementById('gameFeedback').style.color = "#f87171";
+      // Fall through to show reveal
     }
-  </script>
+  }
+
+  document.getElementById('gameReveal').style.display = 'block';
+  document.getElementById('gameControlsStart').style.display = 'none';
+  
+  if(STATE.mode === 'reveal') {
+    document.getElementById('gameControlsJudge').style.display = 'flex';
+  } else {
+    document.getElementById('gameControlsNext').style.display = 'flex';
+  }
+}
+
+function markCard(success) {
+  const c = STATE.currentCard;
+  if(!STATE.progress[c._uid]) STATE.progress[c._uid] = { score: 0, seen: 0 };
+  
+  STATE.progress[c._uid].seen++;
+  if(success) STATE.progress[c._uid].score++;
+  else STATE.progress[c._uid].score = Math.max(0, STATE.progress[c._uid].score - 1);
+  
+  saveData();
+  updateStats();
+  
+  // Next
+  nextCard();
+}
+
+function deleteCurrentCard() {
+  if(!confirm("Permanently remove this card from your game?")) return;
+  
+  const c = STATE.currentCard;
+  
+  // If user card, remove from store
+  if(c._custom) {
+    const deckCards = STATE.customCards[c._realDeckId];
+    if(deckCards) {
+      const idx = deckCards.findIndex(x => x.es === c.es && x.en === c.en);
+      if(idx > -1) deckCards.splice(idx, 1);
+    }
+    // Also remove from activeDeck in memory
+    const activeDeck = STATE.activeDecks.find(d => d.id === c._realDeckId);
+    if(activeDeck) {
+       const adIdx = activeDeck.cards.findIndex(x => x.es === c.es && x.en === c.en);
+       if(adIdx > -1) activeDeck.cards.splice(adIdx, 1);
+    }
+  } else {
+    // File card: Blacklist it
+    STATE.blacklist.add(c._uid);
+  }
+  
+  saveData();
+  updateStats();
+  nextCard();
+}
+
+// --- ADD CARD UI ---
+function populateAddDropdown() {
+  const sel = document.getElementById('addDeckSelect');
+  sel.innerHTML = '';
+  
+  // Group by difficulty
+  STATE.activeDecks.forEach(d => {
+    // Skip mix decks if any exist in array
+    const topic = STATE.decksRaw.topics.find(t => t.id === d.topicId)?.label || d.name;
+    const diff = STATE.decksRaw.difficulties.find(x => x.id === d.difficultyId)?.label || d.difficultyId;
+    
+    const opt = document.createElement('option');
+    opt.value = d.id;
+    opt.textContent = `[${diff} L${d.levelIndex}] ${topic}`;
+    sel.appendChild(opt);
+  });
+
+  // Auto-select based on last played difficulty/deck
+  if(STATE.currentDeckId) {
+    sel.value = STATE.currentDeckId;
+  } else if (STATE.selDiff) {
+    // Try to find first deck of current difficulty
+    const match = STATE.activeDecks.find(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel);
+    if(match) sel.value = match.id;
+  }
+}
+
+function onAddSubmit() {
+  const es = document.getElementById('addEs').value.trim();
+  const en = document.getElementById('addEn').value.trim();
+  const deckId = document.getElementById('addDeckSelect').value;
+  const exEs = document.getElementById('addExEs').value.trim();
+  const exEn = document.getElementById('addExEn').value.trim();
+  
+  if(!es || !en || !deckId) {
+    document.getElementById('addMsg').textContent = "Please fill required fields.";
+    document.getElementById('addMsg').style.color = "#f87171";
+    return;
+  }
+  
+  const newCard = { es, en, exampleEs: exEs, exampleEn: exEn, _custom: true };
+  
+  // Save to LocalStorage Store
+  if(!STATE.customCards[deckId]) STATE.customCards[deckId] = [];
+  STATE.customCards[deckId].push(newCard);
+  
+  // Push to active memory
+  const deck = STATE.activeDecks.find(d => d.id === deckId);
+  if(deck) deck.cards.push(newCard);
+  
+  saveData();
+  updateStats();
+  
+  // Feedback
+  document.getElementById('addMsg').textContent = "Card Added!";
+  document.getElementById('addMsg').style.color = "#4ade80";
+  
+  // Clear inputs
+  document.getElementById('addEs').value = '';
+  document.getElementById('addEn').value = '';
+  document.getElementById('addExEs').value = '';
+  document.getElementById('addExEn').value = '';
+  document.getElementById('addEs').focus();
+  
+  setTimeout(() => document.getElementById('addMsg').textContent = '', 2000);
+}
+
+
+// --- UTILS ---
+function switchPanel(panelId) {
+  document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
+  document.getElementById('panel-'+panelId).classList.add('active');
+  
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.nav-tab[data-panel="${panelId}"]`).classList.add('active');
+  
+  if(panelId === 'decks') renderDecks();
+  if(panelId === 'add') populateAddDropdown();
+}
+
+function changeToggle(group, val) {
+  document.querySelectorAll(`.toggle-btn[data-group="${group}"]`).forEach(btn => {
+    if(btn.dataset.val === val) btn.classList.add('active');
+    else btn.classList.remove('active');
+  });
+  
+  if(group === 'dir') STATE.direction = val;
+  if(group === 'mode') STATE.mode = val;
+  saveData();
+}
+
+function updateStats() {
+  let known = 0, learning = 0;
+  // Calculate based on progress
+  Object.values(STATE.progress).forEach(p => {
+    if(p.score > 3) known++;
+    else learning++;
+  });
+  
+  // Total cards available (respecting filters)
+  let total = 0;
+  STATE.activeDecks.forEach(d => {
+    total += getPlayableCount(d);
+  });
+
+  document.getElementById('statKnown').textContent = known;
+  document.getElementById('statLearning').textContent = learning;
+  document.getElementById('statTotal').textContent = total;
+}
+
+function getCardId(deckId, card) {
+  // Unique ID generator
+  // For file cards, use deckId + index? No, index shifts if we delete.
+  // Use content hash.
+  return `${deckId}:${card.es.replace(/\s/g,'')}`;
+}
+
+function resetAllData() {
+  if(confirm("Reset ALL data? Progress, custom cards, and settings will be lost.")) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+// --- BINDINGS ---
+function bindEvents() {
+  // Nav
+  document.querySelectorAll('.nav-tab').forEach(btn => {
+    btn.onclick = () => switchPanel(btn.dataset.panel);
+  });
+  
+  // Toggles
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.onclick = () => changeToggle(btn.dataset.group, btn.dataset.val);
+  });
+  
+  // Settings Checkboxes
+  document.getElementById('checkIncludeCustom').onchange = (e) => {
+    STATE.includeCustom = e.target.checked;
+    saveData();
+    renderDecks(); // update counts
+  };
+  document.getElementById('checkOnlyCustom').onchange = (e) => {
+    STATE.onlyCustom = e.target.checked;
+    saveData();
+    renderDecks(); // update counts
+  };
+  
+  // Game Buttons
+  document.getElementById('btnShowAnswer').onclick = () => showAnswer();
+  document.getElementById('btnEasy').onclick = () => markCard(true);
+  document.getElementById('btnHard').onclick = () => markCard(false);
+  document.getElementById('btnNextCard').onclick = () => nextCard();
+  document.getElementById('btnDeleteCard').onclick = deleteCurrentCard;
+  
+  // Input Enter Key
+  document.getElementById('gameInput').onkeydown = (e) => {
+    if(e.key === 'Enter') showAnswer();
+  };
+  
+  // Add Submit
+  document.getElementById('btnAddSubmit').onclick = onAddSubmit;
+  
+  // Reset
+  document.getElementById('btnResetData').onclick = resetAllData;
+}
+
+// Start
+init();
+
+</script>
 </body>
 </html>
