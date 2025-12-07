@@ -1301,6 +1301,7 @@
     let lastPlayedDifficultyId = null;
     let lastPlayedLevelIndex = 1;
 
+    const DECKS_URL = "./decks.json";
     async function loadDecksFromJson() {
       try {
         const res = await fetch("./decks.json", { cache: "no-store" });
