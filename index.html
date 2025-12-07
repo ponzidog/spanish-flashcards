@@ -2,17 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Spanish Flashcards – Semi-Beginner Trainer</title>
+  <title>Spanish Flashcards – Level Trainer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- PWA bits -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#020617" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Spanish Flashcards" />
 
-  <!-- Modern font: Inter -->
   <link
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
@@ -228,38 +226,37 @@
       letter-spacing: 0.14em;
       color: var(--text-muted);
       margin-bottom: 6px;
-    }
-
-    /* Deck list in panel */
-    .deck-filters {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 8px;
-      font-size: 12px;
+      justify-content: space-between;
       align-items: center;
     }
 
-    .deck-filters label {
+    /* Deck Nav / Breadcrumbs */
+    .deck-nav-header {
       display: flex;
-      flex-direction: column;
-      gap: 3px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
     }
-
-    .deck-filters select {
-      background: rgba(15, 23, 42, 0.98);
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      padding: 7px 11px;
+    
+    .nav-back-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      border-radius: 99px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-back-btn:hover {
       color: var(--text-main);
-      font-size: 12px;
-      outline: none;
+      background: rgba(255,255,255,0.1);
     }
 
-    .deck-filters select:focus {
-      border-color: var(--accent);
-    }
-
+    /* Deck list in panel */
     .deck-list {
       display: flex;
       flex-wrap: wrap;
@@ -301,6 +298,13 @@
     .deck-meta {
       font-size: 11px;
       color: var(--text-muted);
+    }
+    
+    .loading-msg {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 10px;
+      text-align: center;
     }
 
     /* Session settings panel */
@@ -411,7 +415,8 @@
       border: 1px solid rgba(148, 163, 184, 0.7);
       padding: 10px 12px;
       color: var(--text-main);
-      font-size: 16px; /* >=16px to avoid mobile zoom */
+      font-size: 16px;
+      /* >=16px to avoid mobile zoom */
       outline: none;
       width: 100%;
     }
@@ -705,7 +710,8 @@
       border: 1px solid rgba(148, 163, 184, 0.75);
       padding: 10px 14px;
       color: var(--text-main);
-      font-size: 18px; /* >=16px to avoid mobile zoom */
+      font-size: 18px;
+      /* >=16px to avoid mobile zoom */
       outline: none;
       width: 100%;
     }
@@ -739,28 +745,27 @@
     }
 
     .card-primary-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-}
-/* Make the three main buttons equal width */
-.card-primary-actions .btn-main {
-  flex: 1 1 0;
-  justify-content: center;
-}
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    /* Make the three main buttons equal width */
+    .card-primary-actions .btn-main {
+      flex: 1 1 0;
+      justify-content: center;
+    }
 
-/* Delete-current-card button anchored to the left */
-.card-delete-current-btn {
-  margin-right: auto;
-  opacity: 0.8;
-}
+    /* Delete-current-card button anchored to the left */
+    .card-delete-current-btn {
+      margin-right: auto;
+      opacity: 0.8;
+    }
 
-.card-delete-current-btn:hover {
-  opacity: 1;
-}
-
+    .card-delete-current-btn:hover {
+      opacity: 1;
+    }
 
     .btn {
       border-radius: 999px;
@@ -1004,10 +1009,10 @@
           <div class="logo-title">Spanish trainer</div>
           <div class="logo-main">
             FlashCards
-            <span class="logo-pill">semi-beginner</span>
+            <span class="logo-pill">Level Up</span>
           </div>
           <p class="deck-description" id="deckDescription">
-            Choose a deck, then practice by revealing or typing the answer.
+            Select Difficulty &gt; Level &gt; Topic to begin.
           </p>
         </div>
         <div class="stats">
@@ -1026,7 +1031,6 @@
         </div>
       </div>
 
-      <!-- Icon bar -->
       <div class="top-nav" id="topNav">
         <button class="top-nav-btn active" data-panel="decks">
           📚 <span class="label">Decks</span>
@@ -1042,25 +1046,16 @@
         </button>
       </div>
 
-      <!-- Panels -->
       <div class="top-panels">
-        <!-- Decks -->
         <div class="top-panel active" id="panel-decks">
-          <div class="panel-title">Decks</div>
-          <div class="deck-filters">
-            <label>
-              Difficulty
-              <select id="difficultySelect"></select>
-            </label>
-            <label>
-              Level
-              <select id="levelSelect"></select>
-            </label>
+          <div class="panel-title">
+            <span id="deckPanelTitle">Decks</span>
           </div>
-          <div class="deck-list" id="deckList"></div>
+          <div class="deck-list" id="deckList">
+             <div class="loading-msg">Loading decks.json...</div>
+          </div>
         </div>
 
-        <!-- Session settings -->
         <div class="top-panel" id="panel-session">
           <div class="panel-title">Session settings</div>
           <div class="settings-box">
@@ -1091,7 +1086,6 @@
           </div>
         </div>
 
-        <!-- Add word -->
         <div class="top-panel" id="panel-add">
           <div class="panel-title">Add your own words</div>
           <div class="add-card">
@@ -1148,7 +1142,6 @@
           </div>
         </div>
 
-        <!-- Words view/edit panel -->
         <div class="top-panel" id="panel-words">
           <div class="panel-title">All words</div>
           <div class="words-controls">
@@ -1160,7 +1153,6 @@
       </div>
     </header>
 
-    <!-- MAIN / GAME -->
     <main class="main">
       <section class="card-shell">
         <div class="card" id="card">
@@ -1202,26 +1194,24 @@
                 Click “Show answer” or press the spacebar.
               </div>
               <div class="card-primary-actions">
-   <!-- NEW: delete current card button (bottom-left) -->
-  <button
-    class="btn btn-ghost btn-xs card-delete-current-btn"
-    id="deleteCurrentBtn"
-    type="button"
-  >
-    🗑 Remove card
-  </button>
+                <button
+                  class="btn btn-ghost btn-xs card-delete-current-btn"
+                  id="deleteCurrentBtn"
+                  type="button"
+                >
+                  🗑 Remove card
+                </button>
 
-  <!-- Main action buttons: equal size -->
-  <button class="btn btn-ghost btn-main" id="showAnswerBtn">
-    👀 Show answer
-  </button>
-  <button class="btn btn-danger btn-main" id="learningBtn" disabled>
-    🤔 Still learning
-  </button>
-  <button class="btn btn-accent btn-main" id="knewItBtn" disabled>
-    ✅ I knew it
-  </button>
-</div>
+                <button class="btn btn-ghost btn-main" id="showAnswerBtn">
+                  👀 Show answer
+                </button>
+                <button class="btn btn-danger btn-main" id="learningBtn" disabled>
+                  🤔 Still learning
+                </button>
+                <button class="btn btn-accent btn-main" id="knewItBtn" disabled>
+                  ✅ I knew it
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1267,7 +1257,6 @@
       </section>
     </main>
 
-    <!-- Deck complete overlay -->
     <div class="deck-complete-overlay" id="deckCompleteOverlay">
       <div class="deck-complete-card">
         <div class="deck-complete-title" id="deckCompleteTitle">🎉 Congrats!</div>
@@ -1286,120 +1275,17 @@
     </div>
   </div>
 
-  <!-- JS -->
   <script>
     /******************************************************
-     * 1. DATA – semi-beginner decks (static base)
+     * 1. DATA FETCHING & STATE
      ******************************************************/
-    
-    const DECKS_URL = "decks.json";
-    let DECKS = [];
-    let DIFFICULTIES = [];
-    let TOPICS = [];
-    let currentDifficultyId = null;
-    let currentLevelIndex = 1;
-    let lastPlayedDifficultyId = null;
-    let lastPlayedLevelIndex = 1;
+    let RAW_DATA = { difficulties: [], topics: [], decks: [] };
+    let DECKS = []; // flattened/processed active decks list
+    let loaded = false;
 
-    const DECKS_URL = "./decks.json";
-    async function loadDecksFromJson() {
-      try {
-        const res = await fetch("./decks.json", { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error("Failed to load decks.json");
-        }
-        const data = await res.json();
-        DIFFICULTIES = (data.difficulties || []).slice().sort((a, b) => {
-          const ao = typeof a.order === "number" ? a.order : 999;
-          const bo = typeof b.order === "number" ? b.order : 999;
-          return ao - bo;
-        });
-        TOPICS = data.topics || [];
-        const baseDecks = data.decks || [];
-
-        const decks = [
-          {
-            id: "all",
-            name: "All words",
-            description: "All difficulties, topics, and levels combined.",
-            cards: [],
-            meta: {},
-            difficultyId: "*all",
-            levelIndex: 0
-          },
-        ];
-
-        baseDecks.forEach((deck) => {
-          if (!deck || !deck.id) return;
-          decks.push({
-            id: deck.id,
-            name: deck.name || deck.id,
-            description: deck.description || "",
-            cards: (deck.cards || []).map((c) => ({
-              es: c.es,
-              en: c.en,
-              exampleEs: c.exampleEs,
-              exampleEn: c.exampleEn,
-            })),
-            difficultyId: deck.difficultyId || null,
-            topicId: deck.topicId || null,
-            levelIndex:
-              typeof deck.levelIndex === "number"
-                ? deck.levelIndex
-                : parseInt(deck.levelIndex, 10) || 1,
-          });
-        });
-
-        DECKS = decks;
-
-        if (!currentDifficultyId && DIFFICULTIES.length) {
-          currentDifficultyId = DIFFICULTIES[0].id;
-        }
-        if (!lastPlayedDifficultyId) {
-          lastPlayedDifficultyId = currentDifficultyId;
-        }
-        currentLevelIndex = currentLevelIndex || 1;
-        lastPlayedLevelIndex = lastPlayedLevelIndex || currentLevelIndex;
-      } catch (err) {
-        console.error("Error loading decks.json:", err);
-        DECKS = [
-          {
-            id: "all",
-            name: "All words",
-            description:
-              "Could not load decks.json – using an empty placeholder deck.",
-            cards: [],
-            meta: {},
-          },
-        ];
-        const errorMsg =
-          "Could not load decks.json. Make sure it is in the same folder as index.html.";
-        if (typeof cardFrontTextEl !== "undefined") {
-          cardFrontTextEl.textContent = errorMsg;
-        }
-        if (typeof cardHintEl !== "undefined") {
-          cardHintEl.textContent = "Reload the page after fixing the file location.";
-        }
-      }
-    }
-
-function rebuildAllDeck() {
-      const allDeck = DECKS.find((d) => d.id === "all");
-      allDeck.cards = [];
-      DECKS.forEach((deck) => {
-        if (deck.id === "all") return;
-        deck.cards.forEach((card, index) => {
-          allDeck.cards.push({
-            ...card,
-            _sourceDeckId: deck.id,
-            _sourceIndex: index,
-          });
-        });
-      });
-      allDeck.meta = {
-        fromDecks: DECKS.filter((d) => d.id !== "all").map((d) => d.id),
-      };
-    }
+    // Navigation state
+    let selectedDifficulty = null; // id string
+    let selectedLevel = null;      // integer
 
     /******************************************************
      * 2. STATE & STORAGE
@@ -1407,40 +1293,34 @@ function rebuildAllDeck() {
     const STORAGE_KEY = "spanishFlashAppProgress_v1";
     const STORAGE_CUSTOM = "spanishFlashAppCustomCards_v1";
 
-    let progressMap = {}; // { cardKey: { strength, seen, lastSeen, correct, wrong, firstAnswerCorrect } }
-    let customCardsStore = {}; // { deckId: [ card, ... ] }
+    let progressMap = {};
+    let customCardsStore = {}; 
+    // { deckId: [ card, ... ] }
 
-    let currentDeckId = "all";
-    let currentDirection = "es-en"; // "es-en" or "en-es"
-    let currentMode = "focus"; // always focus
-    let currentAnswerMode = "reveal"; // "reveal" or "type"
-    let currentCardRef = null; // { deckId, index }
+    let currentDeckId = null; 
+    let currentDirection = "es-en"; 
+    let currentMode = "focus"; 
+    let currentAnswerMode = "reveal";
+    let currentCardRef = null; 
     let currentRevealed = false;
-
-    const sessionStats = {
-      seen: 0,
-      knew: 0,
-      learning: 0,
-    };
-
+    const sessionStats = { seen: 0, knew: 0, learning: 0 };
     let typeAnswerChecked = false;
     let lastTypeWasCorrect = null;
 
     // Session filters / completion
-    let currentSessionFilter = "all"; // "all" | "struggle"
+    let currentSessionFilter = "all"; 
     let excludeKnownFromSession = false;
-    let sessionSeenByDeck = {}; // { deckId: Set(cardIds) }
-    let deckCompletionShown = {}; // { deckId: true }
+    let sessionSeenByDeck = {}; 
+    let deckCompletionShown = {}; 
     let lastCompletedDeckId = null;
-    let deletedInSession = {}; // { deckId: Set(indexes) }
+    let deletedInSession = {}; 
 
-function markCardDeletedForSession(deckId, index) {
-  if (!deletedInSession[deckId]) {
-    deletedInSession[deckId] = new Set();
-  }
-  deletedInSession[deckId].add(index);
-}
-
+    function markCardDeletedForSession(deckId, index) {
+      if (!deletedInSession[deckId]) {
+        deletedInSession[deckId] = new Set();
+      }
+      deletedInSession[deckId].add(index);
+    }
 
     function loadProgress() {
       try {
@@ -1476,13 +1356,6 @@ function markCardDeletedForSession(deckId, index) {
         if (!raw) return;
         const data = JSON.parse(raw) || {};
         customCardsStore = data;
-        Object.entries(data).forEach(([deckId, cards]) => {
-          const deck = DECKS.find((d) => d.id === deckId);
-          if (!deck) return;
-          cards.forEach((card) => {
-            deck.cards.push(card);
-          });
-        });
       } catch (e) {
         console.warn("Could not load custom cards:", e);
       }
@@ -1496,10 +1369,28 @@ function markCardDeletedForSession(deckId, index) {
       }
     }
 
+    // When fetching data, we inject custom cards into the matching deck IDs
+    function injectCustomCards() {
+      Object.entries(customCardsStore).forEach(([deckId, cards]) => {
+        const deck = DECKS.find((d) => d.id === deckId);
+        if (!deck) return;
+        // avoid dupes if re-injecting
+        cards.forEach((card) => {
+          // Check if already in deck (simple check)
+          const exists = deck.cards.some(c => c.es === card.es && c.en === card.en && c._userAdded);
+          if(!exists) {
+            deck.cards.push(card);
+          }
+        });
+      });
+    }
+
     function syncCustomStoreFromDecks() {
       const nextStore = {};
       DECKS.forEach((deck) => {
-        if (deck.id === "all") return;
+        // Skip generated mix decks
+        if (deck.id.startsWith("mix-")) return;
+
         deck.cards.forEach((card) => {
           if (card._userAdded) {
             if (!nextStore[deck.id]) nextStore[deck.id] = [];
@@ -1529,73 +1420,42 @@ function markCardDeletedForSession(deckId, index) {
     function setCardProgress(deckId, index, update) {
       const id = getCardId(deckId, index);
       const prev = progressMap[id] || { strength: 0, seen: 0, lastSeen: 0 };
-      const next = {
-        ...prev,
-        ...update,
-      };
+      const next = { ...prev, ...update };
       progressMap[id] = next;
       saveProgress();
       return next;
     }
 
-    function findAllDeckIndexForCard(deckId, index) {
-      const allDeck = DECKS.find((d) => d.id === "all");
-      if (!allDeck) return -1;
-      for (let i = 0; i < allDeck.cards.length; i++) {
-        const c = allDeck.cards[i];
-        if (c._sourceDeckId === deckId && c._sourceIndex === index) {
-          return i;
-        }
-      }
-      return -1;
-    }
+    // Because we have specific decks now, aggregation is simpler: 
+    // Just return the progress for the current card. 
+    // If we are in a "Mix" deck, the card object has _sourceDeckId/_sourceIndex.
+    function getRealCardLocation(deckId, index) {
+      const deck = DECKS.find(d => d.id === deckId);
+      if(!deck) return null;
+      const card = deck.cards[index];
+      if(!card) return null;
 
-    function getAggregatedProgressForAllIndex(allIndex) {
-      const allDeck = DECKS.find((d) => d.id === "all");
-      if (!allDeck || !allDeck.cards[allIndex]) {
-        return { correct: 0, wrong: 0 };
+      if(card._sourceDeckId && typeof card._sourceIndex === 'number') {
+         return { deckId: card._sourceDeckId, index: card._sourceIndex };
       }
-      const card = allDeck.cards[allIndex];
-      const progAll = getCardProgress("all", allIndex);
-      let progSource = { correct: 0, wrong: 0 };
-      if (
-        card._sourceDeckId &&
-        card._sourceDeckId !== "all" &&
-        typeof card._sourceIndex === "number"
-      ) {
-        progSource = getCardProgress(card._sourceDeckId, card._sourceIndex);
-      }
-      return {
-        correct: (progAll.correct || 0) + (progSource.correct || 0),
-        wrong: (progAll.wrong || 0) + (progSource.wrong || 0),
-      };
+      return { deckId, index };
     }
 
     function getAggregatedProgress(deckId, index) {
-      const progDeck = getCardProgress(deckId, index);
-      const allIndex = findAllDeckIndexForCard(deckId, index);
-      let progAll = { correct: 0, wrong: 0 };
-      if (allIndex >= 0) {
-        const p = getCardProgress("all", allIndex);
-        progAll = p;
-      }
-      return {
-        correct: (progDeck.correct || 0) + (progAll.correct || 0),
-        wrong: (progDeck.wrong || 0) + (progAll.wrong || 0),
-      };
+       const loc = getRealCardLocation(deckId, index);
+       if(!loc) return { correct: 0, wrong: 0 };
+       return getCardProgress(loc.deckId, loc.index);
     }
 
     /******************************************************
      * 3. DOM references
      ******************************************************/
     const deckListEl = document.getElementById("deckList");
-    const difficultySelectEl = document.getElementById("difficultySelect");
-    const levelSelectEl = document.getElementById("levelSelect");
+    const deckPanelTitleEl = document.getElementById("deckPanelTitle");
     const deckDescriptionEl = document.getElementById("deckDescription");
     const statSessionSeenEl = document.getElementById("statSessionSeen");
     const statSessionKnewEl = document.getElementById("statSessionKnew");
-    const statSessionLearningEl =
-      document.getElementById("statSessionLearning");
+    const statSessionLearningEl = document.getElementById("statSessionLearning");
     const statTotalWordsEl = document.getElementById("statTotalWords");
 
     const cardEl = document.getElementById("card");
@@ -1608,25 +1468,21 @@ function markCardDeletedForSession(deckId, index) {
     const cardBackExampleEl = document.getElementById("cardBackExample");
     const cardHintEl = document.getElementById("cardHint");
     const cardIndexBadgeEl = document.getElementById("cardIndexBadge");
-
-    const typedAnswerContainer = document.getElementById(
-      "typedAnswerContainer"
-    );
+    const typedAnswerContainer = document.getElementById("typedAnswerContainer");
     const typedAnswerInput = document.getElementById("typedAnswerInput");
     const typedFeedbackEl = document.getElementById("typedFeedback");
 
     const deleteCurrentBtn = document.getElementById("deleteCurrentBtn");
-const showAnswerBtn = document.getElementById("showAnswerBtn");
-const learningBtn = document.getElementById("learningBtn");
-const knewItBtn = document.getElementById("knewItBtn");
-const skipBtn = document.getElementById("skipBtn");
+    const showAnswerBtn = document.getElementById("showAnswerBtn");
+    const learningBtn = document.getElementById("learningBtn");
+    const knewItBtn = document.getElementById("knewItBtn");
+    const skipBtn = document.getElementById("skipBtn");
 
     const directionToggleEl = document.getElementById("directionToggle");
     const answerModeToggleEl = document.getElementById("answerModeToggle");
     const resetProgressBtn = document.getElementById("resetProgressBtn");
     const sessionInfoEl = document.getElementById("sessionInfo");
 
-    // top icon nav
     const topNavEl = document.getElementById("topNav");
     const panelDecksEl = document.getElementById("panel-decks");
     const panelSessionEl = document.getElementById("panel-session");
@@ -1634,7 +1490,6 @@ const skipBtn = document.getElementById("skipBtn");
     const panelWordsEl = document.getElementById("panel-words");
     let currentOpenPanelId = "panel-decks";
 
-    // Add-card form
     const addCardFormEl = document.getElementById("addCardForm");
     const addDeckSelectEl = document.getElementById("addDeckSelect");
     const addEsInputEl = document.getElementById("addEs");
@@ -1645,32 +1500,22 @@ const skipBtn = document.getElementById("skipBtn");
     const toggleExamplesBtn = document.getElementById("toggleExamplesBtn");
     const exampleFieldsEl = document.getElementById("exampleFields");
 
-    // Words view/edit
     const wordsDeckSelectEl = document.getElementById("wordsDeckSelect");
     const wordsListEl = document.getElementById("wordsList");
 
-    // Stats panel
     const statsToggleBtn = document.getElementById("statsToggleBtn");
     const statsPanelEl = document.getElementById("statsPanel");
     const statsKnownCountEl = document.getElementById("statsKnownCount");
     const statsDontKnowCountEl = document.getElementById("statsDontKnowCount");
     const statsStruggleCountEl = document.getElementById("statsStruggleCount");
     const statsDeleteKnownBtn = document.getElementById("statsDeleteKnownBtn");
-    const statsExcludeKnownBtn = document.getElementById(
-      "statsExcludeKnownBtn"
-    );
+    const statsExcludeKnownBtn = document.getElementById("statsExcludeKnownBtn");
 
-    // Deck-complete overlay
-    const deckCompleteOverlayEl =
-      document.getElementById("deckCompleteOverlay");
+    const deckCompleteOverlayEl = document.getElementById("deckCompleteOverlay");
     const deckCompleteTitleEl = document.getElementById("deckCompleteTitle");
     const deckCompleteTextEl = document.getElementById("deckCompleteText");
-    const deckCompleteStruggleBtn = document.getElementById(
-      "deckCompleteStruggleBtn"
-    );
-    const deckCompleteCloseBtn = document.getElementById(
-      "deckCompleteCloseBtn"
-    );
+    const deckCompleteStruggleBtn = document.getElementById("deckCompleteStruggleBtn");
+    const deckCompleteCloseBtn = document.getElementById("deckCompleteCloseBtn");
 
     /******************************************************
      * 4. Helpers
@@ -1679,9 +1524,9 @@ const skipBtn = document.getElementById("skipBtn");
       if (!str) return "";
       return str
         .toLowerCase()
-        .normalize("NFD") // decompose accents
-        .replace(/[\u0300-\u036f]/g, "") // remove diacritics
-        .replace(/[¿?¡!.,;:()"'«»\-]/g, " ") // remove punctuation
+        .normalize("NFD") 
+        .replace(/[\u0300-\u036f]/g, "") 
+        .replace(/[¿?¡!.,;:()"'«»\-]/g, " ") 
         .replace(/\s+/g, " ")
         .trim();
     }
@@ -1713,25 +1558,29 @@ const skipBtn = document.getElementById("skipBtn");
     }
 
     function computeGlobalStats() {
-      const allDeck = DECKS.find((d) => d.id === "all");
-      if (!allDeck) return { known: 0, dontKnow: 0, struggle: 0 };
+      // Aggregate stats across all decks
       let known = 0;
       let dontKnow = 0;
       let struggle = 0;
-      allDeck.cards.forEach((card, idx) => {
-        const agg = getAggregatedProgressForAllIndex(idx);
-        const c = agg.correct || 0;
-        const w = agg.wrong || 0;
-        if (c === 0 && w === 0) {
-          dontKnow++;
-        } else if (c === 0 && w > 0) {
-          // seen but never correct
-          dontKnow++;
-        } else if (c > 0 && w === 0) {
-          known++;
-        } else if (c > 0 && w > 0) {
-          struggle++;
-        }
+      
+      DECKS.forEach(deck => {
+        // Skip generated Mix decks to avoid double counting
+        if(deck.id.startsWith("mix-")) return;
+        
+        deck.cards.forEach((card, idx) => {
+          const prog = getCardProgress(deck.id, idx);
+          const c = prog.correct || 0;
+          const w = prog.wrong || 0;
+          if (c === 0 && w === 0) {
+            dontKnow++;
+          } else if (c === 0 && w > 0) {
+            dontKnow++;
+          } else if (c > 0 && w === 0) {
+            known++;
+          } else if (c > 0 && w > 0) {
+            struggle++;
+          }
+        });
       });
       return { known, dontKnow, struggle };
     }
@@ -1740,7 +1589,6 @@ const skipBtn = document.getElementById("skipBtn");
       const container = document.createElement("div");
       container.className = "confetti-container";
       const colors = ["#22c55e", "#38bdf8", "#facc15", "#f97316", "#a855f7"];
-
       for (let i = 0; i < 120; i++) {
         const piece = document.createElement("div");
         piece.className = "confetti-piece";
@@ -1752,7 +1600,6 @@ const skipBtn = document.getElementById("skipBtn");
         piece.style.transform = `rotate(${Math.random() * 360}deg)`;
         container.appendChild(piece);
       }
-
       document.body.appendChild(container);
       setTimeout(() => {
         container.remove();
@@ -1764,15 +1611,14 @@ const skipBtn = document.getElementById("skipBtn");
       if (!deck) return;
       lastCompletedDeckId = deckId;
 
-      const allDeck = DECKS.find((d) => d.id === "all");
       let struggleCount = 0;
-      if (allDeck) {
-        allDeck.cards.forEach((card, idx) => {
-          if (card._sourceDeckId !== deckId) return;
-          const agg = getAggregatedProgressForAllIndex(idx);
-          if ((agg.wrong || 0) > 0) struggleCount++;
-        });
-      }
+      deck.cards.forEach((card, idx) => {
+          // get real location in case of mix deck
+          const loc = getRealCardLocation(deckId, idx);
+          if(!loc) return;
+          const prog = getCardProgress(loc.deckId, loc.index);
+          if ((prog.wrong || 0) > 0) struggleCount++;
+      });
 
       deckCompleteTitleEl.textContent = "🎉 Congrats!";
       deckCompleteTextEl.textContent =
@@ -1782,169 +1628,212 @@ const skipBtn = document.getElementById("skipBtn");
 
       deckCompleteStruggleBtn.style.display =
         struggleCount > 0 ? "inline-flex" : "none";
-
       deckCompleteOverlayEl.style.display = "flex";
       launchConfetti();
     }
 
     /******************************************************
-     * 5. UI
-    function deckMatchesCurrentFilter(deck) {
-      if (!deck || deck.id === "all") return false;
-      if (currentDifficultyId && deck.difficultyId && deck.difficultyId !== currentDifficultyId) {
-        return false;
-      }
-      if (
-        typeof deck.levelIndex === "number" &&
-        deck.levelIndex !== currentLevelIndex
-      ) {
-        return false;
-      }
-      return true;
-    }
-
-    function populateDifficultySelect() {
-      if (!difficultySelectEl) return;
-      difficultySelectEl.innerHTML = "";
-      if (!DIFFICULTIES || !DIFFICULTIES.length) return;
-      DIFFICULTIES.forEach((diff) => {
-        const opt = document.createElement("option");
-        opt.value = diff.id;
-        opt.textContent = diff.label || diff.id;
-        difficultySelectEl.appendChild(opt);
-      });
-      if (!currentDifficultyId) {
-        currentDifficultyId = DIFFICULTIES[0].id;
-      }
-      difficultySelectEl.value = currentDifficultyId;
-    }
-
-    function populateLevelSelect() {
-      if (!levelSelectEl) return;
-      levelSelectEl.innerHTML = "";
-      const levels = [1, 2, 3];
-      levels.forEach((lvl) => {
-        const opt = document.createElement("option");
-        opt.value = String(lvl);
-        opt.textContent = "Level " + lvl;
-        levelSelectEl.appendChild(opt);
-      });
-      levelSelectEl.value = String(currentLevelIndex || 1);
-    }
-
-    function selectFirstDeckForCurrentFilter() {
-      const candidate = DECKS.find((d) => deckMatchesCurrentFilter(d));
-      if (candidate) {
-        currentDeckId = candidate.id;
-        sessionSeenByDeck[currentDeckId] = new Set();
-        sessionInfoEl.textContent =
-          "New difficulty/level selected – now training on " + candidate.name + ".";
-        goToNextCard();
-      } else {
-        currentDeckId = "all";
-        sessionSeenByDeck[currentDeckId] = new Set();
-        sessionInfoEl.textContent =
-          "No decks found for this difficulty/level. Try another combination.";
-        goToNextCard();
-      }
-    }
-
-    function onDifficultyChange() {
-      if (!difficultySelectEl) return;
-      currentDifficultyId = difficultySelectEl.value;
-      lastPlayedDifficultyId = currentDifficultyId;
-      renderDeckList();
-      populateAddDeckSelect();
-      populateWordsDeckSelect();
-      renderWordsList();
-      selectFirstDeckForCurrentFilter();
-    }
-
-    function onLevelChange() {
-      if (!levelSelectEl) return;
-      const lvl = parseInt(levelSelectEl.value, 10);
-      currentLevelIndex = Number.isNaN(lvl) ? 1 : lvl;
-      lastPlayedLevelIndex = currentLevelIndex;
-      renderDeckList();
-      populateAddDeckSelect();
-      populateWordsDeckSelect();
-      renderWordsList();
-      selectFirstDeckForCurrentFilter();
-    }
-
- helpers
+     * 5. UI helpers for DECK HIERARCHY
      ******************************************************/
-    function renderDeckList() {
-      if (!deckListEl) return;
-      deckListEl.innerHTML = "";
-      if (!DECKS || !DECKS.length) return;
 
-      const filtered = DECKS.filter((deck) => deckMatchesCurrentFilter(deck));
-      if (!filtered.length) {
-        const empty = document.createElement("div");
-        empty.className = "words-empty";
-        empty.textContent = "No decks for this difficulty/level yet.";
-        deckListEl.appendChild(empty);
+    function generateMixDeckForLevel(diffId, levelIdx) {
+      const id = `mix-${diffId}-${levelIdx}`;
+      const name = `Mix: ${diffId} Level ${levelIdx}`;
+      // Collect cards
+      const cards = [];
+      DECKS.forEach(d => {
+        if(d.id.startsWith("mix-")) return;
+        if(d.difficultyId === diffId && d.levelIndex === levelIdx) {
+          d.cards.forEach((c, idx) => {
+            cards.push({
+              ...c,
+              _sourceDeckId: d.id,
+              _sourceIndex: idx
+            });
+          });
+        }
+      });
+      return {
+        id,
+        difficultyId: diffId,
+        levelIndex: levelIdx,
+        name,
+        description: `All words from Level ${levelIdx} (${diffId}) mixed together.`,
+        cards,
+        isMix: true
+      };
+    }
+
+    function renderSelectionFlow() {
+      deckListEl.innerHTML = "";
+      
+      // STEP 1: Select Difficulty
+      if (!selectedDifficulty) {
+        deckPanelTitleEl.textContent = "Select Difficulty";
+        deckDescriptionEl.textContent = "Choose your proficiency level to filter decks.";
+        
+        RAW_DATA.difficulties.forEach(diff => {
+          const item = document.createElement("div");
+          item.className = "deck-item";
+          
+          const name = document.createElement("div");
+          name.className = "deck-name";
+          name.textContent = diff.label;
+          
+          item.appendChild(name);
+          item.addEventListener("click", () => {
+             selectedDifficulty = diff.id;
+             renderSelectionFlow();
+          });
+          deckListEl.appendChild(item);
+        });
         return;
       }
 
-      filtered.forEach((deck) => {
-        if (!deck) return;
-        const item = document.createElement("div");
-        item.className = "deck-item";
-        if (deck.id === currentDeckId) {
-          item.classList.add("active");
+      // STEP 2: Select Level
+      if (selectedDifficulty && !selectedLevel) {
+        const diffObj = RAW_DATA.difficulties.find(d => d.id === selectedDifficulty);
+        const diffName = diffObj ? diffObj.label : selectedDifficulty;
+
+        // Header with Back button
+        const header = document.createElement("div");
+        header.className = "deck-nav-header";
+        const back = document.createElement("button");
+        back.className = "nav-back-btn";
+        back.innerHTML = "‹ Back";
+        back.onclick = () => { selectedDifficulty = null; renderSelectionFlow(); };
+        const bread = document.createElement("span");
+        bread.style.fontSize = "12px";
+        bread.style.color = "var(--text-muted)";
+        bread.textContent = `${diffName}`;
+        header.appendChild(back);
+        header.appendChild(bread);
+        deckListEl.appendChild(header);
+
+        deckPanelTitleEl.textContent = "Select Level";
+        deckDescriptionEl.textContent = `Choose a level within ${diffName}.`;
+
+        // Find available levels in this difficulty
+        // We can just look at decks to see which levels exist
+        const levels = new Set();
+        DECKS.forEach(d => {
+          if (d.difficultyId === selectedDifficulty && !d.isMix) {
+            levels.add(d.levelIndex);
+          }
+        });
+        const sortedLevels = Array.from(levels).sort();
+
+        sortedLevels.forEach(lvl => {
+          const item = document.createElement("div");
+          item.className = "deck-item";
+          const name = document.createElement("div");
+          name.className = "deck-name";
+          name.textContent = `Level ${lvl}`;
+          item.appendChild(name);
+          item.addEventListener("click", () => {
+             selectedLevel = lvl;
+             renderSelectionFlow();
+          });
+          deckListEl.appendChild(item);
+        });
+        return;
+      }
+
+      // STEP 3: Select Deck (Topic)
+      if (selectedDifficulty && selectedLevel) {
+        const diffObj = RAW_DATA.difficulties.find(d => d.id === selectedDifficulty);
+        const diffName = diffObj ? diffObj.label : selectedDifficulty;
+
+        // Header with Back button
+        const header = document.createElement("div");
+        header.className = "deck-nav-header";
+        const back = document.createElement("button");
+        back.className = "nav-back-btn";
+        back.innerHTML = "‹ Back";
+        back.onclick = () => { selectedLevel = null; renderSelectionFlow(); };
+        const bread = document.createElement("span");
+        bread.style.fontSize = "12px";
+        bread.style.color = "var(--text-muted)";
+        bread.textContent = `${diffName} / Level ${selectedLevel}`;
+        header.appendChild(back);
+        header.appendChild(bread);
+        deckListEl.appendChild(header);
+
+        deckPanelTitleEl.textContent = "Select Topic";
+        deckDescriptionEl.textContent = "Pick a specific topic or choose the Mix deck.";
+
+        // Available decks
+        const relevantDecks = DECKS.filter(d => 
+          d.difficultyId === selectedDifficulty && 
+          d.levelIndex === selectedLevel &&
+          !d.isMix
+        );
+
+        // Generate Mix Deck for this specific combo
+        const mixDeck = generateMixDeckForLevel(selectedDifficulty, selectedLevel);
+        // Add to global DECKS if not there? 
+        // Actually, let's just use it here locally or check if in DECKS.
+        // To make "Words" view work, it's better if it's in DECKS.
+        if(!DECKS.find(d => d.id === mixDeck.id)) {
+          DECKS.unshift(mixDeck);
         }
-        item.dataset.deckId = deck.id;
+        
+        // Render Mix Deck First
+        const mixItem = document.createElement("div");
+        mixItem.className = "deck-item";
+        if (currentDeckId === mixDeck.id) mixItem.classList.add("active");
+        mixItem.innerHTML = `<div class="deck-name">⚡ Mix: Level ${selectedLevel}</div><div class="deck-meta">${mixDeck.cards.length} words</div>`;
+        mixItem.addEventListener("click", () => onSelectDeck(mixDeck.id));
+        deckListEl.appendChild(mixItem);
 
-        const name = document.createElement("div");
-        name.className = "deck-name";
-        name.textContent = deck.name;
+        relevantDecks.forEach(d => {
+          const item = document.createElement("div");
+          item.className = "deck-item";
+          if (currentDeckId === d.id) item.classList.add("active");
+          
+          // Get Topic Label if possible
+          const topicObj = RAW_DATA.topics.find(t => t.id === d.topicId);
+          const topicLabel = topicObj ? topicObj.label : d.name;
 
-        const meta = document.createElement("div");
-        meta.className = "deck-meta";
+          item.innerHTML = `
+            <div class="deck-name">${topicLabel}</div>
+            <div class="deck-meta">${d.cards.length} words</div>
+          `;
+          item.addEventListener("click", () => onSelectDeck(d.id));
+          deckListEl.appendChild(item);
+        });
+      }
+    }
 
-        const totalCards = deck.cards ? deck.cards.length : 0;
-        const levelLabel =
-          typeof deck.levelIndex === "number" && deck.levelIndex > 0
-            ? ` · L${deck.levelIndex}`
-            : "";
-        meta.textContent = `${totalCards} words${levelLabel}`;
-
-        item.appendChild(name);
-        item.appendChild(meta);
-        deckListEl.appendChild(item);
-      });
+    function onSelectDeck(deckId) {
+       currentDeckId = deckId;
+       // Update UI highlighting
+       deckListEl.querySelectorAll(".deck-item").forEach(el => el.classList.remove("active"));
+       // Find the one clicked - hard to target without ID, so just re-render is safer
+       renderSelectionFlow();
+       
+       updateDeckDescription();
+       populateAddDeckSelect();
+       populateWordsDeckSelect();
+       renderWordsList();
+       
+       currentSessionFilter = "all";
+       sessionSeenByDeck[currentDeckId] = new Set();
+       sessionInfoEl.textContent = "New deck selected.";
+       goToNextCard();
     }
 
     function populateAddDeckSelect() {
-      if (!addDeckSelectEl) return;
       addDeckSelectEl.innerHTML = "";
-      if (!DECKS || !DECKS.length) return;
-
-      let defaultDeckId = null;
       DECKS.forEach((deck) => {
-        if (!deck || deck.id === "all") return;
+        if (deck.isMix) return; // Don't add to mix decks directly
         const opt = document.createElement("option");
         opt.value = deck.id;
         opt.textContent = deck.name;
         addDeckSelectEl.appendChild(opt);
-
-        if (
-          !defaultDeckId &&
-          deck.difficultyId === lastPlayedDifficultyId &&
-          deck.levelIndex === lastPlayedLevelIndex
-        ) {
-          defaultDeckId = deck.id;
-        }
       });
-
-      if (currentDeckId && currentDeckId !== "all") {
+      if (currentDeckId && !currentDeckId.startsWith("mix-")) {
         addDeckSelectEl.value = currentDeckId;
-      } else if (defaultDeckId) {
-        addDeckSelectEl.value = defaultDeckId;
-      } else if (addDeckSelectEl.options.length) {
-        addDeckSelectEl.value = addDeckSelectEl.options[0].value;
       }
     }
 
@@ -1955,21 +1844,21 @@ const skipBtn = document.getElementById("skipBtn");
 
       const allOpt = document.createElement("option");
       allOpt.value = "*all";
-      allOpt.textContent = "All decks";
+      allOpt.textContent = "View All (Filtered by Selection)";
       wordsDeckSelectEl.appendChild(allOpt);
 
       DECKS.forEach((deck) => {
-        if (deck.id === "all") return;
+        // Only show decks relevant to current selection? Or all?
+        // Let's show all but group them or just list them.
+        if(deck.isMix) return;
         const opt = document.createElement("option");
         opt.value = deck.id;
         opt.textContent = deck.name;
         wordsDeckSelectEl.appendChild(opt);
       });
-
+      
       if (previous && [...wordsDeckSelectEl.options].some((o) => o.value === previous)) {
         wordsDeckSelectEl.value = previous;
-      } else if (currentDeckId !== "all") {
-        wordsDeckSelectEl.value = currentDeckId;
       } else {
         wordsDeckSelectEl.value = "*all";
       }
@@ -2040,7 +1929,7 @@ const skipBtn = document.getElementById("skipBtn");
       const rows = [];
       if (selected === "*all") {
         DECKS.forEach((deck) => {
-          if (deck.id === "all") return;
+          if (deck.isMix) return;
           deck.cards.forEach((card, index) => {
             rows.push({ deckId: deck.id, index, card });
           });
@@ -2057,7 +1946,7 @@ const skipBtn = document.getElementById("skipBtn");
       if (!rows.length) {
         const empty = document.createElement("div");
         empty.className = "words-empty";
-        empty.textContent = "No words yet in this view.";
+        empty.textContent = "No words found.";
         wordsListEl.appendChild(empty);
         return;
       }
@@ -2068,6 +1957,10 @@ const skipBtn = document.getElementById("skipBtn");
     }
 
     function updateDeckDescription() {
+      if(!currentDeckId) {
+         deckDescriptionEl.textContent = "Select Difficulty > Level > Topic to begin.";
+         return;
+      }
       const deck = DECKS.find((d) => d.id === currentDeckId);
       deckDescriptionEl.textContent = deck
         ? deck.description
@@ -2075,12 +1968,14 @@ const skipBtn = document.getElementById("skipBtn");
     }
 
     function updateStatsUI() {
-      const allDeck = DECKS.find((d) => d.id === "all");
-      statTotalWordsEl.textContent = allDeck ? allDeck.cards.length : 0;
+      let total = 0;
+      DECKS.forEach(d => { if(!d.isMix) total += d.cards.length; });
+      statTotalWordsEl.textContent = total;
+      
       statSessionSeenEl.textContent = sessionStats.seen;
       statSessionKnewEl.textContent = sessionStats.knew;
       statSessionLearningEl.textContent = sessionStats.learning;
-
+      
       if (statsKnownCountEl && statsDontKnowCountEl && statsStruggleCountEl) {
         const global = computeGlobalStats();
         statsKnownCountEl.textContent = global.known;
@@ -2108,13 +2003,11 @@ const skipBtn = document.getElementById("skipBtn");
 
     function renderCard() {
       const deck = DECKS.find((d) => d.id === currentDeckId);
-
       if (!deck || !deck.cards.length) {
         cardFrontTextEl.textContent = "No words in this deck yet.";
         cardDeckLabelEl.textContent = deck ? deck.name : "No deck";
         cardBackEl.style.display = "none";
-        cardHintEl.textContent =
-          "Add words in the Add word panel or pick another deck.";
+        cardHintEl.textContent = "Add words or pick another deck.";
         showAnswerBtn.disabled = true;
         learningBtn.disabled = true;
         knewItBtn.disabled = true;
@@ -2127,16 +2020,13 @@ const skipBtn = document.getElementById("skipBtn");
       }
 
       if (!currentCardRef) {
-        const hasFilter =
-          excludeKnownFromSession || currentSessionFilter !== "all";
+        const hasFilter = excludeKnownFromSession || currentSessionFilter !== "all";
         cardFrontTextEl.textContent = hasFilter
           ? "No cards match the current filter."
           : "Choose a deck to begin";
         cardDeckLabelEl.textContent = deck.name;
         cardBackEl.style.display = "none";
-        cardHintEl.textContent = hasFilter
-          ? "Adjust your stats filters below or pick another deck to keep practicing."
-          : "Pick a deck from the Decks panel above to start your session.";
+        cardHintEl.textContent = "Pick a deck above.";
         showAnswerBtn.disabled = true;
         learningBtn.disabled = true;
         knewItBtn.disabled = true;
@@ -2149,12 +2039,12 @@ const skipBtn = document.getElementById("skipBtn");
       }
 
       const { deckId, index } = currentCardRef;
-      const currentDeck = DECKS.find((d) => d.id === deckId);
-      const card = currentDeck.cards[index];
+      // Resolve mix
+      const loc = getRealCardLocation(deckId, index);
+      const cardDeck = DECKS.find(d => d.id === loc.deckId);
+      const card = cardDeck.cards[loc.index];
 
-      cardDeckLabelEl.textContent =
-        deckId === "all" ? "All decks" : currentDeck.name;
-
+      cardDeckLabelEl.textContent = cardDeck.name;
       const frontIsSpanish = currentDirection === "es-en";
       cardFrontLabelEl.textContent = frontIsSpanish ? "Spanish" : "English";
       const frontText = frontIsSpanish ? card.es : card.en;
@@ -2162,77 +2052,61 @@ const skipBtn = document.getElementById("skipBtn");
 
       cardFrontTextEl.textContent = frontText;
       cardBackMainEl.textContent = backText;
-
       let exampleHtml = "";
       if (card.exampleEs || card.exampleEn) {
         if (frontIsSpanish) {
-          if (card.exampleEs) {
-            exampleHtml +=
-              "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
-          }
-          if (card.exampleEn) {
-            exampleHtml +=
-              "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
-          }
+          if (card.exampleEs) exampleHtml += "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
+          if (card.exampleEn) exampleHtml += "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
         } else {
-          if (card.exampleEn) {
-            exampleHtml +=
-              "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
-          }
-          if (card.exampleEs) {
-            exampleHtml +=
-              "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
-          }
+          if (card.exampleEn) exampleHtml += "<span><strong>EN:</strong> " + card.exampleEn + "</span>";
+          if (card.exampleEs) exampleHtml += "<span><strong>ES:</strong> " + card.exampleEs + "</span>";
         }
       }
       cardBackExampleEl.innerHTML = exampleHtml;
-
-      const progress = getCardProgress(deckId, index);
+      
+      const progress = getCardProgress(loc.deckId, loc.index);
       updateCardStrengthLabel(progress);
 
-      const totalInDeck = deck.cards.length;
-      cardIndexBadgeEl.textContent = `Card ${index + 1} of ${totalInDeck}`;
+      // We show index in the current session set context essentially, 
+      // but showing raw index from deck is fine.
+      cardIndexBadgeEl.textContent = "";
 
       if (currentAnswerMode === "reveal") {
-  typedAnswerContainer.style.display = "none";
-  typedFeedbackEl.textContent = "";
-  if (typedAnswerInput) typedAnswerInput.value = "";
+        typedAnswerContainer.style.display = "none";
+        typedFeedbackEl.textContent = "";
+        if (typedAnswerInput) typedAnswerInput.value = "";
+        cardBackEl.style.display = currentRevealed ? "block" : "none";
 
-  cardBackEl.style.display = currentRevealed ? "block" : "none";
+        showAnswerBtn.disabled = currentRevealed;
+        showAnswerBtn.style.display = currentRevealed ? "none" : "inline-flex";
 
-  // Hide "Show answer" once revealed
-  showAnswerBtn.disabled = currentRevealed;
-  showAnswerBtn.style.display = currentRevealed ? "none" : "inline-flex";
+        learningBtn.disabled = !currentRevealed;
+        knewItBtn.disabled = !currentRevealed;
 
-  learningBtn.disabled = !currentRevealed;
-  knewItBtn.disabled = !currentRevealed;
+        learningBtn.style.display = currentRevealed ? "inline-flex" : "none";
+        knewItBtn.style.display = currentRevealed ? "inline-flex" : "none";
 
-  learningBtn.style.display = currentRevealed ? "inline-flex" : "none";
-  knewItBtn.style.display = currentRevealed ? "inline-flex" : "none";
+        showAnswerBtn.textContent = "👀 Show answer";
+        cardHintEl.textContent = currentRevealed
+          ? "Mark if you knew it or not."
+          : "Try to recall it, then show the answer.";
+      } else {
+        // TYPE MODE
+        typedAnswerContainer.style.display = "flex";
+        cardBackEl.style.display = typeAnswerChecked ? "block" : "none";
+        learningBtn.style.display = "none";
+        knewItBtn.style.display = "none";
 
-  showAnswerBtn.textContent = "👀 Show answer";
-
-  cardHintEl.textContent = currentRevealed
-    ? "Mark if you knew it or not."
-    : "Try to recall it, then show the answer.";
-} else {
-  // TYPE MODE
-  typedAnswerContainer.style.display = "flex";
-  cardBackEl.style.display = typeAnswerChecked ? "block" : "none";
-  learningBtn.style.display = "none";
-  knewItBtn.style.display = "none";
-
-  showAnswerBtn.disabled = false;
-  showAnswerBtn.style.display = "inline-flex";
-  showAnswerBtn.textContent = typeAnswerChecked
-    ? "Next word"
-    : "⏎ Check answer";
+        showAnswerBtn.disabled = false;
+        showAnswerBtn.style.display = "inline-flex";
+        showAnswerBtn.textContent = typeAnswerChecked
+          ? "Next word"
+          : "⏎ Check answer";
 
         cardHintEl.textContent = typeAnswerChecked
           ? 'Press "Next word" to continue, or use Skip to move on without marking.'
           : 'Type the translation and press Enter or "Check answer".';
       }
-
       skipBtn.disabled = false;
     }
 
@@ -2248,30 +2122,23 @@ const skipBtn = document.getElementById("skipBtn");
 
       const now = Date.now();
       const candidates = [];
+      deck.cards.forEach((card, idx) => {
+        // Check if deleted for session
+        // For mixed decks, we track delete on the mix deck ID itself or source?
+        // Let's track on currentDeckId for simplicity of session
+        if (deletedInSession[currentDeckId] && deletedInSession[currentDeckId].has(idx)) return;
 
-        deck.cards.forEach((card, idx) => {
-    // Skip cards that were deleted in this session
-    const deletedSet = deletedInSession[currentDeckId];
-    if (deletedSet && deletedSet.has(idx)) {
-      return;
-    }
+        // Resolve real stats
+        const loc = getRealCardLocation(currentDeckId, idx);
+        if(!loc) return;
 
-    const prog = getCardProgress(currentDeckId, idx);
-    const agg = getAggregatedProgress(currentDeckId, idx);
+        const prog = getCardProgress(loc.deckId, loc.index);
 
-    if (currentSessionFilter === "struggle" && (agg.wrong || 0) <= 0) {
-      return;
-    }
-    if (
-      excludeKnownFromSession &&
-      (agg.correct || 0) > 0 &&
-      (agg.wrong || 0) === 0
-    ) {
-      return;
-    }
+        // Filters
+        if (currentSessionFilter === "struggle" && (prog.wrong || 0) <= 0) return;
+        if (excludeKnownFromSession && (prog.correct || 0) > 0 && (prog.wrong || 0) === 0) return;
 
-        const ageMinutes =
-          prog.lastSeen > 0 ? (now - prog.lastSeen) / 60000 : 9999;
+        const ageMinutes = prog.lastSeen > 0 ? (now - prog.lastSeen) / 60000 : 9999;
         let weight = 1 + Math.max(0, 3 - (prog.strength || 0)) * 2;
 
         if (currentMode === "focus") {
@@ -2281,7 +2148,6 @@ const skipBtn = document.getElementById("skipBtn");
             weight *= 0.8;
           }
         }
-
         if (ageMinutes < 1) {
           weight *= 0.4;
         }
@@ -2319,7 +2185,6 @@ const skipBtn = document.getElementById("skipBtn");
       typedFeedbackEl.textContent = "";
       chooseNextCard();
       renderCard();
-
       if (currentAnswerMode === "type" && typedAnswerInput) {
         setTimeout(() => typedAnswerInput.focus(), 0);
       }
@@ -2328,46 +2193,7 @@ const skipBtn = document.getElementById("skipBtn");
     /******************************************************
      * 7. Event handlers
      ******************************************************/
-    function onDeckClick(e) {
-      const item = e.target.closest(".deck-item");
-      if (!item) return;
-      const deckId = item.dataset.deckId;
-      if (!deckId || deckId === currentDeckId) return;
-      currentDeckId = deckId;
-
-      const deck = DECKS.find((d) => d.id === deckId);
-      if (deck) {
-        if (deck.difficultyId && deck.difficultyId !== "*all") {
-          currentDifficultyId = deck.difficultyId;
-          lastPlayedDifficultyId = deck.difficultyId;
-          if (difficultySelectEl) {
-            difficultySelectEl.value = deck.difficultyId;
-          }
-        }
-        if (typeof deck.levelIndex === "number" && deck.levelIndex > 0) {
-          currentLevelIndex = deck.levelIndex;
-          lastPlayedLevelIndex = deck.levelIndex;
-          if (levelSelectEl) {
-            levelSelectEl.value = String(deck.levelIndex);
-          }
-        }
-      }
-
-      deckListEl
-        .querySelectorAll(".deck-item")
-        .forEach((el) => el.classList.remove("active"));
-      item.classList.add("active");
-      updateDeckDescription();
-      populateAddDeckSelect();
-      populateWordsDeckSelect();
-      renderWordsList();
-      currentSessionFilter = "all";
-      sessionSeenByDeck[currentDeckId] = new Set();
-      sessionInfoEl.textContent =
-        "New deck selected. The app will keep mixing words and show the ones you struggle with more often.";
-      goToNextCard();
-    }
-
+    
     function onShowAnswer() {
       if (!currentCardRef) return;
       if (currentAnswerMode === "reveal") {
@@ -2381,13 +2207,12 @@ const skipBtn = document.getElementById("skipBtn");
     function onCheckTypedAnswer() {
       if (!currentCardRef) return;
       const { deckId, index } = currentCardRef;
-      const currentDeck = DECKS.find((d) => d.id === deckId);
-      const card = currentDeck.cards[index];
-
+      const loc = getRealCardLocation(deckId, index);
+      const card = DECKS.find(d => d.id === loc.deckId).cards[loc.index];
+      
       const frontIsSpanish = currentDirection === "es-en";
       const targetRaw = frontIsSpanish ? card.en : card.es;
       const userRaw = typedAnswerInput.value || "";
-
       const userNorm = normalizeAnswerString(userRaw);
       const targetNorm = normalizeAnswerString(targetRaw);
 
@@ -2398,7 +2223,6 @@ const skipBtn = document.getElementById("skipBtn");
       }
 
       const isCorrect = userNorm === targetNorm;
-
       if (isCorrect) {
         typedFeedbackEl.textContent = "Correct!";
         typedFeedbackEl.style.color = "#bbf7d0";
@@ -2437,19 +2261,18 @@ const skipBtn = document.getElementById("skipBtn");
 
     function onMark(known) {
       if (!currentCardRef) return;
-
       const { deckId, index } = currentCardRef;
-      const prev = getCardProgress(deckId, index);
+      
+      // Update stats on the real underlying card
+      const loc = getRealCardLocation(deckId, index);
+      const prev = getCardProgress(loc.deckId, loc.index);
+      
       const now = Date.now();
-
       let newStrength = prev.strength || 0;
       let correct = prev.correct || 0;
       let wrong = prev.wrong || 0;
-      let firstAnswerCorrect =
-        typeof prev.firstAnswerCorrect === "boolean"
-          ? prev.firstAnswerCorrect
-          : null;
-
+      let firstAnswerCorrect = typeof prev.firstAnswerCorrect === "boolean" ? prev.firstAnswerCorrect : null;
+      
       if (known) {
         if (newStrength < 3) newStrength += 1;
         correct += 1;
@@ -2464,7 +2287,7 @@ const skipBtn = document.getElementById("skipBtn");
         }
       }
 
-      const updated = setCardProgress(deckId, index, {
+      const updated = setCardProgress(loc.deckId, loc.index, {
         strength: newStrength,
         seen: (prev.seen || 0) + 1,
         lastSeen: now,
@@ -2472,17 +2295,14 @@ const skipBtn = document.getElementById("skipBtn");
         wrong,
         firstAnswerCorrect,
       });
-
       sessionStats.seen += 1;
-      if (known) {
-        sessionStats.knew += 1;
-      } else {
-        sessionStats.learning += 1;
-      }
+      if (known) sessionStats.knew += 1;
+      else sessionStats.learning += 1;
+      
       updateStatsUI();
       updateCardStrengthLabel(updated);
 
-      // track per-deck seen for deck completion
+      // track per-deck seen for deck completion (on the current Active Deck)
       if (!sessionSeenByDeck[deckId]) {
         sessionSeenByDeck[deckId] = new Set();
       }
@@ -2508,37 +2328,14 @@ const skipBtn = document.getElementById("skipBtn");
     }
     
     function onDeleteCurrentCard() {
-  if (!currentCardRef) return;
-
-  const { deckId, index } = currentCardRef;
-  const deck = DECKS.find((d) => d.id === deckId);
-  if (!deck) return;
-
-  const ok = confirm(
-    "Remove this card from this session? You won’t see it again until you reload the app."
-  );
-  if (!ok) return;
-
-  // Mark deleted for the current deck
-  markCardDeletedForSession(deckId, index);
-
-  // If we’re in the 'all' deck, also hide it from its original deck
-  if (deckId === "all") {
-    const cardInAll = deck.cards[index];
-    if (
-      cardInAll &&
-      cardInAll._sourceDeckId &&
-      typeof cardInAll._sourceIndex === "number"
-    ) {
-      markCardDeletedForSession(cardInAll._sourceDeckId, cardInAll._sourceIndex);
+      if (!currentCardRef) return;
+      const { deckId, index } = currentCardRef;
+      const ok = confirm("Remove this card from this session?");
+      if (!ok) return;
+      markCardDeletedForSession(deckId, index);
+      currentCardRef = null;
+      goToNextCard();
     }
-  }
-
-  // Move on to the next card
-  currentCardRef = null;
-  goToNextCard();
-}
-
 
     function onDirectionToggle(e) {
       const btn = e.target.closest("button");
@@ -2546,15 +2343,9 @@ const skipBtn = document.getElementById("skipBtn");
       const dir = btn.dataset.direction;
       if (!dir || dir === currentDirection) return;
       currentDirection = dir;
-
-      directionToggleEl
-        .querySelectorAll("button")
-        .forEach((b) => b.classList.remove("active"));
+      directionToggleEl.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
-
-      if (currentCardRef) {
-        renderCard();
-      }
+      if (currentCardRef) renderCard();
     }
 
     function onAnswerModeToggle(e) {
@@ -2563,25 +2354,18 @@ const skipBtn = document.getElementById("skipBtn");
       const mode = btn.dataset["answerMode"];
       if (!mode || mode === currentAnswerMode) return;
       currentAnswerMode = mode;
-
-      answerModeToggleEl
-        .querySelectorAll("button")
-        .forEach((b) => b.classList.remove("active"));
+      answerModeToggleEl.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
-
       typeAnswerChecked = false;
       lastTypeWasCorrect = null;
       if (typedAnswerInput) typedAnswerInput.value = "";
       typedFeedbackEl.textContent = "";
-
+      
       if (currentAnswerMode === "type") {
-        sessionInfoEl.textContent =
-          "Type mode: you type the translation. Accents, case, and punctuation don’t matter.";
+        sessionInfoEl.textContent = "Type mode: type translation. Accents don't matter.";
       } else {
-        sessionInfoEl.textContent =
-          "Reveal mode: you see the answer and mark if you knew it.";
+        sessionInfoEl.textContent = "Reveal mode: see answer and mark if known.";
       }
-
       currentRevealed = false;
       renderCard();
       if (currentAnswerMode === "type" && typedAnswerInput) {
@@ -2590,14 +2374,9 @@ const skipBtn = document.getElementById("skipBtn");
     }
 
     function onResetProgress() {
-      if (
-        confirm(
-          "Reset all learning progress? This will forget which words you already know."
-        )
-      ) {
+      if (confirm("Reset all learning progress?")) {
         resetProgress();
-        sessionInfoEl.textContent =
-          "Progress reset. All words are new again.";
+        sessionInfoEl.textContent = "Progress reset.";
         sessionSeenByDeck = {};
         deckCompletionShown = {};
         goToNextCard();
@@ -2605,54 +2384,37 @@ const skipBtn = document.getElementById("skipBtn");
     }
 
     function onKeyDown(e) {
-  const target = e.target;
-  const tag = target && target.tagName;
-  const isFormField =
-    tag === "INPUT" ||
-    tag === "TEXTAREA" ||
-    tag === "SELECT" ||
-    (target && target.isContentEditable);
+      const target = e.target;
+      const tag = target && target.tagName;
+      const isFormField = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (target && target.isContentEditable);
+      if (isFormField && target !== typedAnswerInput) return;
 
-  // If we are typing in any input/textarea/select that is NOT the main
-  // typed-answer field, do NOT hijack the spacebar or other shortcuts.
-  if (isFormField && target !== typedAnswerInput) {
-    return;
-  }
-
-  if (!currentCardRef) return;
-
-  if (currentAnswerMode === "type") {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      if (!typeAnswerChecked) {
-        onCheckTypedAnswer();
-      } else {
-        onTypeNext();
+      if (!currentCardRef) return;
+      if (currentAnswerMode === "type") {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (!typeAnswerChecked) onCheckTypedAnswer();
+          else onTypeNext();
+        } else if (e.key === "ArrowRight") {
+          onSkip();
+        }
+        return;
       }
-    } else if (e.key === "ArrowRight") {
-      onSkip();
+
+      if (e.code === "Space" || e.key === " ") {
+        e.preventDefault();
+        if (!currentRevealed) onShowAnswer();
+        else onMark(true);
+      } else if (e.key === "1") {
+        onMark(false);
+      } else if (e.key === "2") {
+        onMark(true);
+      } else if (e.key === "ArrowRight") {
+        onSkip();
+      }
     }
-    return;
-  }
 
-  if (e.code === "Space" || e.key === " ") {
-    e.preventDefault();
-    if (!currentRevealed) {
-      onShowAnswer();
-    } else {
-      onMark(true);
-    }
-  } else if (e.key === "1") {
-    onMark(false);
-  } else if (e.key === "2") {
-    onMark(true);
-  } else if (e.key === "ArrowRight") {
-    onSkip();
-  }
-}
-
-
-        function onAddCardSubmit(e) {
+    function onAddCardSubmit(e) {
       e.preventDefault();
       const es = (addEsInputEl.value || "").trim();
       const en = (addEnInputEl.value || "").trim();
@@ -2661,34 +2423,35 @@ const skipBtn = document.getElementById("skipBtn");
       let deckId = addDeckSelectEl.value;
 
       if (!es || !en) {
-        addFeedbackEl.textContent =
-          "Please fill in both Spanish and English.";
+        addFeedbackEl.textContent = "Please fill in both Spanish and English.";
         addFeedbackEl.style.color = "#fecaca";
         return;
       }
 
-      if (!deckId || deckId === "all") {
-        deckId = currentDeckId !== "all" ? currentDeckId : "core-verbs";
+      if (!deckId || deckId === "all" || deckId.startsWith("mix-")) {
+        // Fallback or specific user deck? 
+        // If we are in "All", we just add to the first real deck found or "custom".
+        // Let's force user to pick one if default is invalid, 
+        // but for now default to first deck available.
+        if(DECKS.length > 0) deckId = DECKS[0].id;
       }
-
+      
       const deck = DECKS.find((d) => d.id === deckId);
       if (!deck) {
-        addFeedbackEl.textContent = "Unknown deck. Try again.";
+        addFeedbackEl.textContent = "Select a valid deck.";
         addFeedbackEl.style.color = "#fecaca";
         return;
       }
 
       const card = {
-        es,
-        en,
-        exampleEs: exampleEs || undefined,
+        es, en, 
+        exampleEs: exampleEs || undefined, 
         exampleEn: exampleEn || undefined,
-        _userAdded: true,
+        _userAdded: true
       };
 
       deck.cards.push(card);
       syncCustomStoreFromDecks();
-      rebuildAllDeck();
 
       addEsInputEl.value = "";
       addEnInputEl.value = "";
@@ -2700,12 +2463,8 @@ const skipBtn = document.getElementById("skipBtn");
       addFeedbackEl.style.color = "#bbf7d0";
 
       updateStatsUI();
-      renderDeckList();
-      populateWordsDeckSelect();
-      renderWordsList();
-
+      // If we are in the deck we just added to (or mix of it), continue
       if (!currentCardRef || currentDeckId === deckId) {
-        currentDeckId = deckId;
         goToNextCard();
       }
     }
@@ -2715,7 +2474,6 @@ const skipBtn = document.getElementById("skipBtn");
       if (!btn) return;
       const key = btn.dataset.panel;
       const panelId = "panel-" + key;
-
       if (currentOpenPanelId === panelId) {
         setTopPanel(null);
       } else {
@@ -2746,45 +2504,26 @@ const skipBtn = document.getElementById("skipBtn");
 
       deck.cards[index][field] = input.value;
       syncCustomStoreFromDecks();
-      rebuildAllDeck();
       updateStatsUI();
-
-      if (
-        currentCardRef &&
-        currentCardRef.deckId === deckId &&
-        currentCardRef.index === index
-      ) {
-        renderCard();
-      }
     }
 
     function onWordsListClick(e) {
       const deleteBtn = e.target.closest(".word-delete-btn");
       if (!deleteBtn) return;
-
       const row = deleteBtn.closest(".word-row");
       if (!row) return;
-
       const deckId = row.dataset.deckId;
       const index = parseInt(row.dataset.index, 10);
       const deck = DECKS.find((d) => d.id === deckId);
       if (!deck || !deck.cards[index]) return;
-
       const card = deck.cards[index];
       const label = card.es || card.en || "this word";
-
-      const ok = confirm(
-        `Delete "${label}" from the "${deck.name}" deck?`
-      );
-      if (!ok) return;
+      if (!confirm(`Delete "${label}"?`)) return;
 
       deck.cards.splice(index, 1);
       syncCustomStoreFromDecks();
-      rebuildAllDeck();
       updateStatsUI();
-      renderDeckList();
       renderWordsList();
-
       if (currentDeckId === deckId) {
         currentCardRef = null;
         goToNextCard();
@@ -2792,48 +2531,24 @@ const skipBtn = document.getElementById("skipBtn");
     }
 
     function deleteKnownWords() {
-      const allDeck = DECKS.find((d) => d.id === "all");
-      if (!allDeck) return;
-
-      const toDeleteByDeck = {};
-      allDeck.cards.forEach((card, idx) => {
-        const agg = getAggregatedProgressForAllIndex(idx);
-        const c = agg.correct || 0;
-        const w = agg.wrong || 0;
-        const isKnown = c > 0 && w === 0;
-
-        if (!isKnown) return;
-        const srcDeckId = card._sourceDeckId;
-        const srcIndex = card._sourceIndex;
-        if (!srcDeckId || srcDeckId === "all") return;
-        if (typeof srcIndex !== "number") return;
-
-        if (!toDeleteByDeck[srcDeckId]) {
-          toDeleteByDeck[srcDeckId] = new Set();
-        }
-        toDeleteByDeck[srcDeckId].add(srcIndex);
+      // iterate all real decks
+      DECKS.forEach(deck => {
+        if(deck.isMix) return;
+        // filter out known
+        deck.cards = deck.cards.filter((c, idx) => {
+          const prog = getCardProgress(deck.id, idx);
+          const isKnown = (prog.correct || 0) > 0 && (prog.wrong || 0) === 0;
+          return !isKnown;
+        });
       });
-
-      DECKS.forEach((deck) => {
-        if (deck.id === "all") return;
-        const marks = toDeleteByDeck[deck.id];
-        if (!marks || !marks.size) return;
-        deck.cards = deck.cards.filter((_, idx) => !marks.has(idx));
-      });
-
       syncCustomStoreFromDecks();
-      rebuildAllDeck();
-
-      // Easiest + safest: reset learning after pruning
       resetProgress();
       sessionSeenByDeck = {};
       deckCompletionShown = {};
-
-      renderDeckList();
+      
       populateWordsDeckSelect();
       renderWordsList();
       updateStatsUI();
-
       currentCardRef = null;
       goToNextCard();
     }
@@ -2843,29 +2558,21 @@ const skipBtn = document.getElementById("skipBtn");
       const visible = statsPanelEl.style.display === "block";
       statsPanelEl.style.display = visible ? "none" : "block";
       statsToggleBtn.textContent = visible ? "📊 Stats" : "📊 Hide stats";
-      if (!visible) {
-        updateStatsUI();
-      }
+      if (!visible) updateStatsUI();
     }
 
     function onStatsDeleteKnown() {
-      const ok = confirm(
-        "Delete all words you already know (only correct answers, never wrong) from all decks? This also resets your learning progress."
-      );
-      if (!ok) return;
-      deleteKnownWords();
-      sessionInfoEl.textContent =
-        "Known words removed and progress reset. Fresh start with the remaining words.";
+      if (confirm("Delete all known words from all decks? Resets progress.")) {
+        deleteKnownWords();
+      }
     }
 
     function onStatsExcludeKnown() {
       excludeKnownFromSession = !excludeKnownFromSession;
       if (excludeKnownFromSession) {
-        statsExcludeKnownBtn.textContent =
-          "✅ Excluding known words this session";
+        statsExcludeKnownBtn.textContent = "✅ Excluding known words this session";
       } else {
-        statsExcludeKnownBtn.textContent =
-          "🚫 Exclude known words this session";
+        statsExcludeKnownBtn.textContent = "🚫 Exclude known words this session";
       }
       currentCardRef = null;
       goToNextCard();
@@ -2874,20 +2581,17 @@ const skipBtn = document.getElementById("skipBtn");
     function onDeckCompletePracticeStruggle() {
       const deckId = lastCompletedDeckId;
       if (!deckId) return;
-      const deck = DECKS.find((d) => d.id === deckId);
       currentDeckId = deckId;
       currentSessionFilter = "struggle";
       excludeKnownFromSession = false;
 
-      renderDeckList();
-      updateDeckDescription();
+      // Ensure we are in correct state to show this deck
+      // (This might require navigating the hierarchy if we wanted to show it in the list,
+      // but strictly speaking we just need the game to run)
+      
       deckCompleteOverlayEl.style.display = "none";
-
       sessionSeenByDeck[deckId] = new Set();
-      sessionInfoEl.textContent = deck
-        ? `Now focusing only on the words you struggled with in "${deck.name}".`
-        : "Now focusing only on the words you struggled with in this deck.";
-
+      sessionInfoEl.textContent = "Focusing on struggle words.";
       currentCardRef = null;
       goToNextCard();
     }
@@ -2895,37 +2599,39 @@ const skipBtn = document.getElementById("skipBtn");
     function onDeckCompleteClose() {
       deckCompleteOverlayEl.style.display = "none";
       currentSessionFilter = "all";
-      sessionInfoEl.textContent =
-        "Nice work – you’ve seen every word in this deck. Keep going or switch decks.";
+      sessionInfoEl.textContent = "Deck complete.";
     }
 
     function onToggleExamples() {
       if (!exampleFieldsEl) return;
-      const isVisible = exampleFieldsEl.style.display === "grid" ||
-        exampleFieldsEl.style.display === "block";
+      const isVisible = exampleFieldsEl.style.display === "grid" || exampleFieldsEl.style.display === "block";
       if (isVisible) {
         exampleFieldsEl.style.display = "none";
         toggleExamplesBtn.textContent = "➕ Add examples";
       } else {
-        // grid on desktop, block on mobile; CSS will handle mobile @media
         exampleFieldsEl.style.display = "grid";
         toggleExamplesBtn.textContent = "➖ Hide examples";
       }
     }
 
-    /******************************************************
-     * 8. Init
-     ******************************************************/
-    
     async function init() {
-      loadProgress();
-      await loadDecksFromJson();
-      loadCustomCards();
-      rebuildAllDeck();
+      try {
+        const res = await fetch('decks.json');
+        if(!res.ok) throw new Error("Failed to load decks.json");
+        RAW_DATA = await res.json();
+        loaded = true;
+        DECKS = RAW_DATA.decks; // Initial population
+      } catch(err) {
+        console.error(err);
+        deckListEl.innerHTML = `<div style="padding:10px; color:var(--danger)">Error loading decks.json. Please ensure it is in the same folder and you are running a local server.</div>`;
+        return;
+      }
 
-      populateDifficultySelect();
-      populateLevelSelect();
-      renderDeckList();
+      loadProgress();
+      loadCustomCards();
+      injectCustomCards(); // Put custom cards back into the loaded decks
+
+      renderSelectionFlow(); // Render Step 1
       updateDeckDescription();
       populateAddDeckSelect();
       populateWordsDeckSelect();
@@ -2933,55 +2639,24 @@ const skipBtn = document.getElementById("skipBtn");
       updateStatsUI();
 
       // Events
-      if (deckListEl) {
-        deckListEl.addEventListener("click", onDeckClick);
-      }
-      if (showAnswerBtn) {
-        showAnswerBtn.addEventListener("click", onAnswerButtonClick);
-      }
-      if (learningBtn) {
-        learningBtn.addEventListener("click", () => onMark(false));
-      }
-      if (knewItBtn) {
-        knewItBtn.addEventListener("click", () => onMark(true));
-      }
-      if (skipBtn) {
-        skipBtn.addEventListener("click", onSkip);
-      }
+      showAnswerBtn.addEventListener("click", onAnswerButtonClick);
+      learningBtn.addEventListener("click", () => onMark(false));
+      knewItBtn.addEventListener("click", () => onMark(true));
+      skipBtn.addEventListener("click", onSkip);
+
       if (deleteCurrentBtn) {
         deleteCurrentBtn.addEventListener("click", onDeleteCurrentCard);
       }
 
-      if (directionToggleEl) {
-        directionToggleEl.addEventListener("click", onDirectionToggle);
-      }
-      if (answerModeToggleEl) {
-        answerModeToggleEl.addEventListener("click", onAnswerModeToggle);
-      }
-      if (resetProgressBtn) {
-        resetProgressBtn.addEventListener("click", onResetProgress);
-      }
-
+      directionToggleEl.addEventListener("click", onDirectionToggle);
+      answerModeToggleEl.addEventListener("click", onAnswerModeToggle);
+      resetProgressBtn.addEventListener("click", onResetProgress);
       document.addEventListener("keydown", onKeyDown);
 
-      if (addCardFormEl) {
-        addCardFormEl.addEventListener("submit", onAddCardSubmit);
-      }
-      if (toggleExamplesBtn) {
-        toggleExamplesBtn.addEventListener("click", onToggleExamples);
-      }
+      addCardFormEl.addEventListener("submit", onAddCardSubmit);
+      toggleExamplesBtn.addEventListener("click", onToggleExamples);
 
-      if (difficultySelectEl) {
-        difficultySelectEl.addEventListener("change", onDifficultyChange);
-      }
-      if (levelSelectEl) {
-        levelSelectEl.addEventListener("change", onLevelChange);
-      }
-
-      if (topNavEl) {
-        topNavEl.addEventListener("click", onTopNavClick);
-      }
-
+      topNavEl.addEventListener("click", onTopNavClick);
       if (wordsDeckSelectEl) {
         wordsDeckSelectEl.addEventListener("change", onWordsDeckChange);
       }
@@ -3001,26 +2676,19 @@ const skipBtn = document.getElementById("skipBtn");
       }
 
       if (deckCompleteStruggleBtn) {
-        deckCompleteStruggleBtn.addEventListener(
-          "click",
-          onDeckCompletePracticeStruggle
-        );
+        deckCompleteStruggleBtn.addEventListener("click", onDeckCompletePracticeStruggle);
       }
       if (deckCompleteCloseBtn) {
         deckCompleteCloseBtn.addEventListener("click", onDeckCompleteClose);
       }
 
-      // Default: decks panel open, focus mode always on
       setTopPanel("panel-decks");
-      sessionInfoEl.textContent =
-        "Focus learning is on: words you’re still learning will appear much more often.";
-      goToNextCard();
+      sessionInfoEl.textContent = "Select a Difficulty to start.";
     }
 
     init();
   </script>
 
-  <!-- Keep your existing service worker file; this just registers it -->
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
@@ -3032,3 +2700,5 @@ const skipBtn = document.getElementById("skipBtn");
       });
     }
   </script>
+</body>
+</html>
