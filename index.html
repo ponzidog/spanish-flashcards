@@ -710,11 +710,28 @@
     }
 
     .card-primary-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+}
+/* Make the three main buttons equal width */
+.card-primary-actions .btn-main {
+  flex: 1 1 0;
+  justify-content: center;
+}
+
+/* Delete-current-card button anchored to the left */
+.card-delete-current-btn {
+  margin-right: auto;
+  opacity: 0.8;
+}
+
+.card-delete-current-btn:hover {
+  opacity: 1;
+}
+
 
     .btn {
       border-radius: 999px;
@@ -1146,16 +1163,26 @@
                 Click “Show answer” or press the spacebar.
               </div>
               <div class="card-primary-actions">
-                <button class="btn btn-ghost" id="showAnswerBtn">
-                  👀 Show answer
-                </button>
-                <button class="btn btn-danger" id="learningBtn" disabled>
-                  🤔 Still learning
-                </button>
-                <button class="btn btn-accent" id="knewItBtn" disabled>
-                  ✅ I knew it
-                </button>
-              </div>
+   <!-- NEW: delete current card button (bottom-left) -->
+  <button
+    class="btn btn-ghost btn-xs card-delete-current-btn"
+    id="deleteCurrentBtn"
+    type="button"
+  >
+    🗑 Remove card
+  </button>
+
+  <!-- Main action buttons: equal size -->
+  <button class="btn btn-ghost btn-main" id="showAnswerBtn">
+    👀 Show answer
+  </button>
+  <button class="btn btn-danger btn-main" id="learningBtn" disabled>
+    🤔 Still learning
+  </button>
+  <button class="btn btn-accent btn-main" id="knewItBtn" disabled>
+    ✅ I knew it
+  </button>
+</div>
             </div>
           </div>
         </div>
@@ -1737,6 +1764,15 @@
     let sessionSeenByDeck = {}; // { deckId: Set(cardIds) }
     let deckCompletionShown = {}; // { deckId: true }
     let lastCompletedDeckId = null;
+    let deletedInSession = {}; // { deckId: Set(indexes) }
+
+function markCardDeletedForSession(deckId, index) {
+  if (!deletedInSession[deckId]) {
+    deletedInSession[deckId] = new Set();
+  }
+  deletedInSession[deckId].add(index);
+}
+
 
     function loadProgress() {
       try {
@@ -1909,10 +1945,11 @@
     const typedAnswerInput = document.getElementById("typedAnswerInput");
     const typedFeedbackEl = document.getElementById("typedFeedback");
 
-    const showAnswerBtn = document.getElementById("showAnswerBtn");
-    const learningBtn = document.getElementById("learningBtn");
-    const knewItBtn = document.getElementById("knewItBtn");
-    const skipBtn = document.getElementById("skipBtn");
+    const deleteCurrentBtn = document.getElementById("deleteCurrentBtn");
+const showAnswerBtn = document.getElementById("showAnswerBtn");
+const learningBtn = document.getElementById("learningBtn");
+const knewItBtn = document.getElementById("knewItBtn");
+const skipBtn = document.getElementById("skipBtn");
 
     const directionToggleEl = document.getElementById("directionToggle");
     const answerModeToggleEl = document.getElementById("answerModeToggle");
@@ -2371,34 +2408,39 @@
       cardIndexBadgeEl.textContent = `Card ${index + 1} of ${totalInDeck}`;
 
       if (currentAnswerMode === "reveal") {
-        typedAnswerContainer.style.display = "none";
-        typedFeedbackEl.textContent = "";
-        if (typedAnswerInput) typedAnswerInput.value = "";
+  typedAnswerContainer.style.display = "none";
+  typedFeedbackEl.textContent = "";
+  if (typedAnswerInput) typedAnswerInput.value = "";
 
-        cardBackEl.style.display = currentRevealed ? "block" : "none";
-        showAnswerBtn.disabled = false;
-        learningBtn.disabled = !currentRevealed;
-        knewItBtn.disabled = !currentRevealed;
+  cardBackEl.style.display = currentRevealed ? "block" : "none";
 
-        learningBtn.style.display = currentRevealed ? "inline-flex" : "none";
-        knewItBtn.style.display = currentRevealed ? "inline-flex" : "none";
+  // Hide "Show answer" once revealed
+  showAnswerBtn.disabled = currentRevealed;
+  showAnswerBtn.style.display = currentRevealed ? "none" : "inline-flex";
 
-        showAnswerBtn.textContent = "👀 Show answer";
+  learningBtn.disabled = !currentRevealed;
+  knewItBtn.disabled = !currentRevealed;
 
-        cardHintEl.textContent = currentRevealed
-          ? "Mark if you knew it or not."
-          : "Try to recall it, then show the answer.";
-      } else {
-        // TYPE MODE
-        typedAnswerContainer.style.display = "flex";
-        cardBackEl.style.display = typeAnswerChecked ? "block" : "none";
-        learningBtn.style.display = "none";
-        knewItBtn.style.display = "none";
+  learningBtn.style.display = currentRevealed ? "inline-flex" : "none";
+  knewItBtn.style.display = currentRevealed ? "inline-flex" : "none";
 
-        showAnswerBtn.disabled = false;
-        showAnswerBtn.textContent = typeAnswerChecked
-          ? "Next word"
-          : "⏎ Check answer";
+  showAnswerBtn.textContent = "👀 Show answer";
+
+  cardHintEl.textContent = currentRevealed
+    ? "Mark if you knew it or not."
+    : "Try to recall it, then show the answer.";
+} else {
+  // TYPE MODE
+  typedAnswerContainer.style.display = "flex";
+  cardBackEl.style.display = typeAnswerChecked ? "block" : "none";
+  learningBtn.style.display = "none";
+  knewItBtn.style.display = "none";
+
+  showAnswerBtn.disabled = false;
+  showAnswerBtn.style.display = "inline-flex";
+  showAnswerBtn.textContent = typeAnswerChecked
+    ? "Next word"
+    : "⏎ Check answer";
 
         cardHintEl.textContent = typeAnswerChecked
           ? 'Press "Next word" to continue, or use Skip to move on without marking.'
@@ -2421,16 +2463,26 @@
       const now = Date.now();
       const candidates = [];
 
-      deck.cards.forEach((_, idx) => {
-        const prog = getCardProgress(currentDeckId, idx);
-        const agg = getAggregatedProgress(currentDeckId, idx);
+        deck.cards.forEach((card, idx) => {
+    // Skip cards that were deleted in this session
+    const deletedSet = deletedInSession[currentDeckId];
+    if (deletedSet && deletedSet.has(idx)) {
+      return;
+    }
 
-        if (currentSessionFilter === "struggle" && (agg.wrong || 0) <= 0) {
-          return;
-        }
-        if (excludeKnownFromSession && (agg.correct || 0) > 0 && (agg.wrong || 0) === 0) {
-          return;
-        }
+    const prog = getCardProgress(currentDeckId, idx);
+    const agg = getAggregatedProgress(currentDeckId, idx);
+
+    if (currentSessionFilter === "struggle" && (agg.wrong || 0) <= 0) {
+      return;
+    }
+    if (
+      excludeKnownFromSession &&
+      (agg.correct || 0) > 0 &&
+      (agg.wrong || 0) === 0
+    ) {
+      return;
+    }
 
         const ageMinutes =
           prog.lastSeen > 0 ? (now - prog.lastSeen) / 60000 : 9999;
@@ -2649,6 +2701,39 @@
       if (!currentCardRef) return;
       goToNextCard();
     }
+    
+    function onDeleteCurrentCard() {
+  if (!currentCardRef) return;
+
+  const { deckId, index } = currentCardRef;
+  const deck = DECKS.find((d) => d.id === deckId);
+  if (!deck) return;
+
+  const ok = confirm(
+    "Remove this card from this session? You won’t see it again until you reload the app."
+  );
+  if (!ok) return;
+
+  // Mark deleted for the current deck
+  markCardDeletedForSession(deckId, index);
+
+  // If we’re in the 'all' deck, also hide it from its original deck
+  if (deckId === "all") {
+    const cardInAll = deck.cards[index];
+    if (
+      cardInAll &&
+      cardInAll._sourceDeckId &&
+      typeof cardInAll._sourceIndex === "number"
+    ) {
+      markCardDeletedForSession(cardInAll._sourceDeckId, cardInAll._sourceIndex);
+    }
+  }
+
+  // Move on to the next card
+  currentCardRef = null;
+  goToNextCard();
+}
+
 
     function onDirectionToggle(e) {
       const btn = e.target.closest("button");
@@ -3041,9 +3126,13 @@
       // Events
       deckListEl.addEventListener("click", onDeckClick);
       showAnswerBtn.addEventListener("click", onAnswerButtonClick);
-      learningBtn.addEventListener("click", () => onMark(false));
-      knewItBtn.addEventListener("click", () => onMark(true));
-      skipBtn.addEventListener("click", onSkip);
+learningBtn.addEventListener("click", () => onMark(false));
+knewItBtn.addEventListener("click", () => onMark(true));
+skipBtn.addEventListener("click", onSkip);
+
+if (deleteCurrentBtn) {
+  deleteCurrentBtn.addEventListener("click", onDeleteCurrentCard);
+}
 
       directionToggleEl.addEventListener("click", onDirectionToggle);
       answerModeToggleEl.addEventListener("click", onAnswerModeToggle);
