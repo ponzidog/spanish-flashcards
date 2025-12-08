@@ -1266,6 +1266,7 @@ function startFilteredSession(uidList) {
 function nextCard() {
   let pool = [];
   
+  // 1. Get the pool of cards based on the current mode
   if (STATE.customSessionList) {
       const allDecks = STATE.activeDecks;
       pool = [];
@@ -1292,24 +1293,28 @@ function nextCard() {
     pool = getPoolFromCurrentSession();
   }
   
-  const playable = pool.filter(c => {
-    if(pool.length > 1 && c._uid === STATE.lastCardUid) return false;
-    if(STATE.isStruggleMode || STATE.customSessionList) return true;
-
-    const p = STATE.progress[c._uid] || {};
-    const score = (STATE.direction === 'es-en') ? (p.scoreEsEn || 0) : (p.scoreEnEs || 0);
-    const sData = STATE.sessionData[c._uid] || { count: 0, struggle: false, postCount: 0 };
-    
-    if(score >= 4) {
-       if(!sData.struggle) { if(sData.count >= 2) return false; } 
-       else { if(sData.postCount >= 2) return false; }
-    }
-    return true;
+  // 2. Filter: Keep cards that are NOT yet marked correct in this specific session
+  const remaining = pool.filter(c => {
+    const sData = STATE.sessionData[c._uid];
+    if (!sData) return true;
+    return sData.correctInSession !== true;
   });
 
-  if(playable.length === 0) { showDeckComplete(); return; }
+  // 3. Check for Completion
+  if(remaining.length === 0) { 
+      showDeckComplete(); 
+      return; 
+  }
   
-  const card = playable[Math.floor(Math.random() * playable.length)];
+  // 4. Constraint: Don't show the same card twice in a row, UNLESS it is the only card left
+  let candidates = remaining.filter(c => c._uid !== STATE.lastCardUid);
+  
+  if (candidates.length === 0) {
+      candidates = remaining;
+  }
+  
+  // 5. Pick and Render
+  const card = candidates[Math.floor(Math.random() * candidates.length)];
   STATE.currentCard = card;
   STATE.lastCardUid = card._uid;
   renderGameCard();
@@ -1451,7 +1456,11 @@ function triggerCardFeedback(isCorrect) {
 function markCard(success, autoAdvance = true) {
   const uid = STATE.currentCard._uid;
   if(!STATE.progress[uid]) STATE.progress[uid] = { scoreEsEn: 0, scoreEnEs: 0, seen: 0 };
-  if(!STATE.sessionData[uid]) STATE.sessionData[uid] = { count: 0, struggle: false, postCount: 0 };
+  
+  // Ensure session data exists with the new correctInSession flag
+  if(!STATE.sessionData[uid]) {
+      STATE.sessionData[uid] = { count: 0, struggle: false, postCount: 0, correctInSession: false };
+  }
   
   STATE.progress[uid].seen++;
   const isEs = STATE.direction === 'es-en';
@@ -1461,6 +1470,9 @@ function markCard(success, autoAdvance = true) {
   let currentScore = isEs ? STATE.progress[uid].scoreEsEn : STATE.progress[uid].scoreEnEs;
 
   if(success) {
+      // MARK CORRECT IN SESSION - This removes it from the "remaining" pool
+      STATE.sessionData[uid].correctInSession = true;
+
       STATE.streak++;
       triggerCardFeedback(true);
       if(STATE.sessionData[uid].count === 1) STATE.sessionStats.correctFirst++;
@@ -1483,16 +1495,18 @@ function markCard(success, autoAdvance = true) {
       }
       
   } else {
+      // MARK INCORRECT IN SESSION - This ensures it stays in the pool
+      STATE.sessionData[uid].correctInSession = false;
+
       STATE.streak = 0;
       if(!autoAdvance) triggerCardFeedback(false); 
       
-      currentScore = Math.max(0, currentScore - 1); // Downgrade
+      currentScore = Math.max(0, currentScore - 1); 
       STATE.sessionData[uid].struggle = true;
       STATE.sessionData[uid].postCount = 0; 
       STATE.sessionStats.struggle++;
       if(!STATE.sessionStruggleIds.includes(uid)) STATE.sessionStruggleIds.push(uid);
 
-      // STRUGGLE LOGIC: Add to persistent struggle list
       STATE.struggleList.add(uid);
   }
 
