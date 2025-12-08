@@ -1116,11 +1116,12 @@ function showAnswer(force = false) {
     if(isCorrect) {
       document.getElementById('gameFeedback').textContent = "✅ Correct!";
       document.getElementById('gameFeedback').style.color = "#4ade80";
-      markCard(true); 
+      markCard(true, true); 
       return; 
     } else {
       document.getElementById('gameFeedback').textContent = `❌ Incorrect.`;
       document.getElementById('gameFeedback').style.color = "#f87171";
+      markCard(false, false);
     }
   }
 
@@ -1135,7 +1136,7 @@ function showAnswer(force = false) {
   }
 }
 
-function markCard(success) {
+function markCard(success, autoAdvance = true) {
   const uid = STATE.currentCard._uid;
   if(!STATE.progress[uid]) STATE.progress[uid] = { scoreEsEn: 0, scoreEnEs: 0, seen: 0 };
   if(!STATE.sessionData[uid]) STATE.sessionData[uid] = { count: 0, struggle: false, postCount: 0 };
@@ -1180,7 +1181,8 @@ function markCard(success) {
   
   saveData();
   updateStats();
-  nextCard();
+  
+  if(autoAdvance) nextCard();
 }
 
 function showDeckComplete() {
