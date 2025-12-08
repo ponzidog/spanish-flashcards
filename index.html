@@ -48,12 +48,6 @@
       align-items: center;
       justify-content: flex-start;
       padding: 10px;
-      transition: background 0.2s; 
-    }
-
-    /* 5-Streak Flash Class */
-    body.streak-flash {
-      background: #064e3b !important; /* Deep green flash */
     }
 
     /* --- Loading Screen --- */
@@ -224,7 +218,7 @@
     .panel.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* --- Deck Grid (Updated) --- */
+    /* --- Deck Grid --- */
     .deck-grid { 
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -403,8 +397,10 @@
     .score-3 { background: #bae6fd; }
     .score-4 { background: #4ade80; }
     
-    .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; font-size: 14px; }
-    .btn-icon:hover { color: var(--danger); }
+    .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; font-size: 14px; transition: 0.2s; }
+    .btn-icon:hover { color: #fff; transform: scale(1.1); }
+    .btn-icon.del:hover { color: var(--danger); }
+    .btn-icon.edit:hover { color: var(--gold); }
 
     /* Game Card */
     .game-area {
@@ -423,6 +419,12 @@
       transition: border-color 0.5s ease, box-shadow 0.5s ease;
     }
     
+    /* Streak Flash Effect (FIXED) */
+    .flashcard.streak-flash {
+       background: #064e3b !important;
+       transition: background 0.1s;
+    }
+
     /* Feedback States */
     .flashcard.correct { border-color: #22c55e !important; box-shadow: 0 0 25px rgba(34, 197, 94, 0.4); }
     .flashcard.wrong { border-color: #ef4444 !important; box-shadow: 0 0 25px rgba(239, 68, 68, 0.4); }
@@ -441,13 +443,17 @@
     .card-btn:hover { color: var(--text-main); transform: scale(1.1); }
     .card-btn.starred { color: var(--gold); }
 
-    /* Edit Form Overlay */
-    .edit-overlay {
-        position: absolute; inset: 0; background: #0f172a; z-index: 10; padding: 20px; border-radius: var(--radius-lg);
-        display: none; flex-direction: column; gap: 10px;
+    /* Global Edit Modal (NEW) */
+    .global-edit-modal {
+       position: fixed; inset: 0; background: rgba(2, 6, 23, 0.8); z-index: 200;
+       display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px);
     }
-    .edit-overlay input { font-size: 14px; padding: 10px; margin-bottom: 5px; }
-    .edit-actions { display: flex; gap: 8px; margin-top: auto; }
+    .edit-box {
+        background: #1e293b; padding: 24px; border-radius: var(--radius-lg);
+        width: 90%; max-width: 400px; border: 1px solid rgba(148,163,184,0.2);
+        display: flex; flex-direction: column; gap: 12px;
+    }
+    .edit-box h3 { margin: 0 0 8px 0; font-size: 16px; color: var(--text-main); }
 
     /* Game Actions */
     .action-row { display: flex; gap: 8px; width: 100%; max-width: 500px; }
@@ -593,7 +599,7 @@
                 <span id="gameDeckName">Deck</span> • <span id="gameStrength">New</span>
             </div>
             <div class="card-controls">
-                <button class="card-btn" id="btnEditCard" onclick="toggleEditMode()" title="Edit Card">✏️</button>
+                <button class="card-btn" id="btnEditCard" onclick="openEditForCurrentCard()" title="Edit Card" style="display:none">✏️</button>
                 <button class="card-btn" id="btnStarCard" onclick="toggleStar()" title="Star Card">★</button>
             </div>
           </div>
@@ -612,17 +618,6 @@
               <div class="reveal-text" id="gameBackText">...</div>
               <div class="examples" id="gameExamples"></div>
             </div>
-          </div>
-          
-          <div class="edit-overlay" id="editOverlay">
-              <label>Spanish</label>
-              <input type="text" id="editEs">
-              <label>English</label>
-              <input type="text" id="editEn">
-              <div class="edit-actions">
-                  <button class="btn-action primary" onclick="saveEdit()">Save</button>
-                  <button class="btn-action ghost" onclick="toggleEditMode()">Cancel</button>
-              </div>
           </div>
         </div>
         
@@ -758,6 +753,20 @@
     </div>
   </div>
 
+  <div class="global-edit-modal" id="globalEditModal">
+      <div class="edit-box">
+          <h3>Edit Card</h3>
+          <label>Spanish</label>
+          <input type="text" id="globalEditEs">
+          <label>English</label>
+          <input type="text" id="globalEditEn">
+          <div class="action-row" style="margin-top:10px">
+              <button class="btn-action ghost" onclick="closeEditModal()">Cancel</button>
+              <button class="btn-action primary" onclick="saveGlobalEdit()">Save Changes</button>
+          </div>
+      </div>
+  </div>
+
 </div>
 
 <script>
@@ -797,6 +806,9 @@ const STATE = {
   onlyCustom: false
 };
 
+// Global for tracking which card is being edited via Modal
+let editingCardUid = null;
+
 const FUN_FACTS = [
     "Spanish is the second most spoken native language in the world, beating English!",
     "The letter 'ñ' is the only letter of Spanish origin.",
@@ -817,10 +829,11 @@ async function init() {
   startLoadingScreen();
   loadLocalData();
   await loadRemoteData();
+  // FIXED: ensure filter/category logic runs AFTER data load
+  populateTopicFilter(); 
   bindEvents();
   renderDecks();
   updateStats();
-  populateTopicFilter();     // <-- This function handles both the Filter and the Add menus
   updateGameMiniSettings();
 }
 
@@ -1258,7 +1271,6 @@ function renderGameCard() {
   document.getElementById('gameControlsNext').style.display = 'none';
   document.getElementById('gameControlsStart').style.display = 'flex';
   document.getElementById('btnShowAnswer').style.display = 'block';
-  document.getElementById('editOverlay').style.display = 'none'; // Ensure edit is closed
 
   // Edit Icon Logic
   const btnEdit = document.getElementById('btnEditCard');
@@ -1380,36 +1392,34 @@ function markCard(success, autoAdvance = true) {
   let currentScore = isEs ? STATE.progress[uid].scoreEsEn : STATE.progress[uid].scoreEnEs;
 
   if(success) {
-     STATE.streak++;
-     triggerCardFeedback(true);
-     if(STATE.sessionData[uid].count === 1) STATE.sessionStats.correctFirst++;
-     
-     // Master immediately on correct (Removing 3s logic)
-     currentScore = 4;
-     
-     // 5-Streak Reward
-     if(STATE.streak > 0 && STATE.streak % 5 === 0) {
-         document.body.classList.add('streak-flash');
-         setTimeout(() => document.body.classList.remove('streak-flash'), 500);
-     }
-     
-     // Remove from struggle list if active
-     if(STATE.isStruggleMode) {
-       STATE.struggleList = STATE.struggleList.filter(id => id !== uid);
-     }
-     
-     // Known Logic for removing from "Learning" tab
-     // (Handled automatically by getPool filtering and status checking)
-
+      STATE.streak++;
+      triggerCardFeedback(true);
+      if(STATE.sessionData[uid].count === 1) STATE.sessionStats.correctFirst++;
+      
+      // Master immediately on correct
+      currentScore = 4;
+      
+      // 5-Streak Reward (FIXED: ONLY CARD BACKGROUND)
+      if(STATE.streak > 0 && STATE.streak % 5 === 0) {
+          const cardEl = document.getElementById('gameCard');
+          cardEl.classList.add('streak-flash');
+          setTimeout(() => cardEl.classList.remove('streak-flash'), 500);
+      }
+      
+      // Remove from struggle list if active
+      if(STATE.isStruggleMode) {
+        STATE.struggleList = STATE.struggleList.filter(id => id !== uid);
+      }
+      
   } else {
-     STATE.streak = 0;
-     if(!autoAdvance) triggerCardFeedback(false); 
-     
-     currentScore = Math.max(0, currentScore - 1); // Downgrade
-     STATE.sessionData[uid].struggle = true;
-     STATE.sessionData[uid].postCount = 0; 
-     STATE.sessionStats.struggle++;
-     if(!STATE.struggleList.includes(uid)) STATE.struggleList.push(uid);
+      STATE.streak = 0;
+      if(!autoAdvance) triggerCardFeedback(false); 
+      
+      currentScore = Math.max(0, currentScore - 1); // Downgrade
+      STATE.sessionData[uid].struggle = true;
+      STATE.sessionData[uid].postCount = 0; 
+      STATE.sessionStats.struggle++;
+      if(!STATE.struggleList.includes(uid)) STATE.struggleList.push(uid);
   }
 
   if(isEs) STATE.progress[uid].scoreEsEn = currentScore;
@@ -1441,51 +1451,106 @@ function toggleStar() {
     updateStats();
 }
 
-// Edit Mode
-function toggleEditMode() {
-    const overlay = document.getElementById('editOverlay');
-    const c = STATE.currentCard;
-    if(overlay.style.display === 'flex') {
-        overlay.style.display = 'none';
-    } else {
-        document.getElementById('editEs').value = c.es;
-        document.getElementById('editEn').value = c.en;
-        overlay.style.display = 'flex';
-    }
+// --- GLOBAL EDIT MODAL (New Feature) ---
+function openEditForCurrentCard() {
+    openEditModal(STATE.currentCard._uid);
 }
 
-function saveEdit() {
-    const es = document.getElementById('editEs').value.trim();
-    const en = document.getElementById('editEn').value.trim();
-    if(!es || !en) return alert("Fields cannot be empty");
+function openEditModal(uid) {
+    editingCardUid = uid;
     
-    // Update Memory
-    STATE.currentCard.es = es;
-    STATE.currentCard.en = en;
-    
-    // Update Custom Cards Store
-    const deck = STATE.activeDecks.find(d => d.id === STATE.currentCard._realDeckId);
+    // Find Card Object
+    let cardObj = null;
+    const allDecks = STATE.activeDecks;
+    // reconstruct finding logic
+    const parts = uid.split(':');
+    const deckId = parts[0];
+    const esKey = parts.slice(1).join(':');
+    const deck = allDecks.find(d => d.id === deckId);
     if(deck) {
-        const cardRef = deck.cards.find(x => x.es === STATE.currentCard.es || x === STATE.currentCard); // Find strict or soft ref
+        cardObj = deck.cards.find(c => c.es.replace(/\s/g,'') === esKey);
+    }
+    
+    if(!cardObj) return alert("Card not found");
+
+    document.getElementById('globalEditEs').value = cardObj.es;
+    document.getElementById('globalEditEn').value = cardObj.en;
+    document.getElementById('globalEditModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('globalEditModal').style.display = 'none';
+    editingCardUid = null;
+}
+
+function saveGlobalEdit() {
+    if(!editingCardUid) return;
+    const es = document.getElementById('globalEditEs').value.trim();
+    const en = document.getElementById('globalEditEn').value.trim();
+    if(!es || !en) return alert("Fields cannot be empty");
+
+    // 1. Find the card and update it in memory (STATE.activeDecks)
+    const parts = editingCardUid.split(':');
+    const deckId = parts[0];
+    const oldEsKey = parts.slice(1).join(':'); // Used to find original
+    
+    const deck = STATE.activeDecks.find(d => d.id === deckId);
+    if(deck) {
+        const cardRef = deck.cards.find(c => c.es.replace(/\s/g,'') === oldEsKey);
         if(cardRef) {
             cardRef.es = es;
             cardRef.en = en;
         }
     }
-    
-    // Persist if in customCards
-    // We iterate customCards to find the object reference
+
+    // 2. Persist to Custom Cards (LocalStorage)
+    // Even if it's currently active in memory, we need to update the storage object
     Object.values(STATE.customCards).forEach(list => {
-        const match = list.find(c => c === STATE.currentCard || (c.es === STATE.currentCard.es && c._custom));
+        // Find by reference or by value if exact match
+        const match = list.find(c => c.es.replace(/\s/g,'') === oldEsKey && c._custom);
         if(match) {
             match.es = es;
             match.en = en;
         }
     });
 
+    // 3. Update Progress Key if Spanish changed?
+    // This is tricky because UID depends on Spanish text. 
+    // For simplicity, we keep the OLD UID for progress to prevent data loss, 
+    // OR we migrate it. Let's just update the content. The UID generation logic uses real-time ES text.
+    // If we change ES, the computed UID changes. We should migrate progress.
+    const newUid = `${deckId}:${es.replace(/\s/g,'')}`;
+    if(newUid !== editingCardUid) {
+        if(STATE.progress[editingCardUid]) {
+            STATE.progress[newUid] = STATE.progress[editingCardUid];
+            delete STATE.progress[editingCardUid];
+        }
+        if(STATE.starred.has(editingCardUid)) {
+            STATE.starred.delete(editingCardUid);
+            STATE.starred.add(newUid);
+        }
+        if(STATE.blacklist.has(editingCardUid)) {
+            STATE.blacklist.delete(editingCardUid);
+            STATE.blacklist.add(newUid);
+        }
+    }
+
     saveData();
-    renderGameCard(); // Refresh View
-    toggleEditMode(); // Close
+    closeEditModal();
+    
+    // Update Views
+    if(STATE.currentCard && (STATE.currentCard._uid === editingCardUid || STATE.currentCard._uid === newUid)) {
+        // If we are currently playing this card
+        STATE.currentCard.es = es;
+        STATE.currentCard.en = en;
+        STATE.currentCard._uid = newUid;
+        renderGameCard();
+    }
+    
+    // Refresh Manager List if open
+    if(document.getElementById('panel-words').classList.contains('active')) {
+        renderWordList();
+    }
 }
 
 function showDeckComplete() {
@@ -1683,19 +1748,22 @@ function renderWordList() {
           ${STATE.starred.has(c._uid) ? '<span class="word-tag" style="color:#facc15">★</span>' : ''}
         </div>
       </div>
-      <button class="btn-icon" onclick="deleteWordByUid('${c._uid}')">🗑</button>
+      <div style="display:flex; gap:4px">
+        <button class="btn-icon edit" onclick="openEditModal('${c._uid}')">✏️</button>
+        <button class="btn-icon del" onclick="deleteWordByUid('${c._uid}')">🗑</button>
+      </div>
     `;
     container.appendChild(el);
   });
   
   if(list.length > 100) {
-     const more = document.createElement('div');
-     more.style.textAlign = 'center';
-     more.style.fontSize = '12px';
-     more.style.padding = '10px';
-     more.style.color = 'var(--text-muted)';
-     more.textContent = `...and ${list.length - 100} more`;
-     container.appendChild(more);
+      const more = document.createElement('div');
+      more.style.textAlign = 'center';
+      more.style.fontSize = '12px';
+      more.style.padding = '10px';
+      more.style.color = 'var(--text-muted)';
+      more.textContent = `...and ${list.length - 100} more`;
+      container.appendChild(more);
   }
 }
 
