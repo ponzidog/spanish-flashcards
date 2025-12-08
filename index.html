@@ -819,7 +819,6 @@ function nextCard() {
       d.cards.forEach(c => {
          const uid = getCardId(d.id, c);
          if(STATE.struggleList.includes(uid)) {
-           // Basic validation to prevent infinite loops if something weird happens
            pool.push({ ...c, _realDeckId: d.id, _uid: uid });
          }
       });
@@ -1082,8 +1081,12 @@ function renderWordList() {
        if(STATE.blacklist.has(uid)) return;
        
        const score = (STATE.progress[uid] || {}).score || 0;
+       const p = STATE.progress[uid] || {seen: 0};
+       
        if(fStatus === 'known' && score < 4) return;
-       if(fStatus === 'learning' && score >= 4) return;
+       if(fStatus === 'learning' && score >= 4) return; // Only show mastered in known
+       // Wait, current learning logic is score < 4 AND seen > 0
+       if(fStatus === 'learning' && (score >= 4 || p.seen === 0)) return;
 
        if(fTopic !== 'all' && d.topicId !== fTopic) return;
        
@@ -1277,8 +1280,11 @@ function updateStats() {
   let known = 0, learning = 0;
   Object.entries(STATE.progress).forEach(([uid, p]) => {
     if(STATE.blacklist.has(uid)) return;
-    if(p.score >= 4) known++;
-    else if (p.score > 0) learning++;
+    if(p.score >= 4) {
+        known++;
+    } else if (p.seen > 0) { 
+        learning++;
+    }
   });
   
   let total = 0;
