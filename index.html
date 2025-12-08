@@ -199,7 +199,6 @@
     .deck-card:hover { background: rgba(30, 41, 59, 0.9); border-color: rgba(148, 163, 184, 0.3); transform: translateY(-2px); }
     .deck-card.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.05); }
     
-    /* Green Mastery (One Direction) */
     .deck-card.mastered-green {
       border-color: var(--accent);
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(34, 197, 94, 0.1));
@@ -208,7 +207,6 @@
       content: '✔'; position: absolute; top: 10px; right: 10px; color: var(--accent); font-size: 14px;
     }
 
-    /* Gold Mastery (Both Directions) */
     .deck-card.mastered-gold {
       border-color: var(--gold);
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(234, 179, 8, 0.15));
@@ -218,25 +216,24 @@
       content: '★'; position: absolute; top: 10px; right: 10px; color: var(--gold); font-size: 16px;
     }
 
-    /* Specific Layout for Difficulty Cards (UPDATED) */
     .deck-card.diff-card {
         flex-direction: row; 
         align-items: center; 
         gap: 16px; 
-        padding: 16px 20px; /* Nicer padding */
+        padding: 16px 20px;
     }
     .diff-emoji { 
-        font-size: 28px; /* Smaller emoji */
+        font-size: 28px; 
         line-height: 1; 
-        min-width: 32px; /* Fixed width to prevent misalignment */
+        min-width: 32px;
         text-align: center;
     }
     .diff-text-col { 
         display: flex; 
         flex-direction: column; 
         gap: 2px; 
-        flex: 1; /* Takes remaining space */
-        min-width: 0; /* Prevents text overflow breaking layout */
+        flex: 1; 
+        min-width: 0;
     }
     .diff-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
     .diff-sub { font-size: 12px; color: var(--text-muted); }
@@ -315,7 +312,6 @@
       padding: 10px; background: rgba(30,41,59,0.5); border-radius: var(--radius-sm);
       border: 1px solid rgba(148,163,184,0.1);
     }
-    /* Difficulty Colors */
     .word-row.bg-diff-beginner { background: rgba(34, 197, 94, 0.08); border-color: rgba(34, 197, 94, 0.1); }
     .word-row.bg-diff-intermediate { background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.1); }
     .word-row.bg-diff-advanced { background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.1); }
@@ -346,7 +342,19 @@
       padding: 30px;
       display: flex; flex-direction: column; justify-content: space-between;
       position: relative; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.5);
+      transition: border-color 0.5s ease, box-shadow 0.5s ease; /* Smooth transition for feedback */
     }
+    
+    /* Feedback States */
+    .flashcard.correct {
+      border-color: #22c55e !important;
+      box-shadow: 0 0 25px rgba(34, 197, 94, 0.4);
+    }
+    .flashcard.wrong {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+    }
+
     .card-meta { display: flex; justify-content: space-between; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 20px; }
     .card-main { text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
     .label-lang { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
@@ -377,9 +385,22 @@
     }
     .input-answer:focus { border-color: var(--accent); }
 
+    /* Streak Indicator */
+    .streak-container {
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fbbf24;
+        text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+        margin-top: 5px;
+    }
+
     /* Mini In-Game Settings (Now Below Buttons) */
     .mini-controls {
-        display: flex; gap: 10px; justify-content: center; width: 100%; margin-top: 10px;
+        display: flex; gap: 10px; justify-content: center; width: 100%; margin-top: 5px;
     }
     .mini-btn {
         background: transparent; border: 1px solid rgba(148,163,184,0.15);
@@ -479,6 +500,8 @@
         <div class="action-row" id="gameControlsNext" style="display:none">
            <button class="btn-action primary" id="btnNextCard">Next Card ➡</button>
         </div>
+
+        <div class="streak-container" id="streakIndicator"></div>
 
         <div class="mini-controls" id="gameMiniControls">
             <button class="mini-btn" id="miniBtnDir" onclick="toggleGameSetting('dir')">Swap: ES ➡ EN</button>
@@ -628,6 +651,7 @@ const STATE = {
   struggleList: [], 
   lastCardUid: null,
   revealTime: 0,
+  streak: 0, // NEW: Track correct answer streak
   
   // Navigation
   view: 'root', 
@@ -859,7 +883,6 @@ function renderDecks() {
 }
 
 // --- MASTERY CHECK HELPERS ---
-// Returns 'gold', 'green', or null
 function getMasteryStatusForCards(cards, deckIdRef) {
     const coreCards = cards.filter(c => !c._custom);
     if(coreCards.length === 0) return null; // Only custom cards don't count for colors
@@ -874,12 +897,8 @@ function getMasteryStatusForCards(cards, deckIdRef) {
         if((p.scoreEnEs || 0) < 4) allEnEs = false;
     });
 
-    // Gold = Both directions mastered
     if(allEsEn && allEnEs) return 'gold';
-    
-    // Green = ONE direction mastered (specifically the active one, or broadly at least one)
     if(allEsEn || allEnEs) return 'green';
-    
     return null;
 }
 
@@ -935,6 +954,7 @@ function startSession(deckId, isMix = false) {
   STATE.isStruggleMode = false;
   STATE.sessionStats = { correctFirst: 0, struggle: 0 };
   STATE.struggleList = [];
+  STATE.streak = 0; // Reset streak
   
   if(!isMix && !deckId) return;
   
@@ -953,6 +973,7 @@ function startPracticeStruggle() {
   if(STATE.struggleList.length === 0) return;
   STATE.isStruggleMode = true;
   STATE.lastCardUid = null;
+  STATE.streak = 0;
   document.getElementById('overlay').style.display = 'none';
   nextCard();
 }
@@ -1041,12 +1062,33 @@ function renderGameCard() {
   document.getElementById('gameControlsNext').style.display = 'none';
   document.getElementById('gameControlsStart').style.display = 'flex';
   document.getElementById('btnShowAnswer').style.display = 'block';
-  document.getElementById('gameInputArea').style.display = STATE.mode === 'type' ? 'block' : 'none';
-  document.getElementById('gameInput').value = '';
+  
+  // Reset Input
+  const input = document.getElementById('gameInput');
+  input.value = '';
   document.getElementById('gameFeedback').textContent = '';
+  
+  // Handling Input Area Visibility and Focus for Mobile Keyboard
+  if (STATE.mode === 'type') {
+      document.getElementById('gameInputArea').style.display = 'block';
+      // Immediate focus attempt
+      input.focus();
+      // Redundant timeout for some mobile behaviors
+      setTimeout(() => input.focus(), 10);
+  } else {
+      document.getElementById('gameInputArea').style.display = 'none';
+  }
   
   // Show mini controls
   document.getElementById('gameMiniControls').style.display = 'flex';
+
+  // Render Streak
+  const streakEl = document.getElementById('streakIndicator');
+  if(STATE.streak >= 2) {
+      streakEl.textContent = `🔥 ${STATE.streak}`;
+  } else {
+      streakEl.textContent = '';
+  }
 
   const deckName = STATE.activeDecks.find(d => d.id === c._realDeckId)?.name || "";
   document.getElementById('gameDeckName').textContent = deckName;
@@ -1070,10 +1112,6 @@ function renderGameCard() {
     ex = `"${c.exampleEs}"<br>"${c.exampleEn}"`;
   }
   document.getElementById('gameExamples').innerHTML = ex;
-  
-  if(STATE.mode === 'type') {
-    setTimeout(() => document.getElementById('gameInput').focus(), 50);
-  }
 }
 
 // Helper to clean strings for typing comparison
@@ -1099,17 +1137,14 @@ function showAnswer(force = false) {
     const targets = rawTarget.split('/').map(t => cleanText(t));
     
     // Logic: If answering in English (Target), "the" is optional.
-    // We remove leading "the" from both user input and target before comparing.
     const cleanThe = (s) => s.replace(/^the\s+/, '');
 
     let isCorrect = false;
 
     if(isEs) {
-        // Target is English -> apply flexible "the" rule
         const valNoThe = cleanThe(val);
         isCorrect = targets.some(t => cleanThe(t) === valNoThe);
     } else {
-        // Target is Spanish -> strict "el/la" required
         isCorrect = targets.includes(val);
     }
     
@@ -1121,6 +1156,7 @@ function showAnswer(force = false) {
     } else {
       document.getElementById('gameFeedback').textContent = `❌ Incorrect.`;
       document.getElementById('gameFeedback').style.color = "#f87171";
+      triggerCardFeedback(false);
       markCard(false, false);
     }
   }
@@ -1134,6 +1170,24 @@ function showAnswer(force = false) {
   } else {
     document.getElementById('gameControlsNext').style.display = 'flex';
   }
+}
+
+// Applies the green/red visual feedback
+function triggerCardFeedback(isCorrect) {
+    const card = document.getElementById('gameCard');
+    const cls = isCorrect ? 'correct' : 'wrong';
+    
+    // Remove both to reset if clicked rapidly
+    card.classList.remove('correct', 'wrong');
+    
+    // Force reflow to restart animation if needed
+    void card.offsetWidth;
+    
+    card.classList.add(cls);
+    
+    setTimeout(() => {
+        card.classList.remove(cls);
+    }, 500);
 }
 
 function markCard(success, autoAdvance = true) {
@@ -1152,6 +1206,9 @@ function markCard(success, autoAdvance = true) {
   let currentScore = isEs ? STATE.progress[uid].scoreEsEn : STATE.progress[uid].scoreEnEs;
 
   if(success) {
+     STATE.streak++;
+     triggerCardFeedback(true); // Green Flash
+
      if(STATE.sessionData[uid].count === 1) STATE.sessionStats.correctFirst++;
      
      // TIME LOGIC
@@ -1167,6 +1224,9 @@ function markCard(success, autoAdvance = true) {
      }
 
   } else {
+     STATE.streak = 0; // Reset Streak
+     if(!autoAdvance) triggerCardFeedback(false); // Red Flash if manually clicking
+
      // Still Learning
      currentScore = Math.max(0, currentScore - 1);
      STATE.sessionData[uid].struggle = true;
@@ -1182,7 +1242,16 @@ function markCard(success, autoAdvance = true) {
   saveData();
   updateStats();
   
-  if(autoAdvance) nextCard();
+  if(autoAdvance) {
+      // In Type mode, we move immediately so the input clears and refocuses 
+      // instantly, keeping keyboard open, while the green hue fades out.
+      nextCard();
+  } else {
+      // In manual mode, update UI to reflect streak changes immediately
+      const streakEl = document.getElementById('streakIndicator');
+      if(STATE.streak >= 2) streakEl.textContent = `🔥 ${STATE.streak}`;
+      else streakEl.textContent = '';
+  }
 }
 
 function showDeckComplete() {
