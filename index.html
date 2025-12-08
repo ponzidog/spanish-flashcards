@@ -820,8 +820,7 @@ async function init() {
   bindEvents();
   renderDecks();
   updateStats();
-  populateAddDropdown();
-  populateTopicFilter();
+  populateTopicFilter();     // <-- This function handles both the Filter and the Add menus
   updateGameMiniSettings();
 }
 
