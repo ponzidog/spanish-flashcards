@@ -47,38 +47,39 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 10px; 
+      padding: 10px;
+      transition: background 0.2s; 
+    }
+
+    /* 5-Streak Flash Class */
+    body.streak-flash {
+      background: #064e3b !important; /* Deep green flash */
     }
 
     /* --- Loading Screen --- */
     #loadingScreen {
-      position: fixed; inset: 0; z-index: 9999;
+      position: fixed;
+      inset: 0; z-index: 9999;
       background: #0f172a;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       transition: opacity 0.5s ease;
     }
-    .loader-content {
-      width: 80%; max-width: 400px; text-align: center;
-    }
+    .loader-content { width: 80%; max-width: 400px; text-align: center; }
     .loading-bar-bg {
       width: 100%; height: 6px; background: rgba(148,163,184,0.2);
       border-radius: 99px; overflow: hidden; margin-bottom: 20px;
     }
     .loading-bar-fill {
-      height: 100%; width: 30%; background: var(--accent);
+      height: 100%; width: 30%;
+      background: var(--accent);
       border-radius: 99px;
       animation: loadAnim 2s infinite ease-in-out;
     }
     @keyframes loadAnim { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
     
     .fun-fact-container { min-height: 80px; display: flex; align-items: center; justify-content: center; }
-    .fun-fact-text {
-      font-size: 16px; color: #bae6fd; font-weight: 500; line-height: 1.5;
-      opacity: 1; transition: opacity 0.5s ease;
-    }
-    .fun-fact-label {
-      font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 8px;
-    }
+    .fun-fact-text { font-size: 16px; color: #bae6fd; font-weight: 500; line-height: 1.5; opacity: 1; transition: opacity 0.5s ease; }
+    .fun-fact-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 8px; }
 
     /* --- App Container --- */
     .app {
@@ -98,7 +99,7 @@
 
     /* --- Header --- */
     .app-header {
-      padding: 20px;
+      padding: 16px;
       border-bottom: var(--card-border);
       background: rgba(15, 23, 42, 0.8);
     }
@@ -106,15 +107,14 @@
     .header-top {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 16px;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
     }
 
     .logo-block h1 {
       margin: 0;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -123,21 +123,30 @@
     }
 
     .logo-pill {
-      font-size: 10px;
+      font-size: 9px;
       text-transform: uppercase;
       background: var(--accent-soft);
       border-radius: 99px;
-      padding: 3px 8px;
+      padding: 2px 6px;
       color: #86efac;
       letter-spacing: 0.05em;
       border: 1px solid rgba(34, 197, 94, 0.3);
     }
 
+    .header-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .btn-settings {
+        background: transparent; border: none; font-size: 20px; cursor: pointer; padding: 0;
+        transition: transform 0.2s;
+    }
+    .btn-settings:hover { transform: rotate(45deg); }
+
     .deck-description {
-      margin: 4px 0 0 0;
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.4;
+      margin: 4px 0 0 0; font-size: 13px; color: var(--text-muted); line-height: 1.4;
     }
 
     /* Stats Pills */
@@ -145,6 +154,7 @@
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
+      margin-top: 8px;
     }
     .stat-pill {
       font-size: 11px;
@@ -160,13 +170,15 @@
     }
     .stat-pill:hover { background: rgba(30, 41, 59, 0.9); border-color: var(--text-muted); }
     .stat-pill strong { color: var(--text-main); font-weight: 600; }
+    
     .stat-pill.accent { border-color: rgba(34, 197, 94, 0.4); color: #bbf7d0; background: rgba(34, 197, 94, 0.1); }
     .stat-pill.danger { border-color: rgba(239, 68, 68, 0.4); color: #fecaca; background: rgba(239, 68, 68, 0.1); }
+    .stat-pill.gold { border-color: rgba(234, 179, 8, 0.4); color: #fde047; background: rgba(234, 179, 8, 0.1); }
 
     /* --- Navigation Tabs --- */
     .nav-tabs {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       background: rgba(15, 23, 42, 0.6);
       padding: 4px;
       border-radius: 99px;
@@ -214,11 +226,9 @@
 
     /* --- Deck Grid (Updated) --- */
     .deck-grid { 
-      display: grid; 
-      /* Increased minmax for better desktop sizing */
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-      /* Increased gap for spacing */
-      gap: 20px; 
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px; 
       margin-bottom: 20px;
     }
     
@@ -226,19 +236,17 @@
       background: rgba(30, 41, 59, 0.6);
       border: 1px solid rgba(148, 163, 184, 0.1);
       border-radius: var(--radius-sm);
-      padding: 20px; /* Increased padding */
+      padding: 16px 12px;
       cursor: pointer;
       transition: all 0.2s;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center; /* Center content */
+      justify-content: center;
       text-align: center;
-      gap: 10px;
+      gap: 8px;
       position: relative;
-      min-height: 120px; /* Ensure cards have height */
-      
-      /* Fix for text overflow */
+      min-height: 100px;
       word-break: break-word;
       overflow-wrap: break-word;
       hyphens: auto;
@@ -252,7 +260,8 @@
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(34, 197, 94, 0.1));
     }
     .deck-card.mastered-green::after {
-      content: '✔'; position: absolute; top: 8px; right: 8px; color: var(--accent); font-size: 14px;
+      content: '✔'; position: absolute; top: 6px; right: 6px;
+      color: var(--accent); font-size: 12px;
     }
 
     .deck-card.mastered-gold {
@@ -261,36 +270,31 @@
       box-shadow: 0 0 15px rgba(234, 179, 8, 0.1);
     }
     .deck-card.mastered-gold::after {
-      content: '★'; position: absolute; top: 8px; right: 8px; color: var(--gold); font-size: 16px;
+      content: '★'; position: absolute; top: 6px; right: 6px;
+      color: var(--gold); font-size: 14px;
     }
 
     .deck-card.diff-card {
-        flex-direction: row; 
+        flex-direction: row;
         align-items: center; 
         text-align: left;
-        gap: 16px; 
-        padding: 16px 20px;
+        gap: 12px; 
+        padding: 12px 16px;
         justify-content: flex-start;
     }
     .diff-emoji { 
-        font-size: 28px; 
+        font-size: 24px; 
         line-height: 1; 
-        min-width: 32px;
+        min-width: 28px;
         text-align: center;
     }
-    .diff-text-col { 
-        display: flex; 
-        flex-direction: column; 
-        gap: 2px; 
-        flex: 1; 
-        min-width: 0;
-    }
-    .diff-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
-    .diff-sub { font-size: 12px; color: var(--text-muted); }
+    .diff-text-col { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .diff-title { font-weight: 700; font-size: 15px; color: var(--text-main); }
+    .diff-sub { font-size: 11px; color: var(--text-muted); }
 
-    .deck-icon { font-size: 26px; margin-bottom: 2px; }
-    .deck-title { font-weight: 600; font-size: 14px; line-height: 1.3; }
-    .deck-count { font-size: 11px; color: var(--text-muted); }
+    .deck-icon { font-size: 22px; margin-bottom: 2px; }
+    .deck-title { font-weight: 600; font-size: 13px; line-height: 1.3; }
+    .deck-count { font-size: 10px; color: var(--text-muted); }
     .deck-section-title { margin: 0 0 15px 0; font-size: 18px; font-weight: 600; color: #fff; }
 
     /* --- Stats Dashboard --- */
@@ -309,7 +313,6 @@
     .sd-label { font-size: 11px; color: var(--text-muted); }
     .rank-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 99px; margin-top: 8px; overflow: hidden; }
     .rank-fill { height: 100%; background: var(--gold); border-radius: 99px; width: 0%; transition: width 1s ease; }
-
 
     /* Breadcrumbs */
     .breadcrumbs { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
@@ -339,24 +342,18 @@
     }
     .setting-check-btn.checked { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); color: #bbf7d0; }
     
-    .setting-nav-btn {
-      width: 100%; display: flex; align-items: center; justify-content: space-between;
-      padding: 14px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(148,163,184,0.2);
-      border-radius: var(--radius-sm); color: var(--text-main); font-size: 14px; font-weight: 500;
-      cursor: pointer; transition: 0.2s;
-    }
-    .setting-nav-btn:hover { background: rgba(30, 41, 59, 0.8); border-color: var(--accent); }
-
     /* Add Card Form */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .add-section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #fff; display:flex; justify-content:space-between; align-items:center; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid rgba(148,163,184,0.15); }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group.full { grid-column: span 2; }
     label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
     input, textarea, select {
-      background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(148, 163, 184, 0.2);
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.2);
       color: var(--text-main); padding: 12px; border-radius: var(--radius-sm);
-      font-family: inherit; font-size: 15px; outline: none; transition: 0.2s;
-      width: 100%;
+      font-family: inherit; font-size: 15px; outline: none;
+      transition: 0.2s; width: 100%;
     }
     input:focus, textarea:focus, select:focus { border-color: var(--accent); background: rgba(15, 23, 42, 0.8); }
     .btn-submit {
@@ -372,13 +369,22 @@
     .toggle-ex-btn:hover { border-color: var(--accent); color: var(--accent); }
 
     /* Words Manager */
-    .word-manager-container { max-height: 500px; overflow-y: auto; margin-top: 10px; }
+    .word-manager-container { max-height: 500px; overflow-y: auto; margin-top: 10px; padding-bottom: 40px;}
     .filter-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .filter-input { flex: 1; min-width: 120px; padding: 8px; font-size: 13px; }
+    
+    .btn-play-filter {
+        width: 100%; background: var(--accent); color: #022c22; font-weight: 700;
+        padding: 12px; border-radius: var(--radius-sm); margin-bottom: 12px;
+        display: none; cursor: pointer; text-align: center; border: none;
+    }
+    .btn-play-filter:hover { background: var(--accent-hover); }
+
     .word-list { display: flex; flex-direction: column; gap: 6px; }
     .word-row {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 10px; background: rgba(30,41,59,0.5); border-radius: var(--radius-sm);
+      padding: 10px;
+      background: rgba(30,41,59,0.5); border-radius: var(--radius-sm);
       border: 1px solid rgba(148,163,184,0.1);
     }
     .word-row.bg-diff-beginner { background: rgba(34, 197, 94, 0.08); border-color: rgba(34, 197, 94, 0.1); }
@@ -402,7 +408,8 @@
 
     /* Game Card */
     .game-area {
-      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; min-height: 400px;
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; min-height: 400px;
     }
     .flashcard {
       width: 100%; max-width: 500px; min-height: 280px;
@@ -411,32 +418,42 @@
       border-radius: var(--radius-lg);
       padding: 30px;
       display: flex; flex-direction: column; justify-content: space-between;
-      position: relative; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.5);
-      transition: border-color 0.5s ease, box-shadow 0.5s ease; /* Smooth transition for feedback */
+      position: relative;
+      box-shadow: 0 20px 50px -12px rgba(0,0,0,0.5);
+      transition: border-color 0.5s ease, box-shadow 0.5s ease;
     }
     
     /* Feedback States */
-    .flashcard.correct {
-      border-color: #22c55e !important;
-      box-shadow: 0 0 25px rgba(34, 197, 94, 0.4);
-    }
-    .flashcard.wrong {
-      border-color: #ef4444 !important;
-      box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
-    }
+    .flashcard.correct { border-color: #22c55e !important; box-shadow: 0 0 25px rgba(34, 197, 94, 0.4); }
+    .flashcard.wrong { border-color: #ef4444 !important; box-shadow: 0 0 25px rgba(239, 68, 68, 0.4); }
 
-    .card-meta { display: flex; justify-content: space-between; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 20px; }
+    .card-meta { display: flex; justify-content: space-between; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 20px; align-items: center; }
     .card-main { text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
     .label-lang { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-    .word-text { font-size: 36px; font-weight: 700; color: var(--text-main); margin-bottom: 20px; line-height: 1.2; word-break: break-word; }
+    .word-text { font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 20px; line-height: 1.2; word-break: break-word; }
     .reveal-section { border-top: 1px dashed rgba(148,163,184,0.2); padding-top: 20px; margin-top: 10px; animation: fadeIn 0.3s ease; }
     .reveal-text { font-size: 24px; font-weight: 500; color: #bae6fd; margin-bottom: 8px; }
     .examples { font-size: 14px; color: var(--text-muted); font-style: italic; line-height: 1.5; }
 
+    /* Card Controls (Star, Edit) */
+    .card-controls { display: flex; gap: 8px; }
+    .card-btn { background: transparent; border: none; cursor: pointer; font-size: 18px; color: rgba(148, 163, 184, 0.5); transition: 0.2s; padding: 4px; }
+    .card-btn:hover { color: var(--text-main); transform: scale(1.1); }
+    .card-btn.starred { color: var(--gold); }
+
+    /* Edit Form Overlay */
+    .edit-overlay {
+        position: absolute; inset: 0; background: #0f172a; z-index: 10; padding: 20px; border-radius: var(--radius-lg);
+        display: none; flex-direction: column; gap: 10px;
+    }
+    .edit-overlay input { font-size: 14px; padding: 10px; margin-bottom: 5px; }
+    .edit-actions { display: flex; gap: 8px; margin-top: auto; }
+
     /* Game Actions */
     .action-row { display: flex; gap: 8px; width: 100%; max-width: 500px; }
     .btn-action {
-      flex: 1; border: 1px solid rgba(148,163,184,0.2); background: rgba(30,41,59,0.5);
+      flex: 1; border: 1px solid rgba(148,163,184,0.2);
+      background: rgba(30,41,59,0.5);
       color: var(--text-main); padding: 12px; border-radius: 99px; font-size: 14px;
       cursor: pointer; transition: 0.2s; font-weight: 500;
     }
@@ -449,8 +466,10 @@
     .btn-action.ghost:hover { color: var(--danger); }
 
     .input-answer {
-      width: 100%; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.3);
-      padding: 14px; border-radius: 99px; color: white; font-size: 16px; text-align: center;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.3);
+      padding: 14px; border-radius: 99px; color: white; font-size: 16px;
+      text-align: center;
       margin-bottom: 10px; outline: none;
     }
     .input-answer:focus { border-color: var(--accent); }
@@ -468,12 +487,11 @@
         margin-top: 5px;
     }
 
-    /* Mini In-Game Settings (Now Below Buttons) */
-    .mini-controls {
-        display: flex; gap: 10px; justify-content: center; width: 100%; margin-top: 5px;
-    }
+    /* Mini In-Game Settings */
+    .mini-controls { display: flex; gap: 10px; justify-content: center; width: 100%; margin-top: 5px; }
     .mini-btn {
-        background: transparent; border: 1px solid rgba(148,163,184,0.15);
+        background: transparent;
+        border: 1px solid rgba(148,163,184,0.15);
         color: var(--text-muted); font-size: 11px; padding: 6px 14px;
         border-radius: 99px; cursor: pointer; transition: 0.2s;
         text-transform: uppercase; letter-spacing: 0.5px;
@@ -491,11 +509,12 @@
     @media (max-width: 600px) {
       .app { min-height: 100vh; border-radius: 0; border: none; }
       .flashcard { min-height: 240px; padding: 20px; }
-      .word-text { font-size: 28px; }
+      .word-text { font-size: 26px; }
       .form-grid { grid-template-columns: 1fr; }
       .form-group.full { grid-column: span 1; }
       .nav-tabs { justify-content: flex-start; }
-      .deck-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+      .deck-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+      .deck-card { padding: 12px; }
     }
   </style>
 </head>
@@ -503,9 +522,7 @@
 
 <div id="loadingScreen">
   <div class="loader-content">
-    <div class="loading-bar-bg">
-      <div class="loading-bar-fill"></div>
-    </div>
+    <div class="loading-bar-bg"><div class="loading-bar-fill"></div></div>
     <div class="fun-fact-container">
       <div>
         <div class="fun-fact-label">Did you know?</div>
@@ -520,20 +537,25 @@
     <div class="header-top">
       <div class="logo-block">
         <h1>Spanish Flashcards <span class="logo-pill">PRO</span></h1>
-        <p class="deck-description" id="headerDesc">Select a difficulty to begin.</p>
       </div>
-      <div class="stats-row">
+      <div class="header-actions">
+          <button class="btn-settings" onclick="openSettings()">⚙️</button>
+      </div>
+    </div>
+    
+    <div style="margin-bottom:12px;">
+       <p class="deck-description" id="headerDesc">Select a difficulty to begin.</p>
+       <div class="stats-row">
         <div class="stat-pill accent" onclick="openWordsManagerFromHeader('known')">Known: <strong id="statKnown">0</strong></div>
         <div class="stat-pill danger" onclick="openWordsManagerFromHeader('learning')">Learning: <strong id="statLearning">0</strong></div>
-        <div class="stat-pill" onclick="openWordsManagerFromHeader('all')">Total: <strong id="statTotal">0</strong></div>
+        <div class="stat-pill gold" onclick="openWordsManagerFromHeader('starred')">Starred: <strong id="statStarred">0</strong></div>
       </div>
     </div>
 
     <div class="nav-tabs">
       <button class="nav-tab active" data-panel="decks">📚 Decks</button>
       <button class="nav-tab" data-panel="game">🎮 Play</button>
-      <button class="nav-tab" data-panel="add">➕ Add</button>
-      <button class="nav-tab" data-panel="settings">⚙️ Settings</button>
+      <button class="nav-tab" data-panel="words">🗂 Words</button>
     </div>
   </header>
 
@@ -567,8 +589,13 @@
       <div class="game-area">
         <div class="flashcard" id="gameCard">
           <div class="card-meta">
-            <span id="gameDeckName">All Decks</span>
-            <span id="gameStrength">New Word</span>
+            <div>
+                <span id="gameDeckName">Deck</span> • <span id="gameStrength">New</span>
+            </div>
+            <div class="card-controls">
+                <button class="card-btn" id="btnEditCard" onclick="toggleEditMode()" title="Edit Card">✏️</button>
+                <button class="card-btn" id="btnStarCard" onclick="toggleStar()" title="Star Card">★</button>
+            </div>
           </div>
           
           <div class="card-main">
@@ -585,6 +612,17 @@
               <div class="reveal-text" id="gameBackText">...</div>
               <div class="examples" id="gameExamples"></div>
             </div>
+          </div>
+          
+          <div class="edit-overlay" id="editOverlay">
+              <label>Spanish</label>
+              <input type="text" id="editEs">
+              <label>English</label>
+              <input type="text" id="editEn">
+              <div class="edit-actions">
+                  <button class="btn-action primary" onclick="saveEdit()">Save</button>
+                  <button class="btn-action ghost" onclick="toggleEditMode()">Cancel</button>
+              </div>
           </div>
         </div>
         
@@ -611,7 +649,10 @@
       </div>
     </div>
 
-    <div id="panel-add" class="panel">
+    <div id="panel-words" class="panel">
+      <div class="add-section-title">
+          <span>Add New Card</span>
+      </div>
       <div class="form-grid">
         <div class="form-group">
           <label>Spanish Word</label>
@@ -624,9 +665,6 @@
         <div class="form-group full">
           <label>Category (Topic)</label>
           <select id="addTopicSelect"></select>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
-            Added words appear in <strong>Mix</strong> decks and specific <strong>Topic</strong> decks across all levels.
-          </div>
         </div>
         
         <div class="form-group full">
@@ -643,44 +681,34 @@
           <div id="addMsg" style="text-align:center; font-size:12px; margin-top:8px; min-height:16px;"></div>
         </div>
       </div>
+      
+      <div class="add-section-title" style="margin-top:30px; border-top:1px solid rgba(148,163,184,0.1); padding-top:20px;">
+          <span>Manage Words</span>
+      </div>
+      <div class="filter-bar">
+         <input type="text" id="searchWords" class="input-answer filter-input" placeholder="🔍 Search words..." onkeyup="renderWordList()">
+         <select id="filterStatus" class="input-answer filter-input" onchange="renderWordList()">
+           <option value="all">All Status</option>
+           <option value="known">Known</option>
+           <option value="learning">Learning</option>
+           <option value="starred">Starred</option>
+         </select>
+         <select id="filterTopic" class="input-answer filter-input" onchange="renderWordList()">
+            <option value="all">All Categories</option>
+         </select>
+      </div>
+      
+      <button id="btnPlayFilter" class="btn-play-filter" onclick="playFilteredList()">▶ Play These Words</button>
+
+      <div id="wordListContainer" class="word-list word-manager-container"></div>
     </div>
 
     <div id="panel-settings" class="panel">
-      
-      <div id="settings-words-manager" style="display:none">
-        <div class="breadcrumbs" style="margin-bottom:15px">
-           <button class="back-btn" onclick="closeWordsManager()">‹ Back to Settings</button>
-        </div>
-        <div class="filter-bar">
-         <select id="filterDifficulty" class="input-answer filter-input" onchange="renderWordList()">
-           <option value="all">All Difficulties</option>
-           </select>
-         <select id="filterStatus" class="input-answer filter-input" onchange="renderWordList()">
-           <option value="all">All Status</option>
-           <option value="known">Known / Mastered</option>
-           <option value="learning">Still Learning</option>
-         </select>
-         <select id="filterTopic" class="input-answer filter-input" onchange="renderWordList()">
-           <option value="all">All Categories</option>
-         </select>
-         <select id="filterSort" class="input-answer filter-input" onchange="renderWordList()">
-            <option value="diff">Sort: Difficulty</option>
-            <option value="az">Sort: A-Z (ES)</option>
-         </select>
-        </div>
-        <div id="wordListContainer" class="word-list word-manager-container">
-          </div>
+      <div class="breadcrumbs" style="margin-bottom:15px">
+           <button class="back-btn" onclick="switchPanel('decks')">‹ Back to Decks</button>
       </div>
-
+      
       <div id="settings-main">
-        <div class="setting-group">
-          <div class="setting-header">Content Manager</div>
-          <button class="setting-nav-btn" onclick="openWordsManager()">
-              <span>🗂 Manage All Words</span>
-              <span style="opacity:0.5; font-size:18px">›</span>
-          </button>
-        </div>
-
         <div class="setting-group">
           <div class="setting-header">Custom Content</div>
           <div class="setting-check-btn" id="btnToggleIncludeCustom" onclick="toggleSetting('includeCustom')">
@@ -714,7 +742,6 @@
           <button class="btn-action danger" id="btnResetData" style="width:100%">Reset All Progress</button>
         </div>
       </div>
-
     </div>
 
   </div>
@@ -722,12 +749,10 @@
   <div class="overlay" id="overlay">
     <div class="overlay-content">
       <h2 style="margin-top:0">🎉 Deck Complete!</h2>
-      
       <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
-        <div class="stat-pill accent">1st Time Correct: <strong id="resCorrect">0</strong></div>
+        <div class="stat-pill accent">Mastered: <strong id="resCorrect">0</strong></div>
         <div class="stat-pill danger">Struggled: <strong id="resStruggle">0</strong></div>
       </div>
-      
       <button class="btn-action primary" onclick="closeOverlay()">Back to Decks</button>
       <button class="btn-action danger" id="btnPracticeStruggle" style="margin-top:10px" onclick="startPracticeStruggle()">Practice Struggle Words</button>
     </div>
@@ -740,19 +765,20 @@
  * APP LOGIC
  */
 const STATE = {
-  decksRaw: [], // Loaded from JSON
-  activeDecks: [], // Flattened list
+  decksRaw: [],
+  activeDecks: [],
   customCards: {}, // { topicId: [cards] } 
   progress: {}, // { cardId: { scoreEsEn, scoreEnEs, seen } }
-  blacklist: new Set(), // Deleted card IDs
+  blacklist: new Set(),
+  starred: new Set(), // Set of UIDs
   
   // Session State
-  sessionData: {}, // { uid: { count: 0, struggle: false, postCount: 0 } }
+  sessionData: {}, 
   sessionStats: { correctFirst: 0, struggle: 0 },
   struggleList: [], 
+  customSessionList: null, // For playing filtered lists
   lastCardUid: null,
-  revealTime: 0,
-  streak: 0, // NEW: Track correct answer streak
+  streak: 0, 
   
   // Navigation
   view: 'root', 
@@ -774,13 +800,13 @@ const STATE = {
 const FUN_FACTS = [
     "Spanish is the second most spoken native language in the world, beating English!",
     "The letter 'ñ' is the only letter of Spanish origin.",
-    "Spanish was once known as 'the Christian' (cristiano) in Spain to distinguish it from Arabic.",
-    "Exclamation and question marks are used upside down at the beginning of sentences (¡Hola!).",
-    "Spanish is one of the 'Romance' languages, meaning it comes from Latin (the language of Romans).",
+    "Spanish was once known as 'the Christian' (cristiano) in Spain.",
+    "Exclamation and question marks are used upside down (¡Hola!).",
+    "Spanish is a Romance language, coming from Latin.",
     "The United States has more Spanish speakers than Spain!",
     "The most common letter in Spanish is 'e'.",
-    "Arabic influenced Spanish heavily: words like 'azúcar' (sugar) and 'almohada' (pillow) come from Arabic.",
-    "The Royal Spanish Academy (RAE) has been regulating the language since 1713.",
+    "Arabic influenced Spanish heavily: words like 'azúcar' come from Arabic.",
+    "The Royal Spanish Academy (RAE) has regulated the language since 1713.",
     "Spanish is the official language in 20 different countries."
 ];
 
@@ -790,28 +816,23 @@ let factInterval;
 async function init() {
   startLoadingScreen();
   loadLocalData();
-  await loadRemoteData(); // This is fast, but loading screen will handle it
+  await loadRemoteData();
   bindEvents();
   renderDecks();
   updateStats();
   populateAddDropdown();
+  populateTopicFilter();
   updateGameMiniSettings();
 }
 
 // --- LOADING SCREEN ---
 function startLoadingScreen() {
     const textEl = document.getElementById('funFactText');
-    const screen = document.getElementById('loadingScreen');
-    
-    // Set initial fact
     textEl.textContent = FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)];
-    
-    // Rotate every 6 seconds
     factInterval = setInterval(() => {
         textEl.style.opacity = '0';
         setTimeout(() => {
-            const fact = FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)];
-            textEl.textContent = fact;
+            textEl.textContent = FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)];
             textEl.style.opacity = '1';
         }, 500);
     }, 6000);
@@ -835,10 +856,9 @@ async function loadRemoteData() {
     STATE.activeDecks = json.decks.map(d => ({ ...d, cards: [...d.cards] }));
     injectCustomCards();
     renderDecks();
-    // Simulate tiny delay just so the screen doesn't flicker uncomfortably fast if local
     setTimeout(hideLoadingScreen, 500);
   } catch (e) {
-    document.getElementById('deckGrid').innerHTML = `<div style="padding:20px; color:#fca5a5">Error loading decks.json. Ensure file exists and is accessible.</div>`;
+    document.getElementById('deckGrid').innerHTML = `<div style="padding:20px; color:#fca5a5">Error loading decks.json.</div>`;
     hideLoadingScreen();
   }
 }
@@ -848,31 +868,17 @@ function loadLocalData() {
   if(custom) STATE.customCards = JSON.parse(custom);
 
   const prog = localStorage.getItem('sf_progress');
-  if(prog) {
-    const rawProg = JSON.parse(prog);
-    STATE.progress = {};
-    Object.keys(rawProg).forEach(uid => {
-        const item = rawProg[uid];
-        if(typeof item.score === 'number') {
-            STATE.progress[uid] = { 
-                scoreEsEn: item.score, 
-                scoreEnEs: 0, 
-                seen: item.seen || 0 
-            };
-        } else {
-            STATE.progress[uid] = item;
-        }
-    });
-  }
+  if(prog) STATE.progress = JSON.parse(prog);
 
   const black = localStorage.getItem('sf_blacklist');
   if(black) STATE.blacklist = new Set(JSON.parse(black));
   
-  // Load settings
+  const starred = localStorage.getItem('sf_starred');
+  if(starred) STATE.starred = new Set(JSON.parse(starred));
+
   const settings = JSON.parse(localStorage.getItem('sf_settings') || '{}');
   if(settings.dir) changeToggle('dir', settings.dir, false);
   if(settings.mode) changeToggle('mode', settings.mode, false);
-  
   STATE.includeCustom = settings.includeCustom !== false;
   STATE.onlyCustom = settings.onlyCustom === true;
   if(settings.selDiff) STATE.selDiff = settings.selDiff;
@@ -885,7 +891,7 @@ function saveData() {
   localStorage.setItem('sf_custom', JSON.stringify(STATE.customCards));
   localStorage.setItem('sf_progress', JSON.stringify(STATE.progress));
   localStorage.setItem('sf_blacklist', JSON.stringify([...STATE.blacklist]));
-  
+  localStorage.setItem('sf_starred', JSON.stringify([...STATE.starred]));
   const settings = {
     dir: STATE.direction,
     mode: STATE.mode,
@@ -902,6 +908,10 @@ function injectCustomCards() {
     topicCards.forEach(c => {
        const exists = deck.cards.find(ex => ex.es === c.es && ex._custom);
        if(!exists) deck.cards.push(c);
+       else {
+           // Update existing custom card ref in memory if it changed
+           Object.assign(exists, c);
+       }
     });
   });
 }
@@ -914,7 +924,7 @@ const domHeaderDesc = document.getElementById('headerDesc');
 function getDifficultyIcon(label) {
     const l = label.toLowerCase();
     if(l.includes('beginner')) return '🐣';
-    if(l.includes('basic')) return '🌱'; // Basic = Seedling
+    if(l.includes('basic')) return '🌱';
     if(l.includes('intermediate')) return '🧗';
     if(l.includes('proficient')) return '🚀';
     if(l.includes('advanced')) return '🧠';
@@ -923,11 +933,7 @@ function getDifficultyIcon(label) {
 
 function getTopicEmoji(topicId) {
     const map = {
-        'verbs': '🏃',
-        'everyday-nouns': '📦',
-        'adjectives': '✨',
-        'phrases': '💬',
-        'time-numbers': '⏰'
+        'verbs': '🏃', 'everyday-nouns': '📦', 'adjectives': '✨', 'phrases': '💬', 'time-numbers': '⏰'
     };
     return map[topicId] || '📝';
 }
@@ -936,27 +942,33 @@ function renderDecks() {
   domGrid.innerHTML = '';
   domBread.innerHTML = '';
   const personalStats = document.getElementById('personalStatsArea');
-  
-  // 1. Root: Select Difficulty
+
   if(!STATE.selDiff) {
     domHeaderDesc.textContent = "Select your difficulty level.";
-    personalStats.style.display = 'block'; // Show stats on main screen
+    personalStats.style.display = 'block';
     updatePersonalStatsUI();
     
     if(!STATE.decksRaw.difficulties) return;
+    
+    // Starred Deck Card
+    if(STATE.starred.size > 0) {
+        const starEl = createCard('⭐', 'Starred Words', `${STATE.starred.size} cards`, () => {
+             openWordsManagerFromHeader('starred');
+             playFilteredList(); // Immediate play
+        });
+        starEl.classList.add('mastered-gold');
+        domGrid.appendChild(starEl);
+    }
+
     STATE.decksRaw.difficulties.forEach(diff => {
-      // Logic for completion color
       const status = checkDifficultyCompletion(diff.id);
-      
       const el = document.createElement('div');
       el.className = 'deck-card diff-card';
       if(status === 'gold') el.classList.add('mastered-gold');
       else if(status === 'green') el.classList.add('mastered-green');
 
-      const icon = getDifficultyIcon(diff.label);
-      
       el.innerHTML = `
-        <div class="diff-emoji">${icon}</div>
+        <div class="diff-emoji">${getDifficultyIcon(diff.label)}</div>
         <div class="diff-text-col">
             <div class="diff-title">${diff.label}</div>
             <div class="diff-sub">Difficulty</div>
@@ -973,83 +985,59 @@ function renderDecks() {
     return;
   }
 
-  // Hide stats on sub-screens to save space
   personalStats.style.display = 'none';
-
-  // 2. Levels
   const diffObj = STATE.decksRaw.difficulties.find(d => d.id === STATE.selDiff);
+  
   if(STATE.selDiff && !STATE.selLevel) {
     domHeaderDesc.textContent = `Select a level in ${diffObj.label}.`;
     addBreadcrumb("Difficulties", () => { STATE.selDiff = null; renderDecks(); });
     
-    // Find levels
     const levels = new Set(STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff).map(d => d.levelIndex));
     [...levels].sort().forEach(lvl => {
       const status = checkLevelCompletion(STATE.selDiff, lvl);
-      
-      const el = createCard('⭐', `Level ${lvl}`, `${diffObj.label}`, () => {
+      const el = createCard('📶', `Level ${lvl}`, `${diffObj.label}`, () => {
         STATE.selLevel = lvl;
         renderDecks();
       });
-      
       if(status === 'gold') el.classList.add('mastered-gold');
       else if(status === 'green') el.classList.add('mastered-green');
-      
       domGrid.appendChild(el);
     });
     return;
   }
 
-  // 3. Decks
   if(STATE.selDiff && STATE.selLevel) {
     domHeaderDesc.textContent = `Pick a topic to study.`;
     addBreadcrumb("Difficulties", () => { STATE.selDiff = null; STATE.selLevel = null; renderDecks(); });
     addBreadcrumb(`Level ${STATE.selLevel}`, () => { STATE.selLevel = null; renderDecks(); });
-    
-    // Filter decks
+
     const decks = STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel);
-    
-    // Calculate Mix Deck Count
     let mixCount = 0;
     decks.forEach(d => { mixCount += getPlayableCount(d); });
-    
-    // Check Level Completion for Mix Deck Color
     const levelStatus = checkLevelCompletion(STATE.selDiff, STATE.selLevel);
-
-    // Add Mix Deck Option
-    const mixEl = createCard('⚡', "Mix All Topics", `${mixCount} cards`, () => {
-       startSession(null, true); 
-    });
+    
+    const mixEl = createCard('⚡', "Mix All Topics", `${mixCount} cards`, () => { startSession(null, true); });
     mixEl.classList.add('active');
     if(levelStatus === 'gold') mixEl.classList.add('mastered-gold');
     else if(levelStatus === 'green') mixEl.classList.add('mastered-green');
-
     domGrid.appendChild(mixEl);
 
     decks.forEach(d => {
-      // Get Topic Name
       const topic = STATE.decksRaw.topics.find(t => t.id === d.topicId);
       const label = topic ? topic.label : d.name;
       const count = getPlayableCount(d);
-      
       const status = checkDeckCompletion(d);
       const icon = getTopicEmoji(d.topicId);
-
-      const el = createCard(icon, label, `${count} cards`, () => {
-        startSession(d.id);
-      });
-      
+      const el = createCard(icon, label, `${count} cards`, () => { startSession(d.id); });
       if(status === 'gold') el.classList.add('mastered-gold');
       else if(status === 'green') el.classList.add('mastered-green');
-
       domGrid.appendChild(el);
     });
   }
 }
 
-// --- PERSONAL STATS UI ---
+// --- STATS UI ---
 function updatePersonalStatsUI() {
-    // Calculate Ranks
     let known = 0;
     const isEs = STATE.direction === 'es-en';
     Object.entries(STATE.progress).forEach(([uid, p]) => {
@@ -1058,7 +1046,6 @@ function updatePersonalStatsUI() {
         if(score >= 4) known++;
     });
 
-    // Ranks Logic
     const ranks = [
         { name: "Novice", limit: 20 },
         { name: "Apprentice", limit: 50 },
@@ -1067,24 +1054,19 @@ function updatePersonalStatsUI() {
         { name: "Master", limit: 600 },
         { name: "Grandmaster", limit: 1000 }
     ];
-
     let currentRank = ranks[0];
     let nextRank = ranks[1];
     let prevLimit = 0;
-
     for(let i=0; i<ranks.length; i++) {
         if(known >= ranks[i].limit) {
             currentRank = ranks[i];
             nextRank = ranks[i+1] || null;
             prevLimit = ranks[i].limit;
-        } else {
-            break;
-        }
+        } else { break; }
     }
 
     document.getElementById('psRank').textContent = currentRank.name;
     document.getElementById('psStreak').textContent = `🔥 ${STATE.streak}`;
-
     if(nextRank) {
         const totalNeeded = nextRank.limit - prevLimit;
         const currentProgress = known - prevLimit;
@@ -1095,37 +1077,27 @@ function updatePersonalStatsUI() {
     }
 }
 
-// --- MASTERY CHECK HELPERS ---
 function getMasteryStatusForCards(cards, deckIdRef) {
     const coreCards = cards.filter(c => !c._custom);
-    if(coreCards.length === 0) return null; // Only custom cards don't count for colors
-
-    let allEsEn = true;
-    let allEnEs = true;
-
+    if(coreCards.length === 0) return null; 
+    let allEsEn = true, allEnEs = true;
     coreCards.forEach(c => {
         const uid = getCardId(c._realDeckId || deckIdRef, c);
         const p = STATE.progress[uid] || {};
         if((p.scoreEsEn || 0) < 4) allEsEn = false;
         if((p.scoreEnEs || 0) < 4) allEnEs = false;
     });
-
     if(allEsEn && allEnEs) return 'gold';
     if(allEsEn || allEnEs) return 'green';
     return null;
 }
-
-function checkDeckCompletion(deck) {
-    return getMasteryStatusForCards(deck.cards, deck.id);
-}
-
+function checkDeckCompletion(deck) { return getMasteryStatusForCards(deck.cards, deck.id); }
 function checkLevelCompletion(diffId, levelIdx) {
     const decks = STATE.activeDecks.filter(d => d.difficultyId === diffId && d.levelIndex === levelIdx);
     if(decks.length === 0) return null;
     const allCards = decks.flatMap(d => d.cards.map(c => ({...c, _realDeckId: d.id})));
     return getMasteryStatusForCards(allCards, null);
 }
-
 function checkDifficultyCompletion(diffId) {
     const decks = STATE.activeDecks.filter(d => d.difficultyId === diffId);
     if(decks.length === 0) return null;
@@ -1162,21 +1134,17 @@ function getPlayableCount(deck) {
 // --- GAME LOGIC ---
 function startSession(deckId, isMix = false) {
   STATE.currentDeckId = deckId;
-  STATE.sessionData = {}; // Clear session counts
+  STATE.sessionData = {};
   STATE.lastCardUid = null;
   STATE.isStruggleMode = false;
+  STATE.customSessionList = null;
   STATE.sessionStats = { correctFirst: 0, struggle: 0 };
   STATE.struggleList = [];
-  STATE.streak = 0; // Reset streak
+  STATE.streak = 0;
   
   if(!isMix && !deckId) return;
-  
   const pool = getPoolFromCurrentSession();
-  
-  if(pool.length === 0) {
-    alert("No cards available with current filters!");
-    return;
-  }
+  if(pool.length === 0) { alert("No cards available!"); return; }
   
   switchPanel('game');
   nextCard();
@@ -1191,10 +1159,41 @@ function startPracticeStruggle() {
   nextCard();
 }
 
+// Start a filtered session (e.g. from Words Manager)
+function startFilteredSession(uidList) {
+    STATE.currentDeckId = null;
+    STATE.customSessionList = uidList; // Use this list instead of logic
+    STATE.sessionData = {};
+    STATE.lastCardUid = null;
+    STATE.isStruggleMode = false;
+    STATE.sessionStats = { correctFirst: 0, struggle: 0 };
+    STATE.struggleList = [];
+    STATE.streak = 0;
+    
+    if(uidList.length === 0) { alert("No cards in list."); return; }
+    switchPanel('game');
+    nextCard();
+}
+
 function nextCard() {
   let pool = [];
   
-  if(STATE.isStruggleMode) {
+  if (STATE.customSessionList) {
+      // Logic for playing specific list from manager
+      const allDecks = STATE.activeDecks;
+      pool = [];
+      STATE.customSessionList.forEach(uid => {
+          // Reconstruct card object from uid
+          const parts = uid.split(':');
+          const deckId = parts[0];
+          const esKey = parts.slice(1).join(':'); // In case ES has colons (rare)
+          const deck = allDecks.find(d => d.id === deckId);
+          if(deck) {
+              const card = deck.cards.find(c => c.es.replace(/\s/g,'') === esKey);
+              if(card) pool.push({ ...card, _realDeckId: deckId, _uid: uid });
+          }
+      });
+  } else if(STATE.isStruggleMode) {
     STATE.activeDecks.forEach(d => {
       d.cards.forEach(c => {
          const uid = getCardId(d.id, c);
@@ -1207,41 +1206,26 @@ function nextCard() {
     pool = getPoolFromCurrentSession();
   }
   
-  // Filter Pool
+  // Filter Pool Strategy (prevent immediate repeats)
   const playable = pool.filter(c => {
-    // No Repeats (if possible)
     if(pool.length > 1 && c._uid === STATE.lastCardUid) return false;
-    
-    if(STATE.isStruggleMode) return true;
+    if(STATE.isStruggleMode || STATE.customSessionList) return true;
 
-    // Session Limit Logic
     const p = STATE.progress[c._uid] || {};
-    // Check score based on CURRENT direction
     const score = (STATE.direction === 'es-en') ? (p.scoreEsEn || 0) : (p.scoreEnEs || 0);
-
     const sData = STATE.sessionData[c._uid] || { count: 0, struggle: false, postCount: 0 };
     
-    // Mastered Words (Score >= 4)
+    // Simple session throttling
     if(score >= 4) {
-       // If never struggled this session, max 2 views
-       if(!sData.struggle) {
-         if(sData.count >= 2) return false; 
-       } else {
-         // If struggled this session, max 2 views AFTER struggle
-         if(sData.postCount >= 2) return false;
-       }
+       if(!sData.struggle) { if(sData.count >= 2) return false; } 
+       else { if(sData.postCount >= 2) return false; }
     }
     return true;
   });
 
-  if(playable.length === 0) {
-    showDeckComplete();
-    return;
-  }
+  if(playable.length === 0) { showDeckComplete(); return; }
   
-  // Simple Random
   const card = playable[Math.floor(Math.random() * playable.length)];
-  
   STATE.currentCard = card;
   STATE.lastCardUid = card._uid;
   renderGameCard();
@@ -1253,7 +1237,7 @@ function getPoolFromCurrentSession() {
   const relevantDecks = isMix 
     ? STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel)
     : [STATE.activeDecks.find(d => d.id === STATE.currentDeckId)];
-    
+  
   relevantDecks.forEach(d => {
     d.cards.forEach((c, idx) => {
       const uid = getCardId(d.id, c);
@@ -1275,33 +1259,34 @@ function renderGameCard() {
   document.getElementById('gameControlsNext').style.display = 'none';
   document.getElementById('gameControlsStart').style.display = 'flex';
   document.getElementById('btnShowAnswer').style.display = 'block';
-  
-  // Reset Input
+  document.getElementById('editOverlay').style.display = 'none'; // Ensure edit is closed
+
+  // Edit Icon Logic
+  const btnEdit = document.getElementById('btnEditCard');
+  if(c._custom) btnEdit.style.display = 'block';
+  else btnEdit.style.display = 'none';
+
+  // Star Icon Logic
+  const btnStar = document.getElementById('btnStarCard');
+  if(STATE.starred.has(c._uid)) btnStar.classList.add('starred');
+  else btnStar.classList.remove('starred');
+
   const input = document.getElementById('gameInput');
   input.value = '';
   document.getElementById('gameFeedback').textContent = '';
   
-  // Handling Input Area Visibility and Focus for Mobile Keyboard
   if (STATE.mode === 'type') {
       document.getElementById('gameInputArea').style.display = 'block';
-      // Immediate focus attempt
       input.focus();
-      // Redundant timeout for some mobile behaviors
       setTimeout(() => input.focus(), 10);
   } else {
       document.getElementById('gameInputArea').style.display = 'none';
   }
-  
-  // Show mini controls
   document.getElementById('gameMiniControls').style.display = 'flex';
 
-  // Render Streak
   const streakEl = document.getElementById('streakIndicator');
-  if(STATE.streak >= 2) {
-      streakEl.textContent = `🔥 ${STATE.streak}`;
-  } else {
-      streakEl.textContent = '';
-  }
+  if(STATE.streak >= 2) streakEl.textContent = `🔥 ${STATE.streak}`;
+  else streakEl.textContent = '';
 
   const deckName = STATE.activeDecks.find(d => d.id === c._realDeckId)?.name || "";
   document.getElementById('gameDeckName').textContent = deckName;
@@ -1321,15 +1306,13 @@ function renderGameCard() {
   document.getElementById('gameBackText').textContent = isEs ? c.en : c.es;
   
   let ex = "";
-  if(c.exampleEs && c.exampleEn) {
-    ex = `"${c.exampleEs}"<br>"${c.exampleEn}"`;
-  }
+  if(c.exampleEs && c.exampleEn) { ex = `"${c.exampleEs}"<br>"${c.exampleEn}"`; }
   document.getElementById('gameExamples').innerHTML = ex;
 }
 
-// Helper to clean strings for typing comparison
 function cleanText(str) {
-    let s = str.replace(/\s*\(.*?\)\s*/g, '');
+    // Remove content inside parentheses: "to be (essential)" -> "to be"
+    let s = str.replace(/\s*\(.*?\)/g, "");
     s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     s = s.toLowerCase();
     s = s.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¿¡?]/g, "");
@@ -1337,23 +1320,15 @@ function cleanText(str) {
 }
 
 function showAnswer(force = false) {
-  STATE.revealTime = Date.now(); 
-  
   if(STATE.mode === 'type' && !force) {
     const input = document.getElementById('gameInput');
     const val = cleanText(input.value);
-    
-    // Check Direction: ES-EN means target is English
     const isEs = STATE.direction === 'es-en';
     const rawTarget = isEs ? STATE.currentCard.en : STATE.currentCard.es;
-    
     const targets = rawTarget.split('/').map(t => cleanText(t));
-    
-    // Logic: If answering in English (Target), "the" is optional.
     const cleanThe = (s) => s.replace(/^the\s+/, '');
-
+    
     let isCorrect = false;
-
     if(isEs) {
         const valNoThe = cleanThe(val);
         isCorrect = targets.some(t => cleanThe(t) === valNoThe);
@@ -1376,8 +1351,7 @@ function showAnswer(force = false) {
 
   document.getElementById('gameReveal').style.display = 'block';
   document.getElementById('gameControlsStart').style.display = 'none';
-  document.getElementById('gameMiniControls').style.display = 'none'; // Hide settings
-  
+  document.getElementById('gameMiniControls').style.display = 'none';
   if(STATE.mode === 'reveal') {
     document.getElementById('gameControlsJudge').style.display = 'flex';
   } else {
@@ -1385,22 +1359,13 @@ function showAnswer(force = false) {
   }
 }
 
-// Applies the green/red visual feedback
 function triggerCardFeedback(isCorrect) {
     const card = document.getElementById('gameCard');
     const cls = isCorrect ? 'correct' : 'wrong';
-    
-    // Remove both to reset if clicked rapidly
     card.classList.remove('correct', 'wrong');
-    
-    // Force reflow to restart animation if needed
     void card.offsetWidth;
-    
     card.classList.add(cls);
-    
-    setTimeout(() => {
-        card.classList.remove(cls);
-    }, 500);
+    setTimeout(() => { card.classList.remove(cls); }, 500);
 }
 
 function markCard(success, autoAdvance = true) {
@@ -1409,10 +1374,7 @@ function markCard(success, autoAdvance = true) {
   if(!STATE.sessionData[uid]) STATE.sessionData[uid] = { count: 0, struggle: false, postCount: 0 };
   
   STATE.progress[uid].seen++;
-  const diff = Date.now() - STATE.revealTime;
   const isEs = STATE.direction === 'es-en';
-
-  // Session Tracking
   STATE.sessionData[uid].count++;
   if(STATE.sessionData[uid].struggle) STATE.sessionData[uid].postCount++;
 
@@ -1420,53 +1382,111 @@ function markCard(success, autoAdvance = true) {
 
   if(success) {
      STATE.streak++;
-     triggerCardFeedback(true); // Green Flash
-
+     triggerCardFeedback(true);
      if(STATE.sessionData[uid].count === 1) STATE.sessionStats.correctFirst++;
      
-     // TIME LOGIC
-     if(diff <= 3000) {
-       currentScore = 4;
-     } else {
-       if(currentScore < 4) currentScore = 3; 
-       if(!STATE.struggleList.includes(uid)) STATE.struggleList.push(uid);
+     // Master immediately on correct (Removing 3s logic)
+     currentScore = 4;
+     
+     // 5-Streak Reward
+     if(STATE.streak > 0 && STATE.streak % 5 === 0) {
+         document.body.classList.add('streak-flash');
+         setTimeout(() => document.body.classList.remove('streak-flash'), 500);
      }
      
+     // Remove from struggle list if active
      if(STATE.isStruggleMode) {
        STATE.struggleList = STATE.struggleList.filter(id => id !== uid);
      }
-     updatePersonalStatsUI(); // Live update streak
+     
+     // Known Logic for removing from "Learning" tab
+     // (Handled automatically by getPool filtering and status checking)
 
   } else {
-     STATE.streak = 0; // Reset Streak
-     if(!autoAdvance) triggerCardFeedback(false); // Red Flash if manually clicking
-
-     // Still Learning
-     currentScore = Math.max(0, currentScore - 1);
+     STATE.streak = 0;
+     if(!autoAdvance) triggerCardFeedback(false); 
+     
+     currentScore = Math.max(0, currentScore - 1); // Downgrade
      STATE.sessionData[uid].struggle = true;
      STATE.sessionData[uid].postCount = 0; 
      STATE.sessionStats.struggle++;
      if(!STATE.struggleList.includes(uid)) STATE.struggleList.push(uid);
-     updatePersonalStatsUI(); // Live update streak
   }
 
-  // Update State
   if(isEs) STATE.progress[uid].scoreEsEn = currentScore;
   else STATE.progress[uid].scoreEnEs = currentScore;
   
   saveData();
   updateStats();
+  updatePersonalStatsUI();
   
-  if(autoAdvance) {
-      // In Type mode, we move immediately so the input clears and refocuses 
-      // instantly, keeping keyboard open, while the green hue fades out.
-      nextCard();
-  } else {
-      // In manual mode, update UI to reflect streak changes immediately
+  if(autoAdvance) nextCard();
+  else {
       const streakEl = document.getElementById('streakIndicator');
       if(STATE.streak >= 2) streakEl.textContent = `🔥 ${STATE.streak}`;
       else streakEl.textContent = '';
   }
+}
+
+function toggleStar() {
+    const uid = STATE.currentCard._uid;
+    const btn = document.getElementById('btnStarCard');
+    if(STATE.starred.has(uid)) {
+        STATE.starred.delete(uid);
+        btn.classList.remove('starred');
+    } else {
+        STATE.starred.add(uid);
+        btn.classList.add('starred');
+    }
+    saveData();
+    updateStats();
+}
+
+// Edit Mode
+function toggleEditMode() {
+    const overlay = document.getElementById('editOverlay');
+    const c = STATE.currentCard;
+    if(overlay.style.display === 'flex') {
+        overlay.style.display = 'none';
+    } else {
+        document.getElementById('editEs').value = c.es;
+        document.getElementById('editEn').value = c.en;
+        overlay.style.display = 'flex';
+    }
+}
+
+function saveEdit() {
+    const es = document.getElementById('editEs').value.trim();
+    const en = document.getElementById('editEn').value.trim();
+    if(!es || !en) return alert("Fields cannot be empty");
+    
+    // Update Memory
+    STATE.currentCard.es = es;
+    STATE.currentCard.en = en;
+    
+    // Update Custom Cards Store
+    const deck = STATE.activeDecks.find(d => d.id === STATE.currentCard._realDeckId);
+    if(deck) {
+        const cardRef = deck.cards.find(x => x.es === STATE.currentCard.es || x === STATE.currentCard); // Find strict or soft ref
+        if(cardRef) {
+            cardRef.es = es;
+            cardRef.en = en;
+        }
+    }
+    
+    // Persist if in customCards
+    // We iterate customCards to find the object reference
+    Object.values(STATE.customCards).forEach(list => {
+        const match = list.find(c => c === STATE.currentCard || (c.es === STATE.currentCard.es && c._custom));
+        if(match) {
+            match.es = es;
+            match.en = en;
+        }
+    });
+
+    saveData();
+    renderGameCard(); // Refresh View
+    toggleEditMode(); // Close
 }
 
 function showDeckComplete() {
@@ -1481,7 +1501,6 @@ function showDeckComplete() {
   } else {
     btnStruggle.style.display = 'none';
   }
-  
   launchConfetti();
 }
 
@@ -1506,7 +1525,6 @@ function launchConfetti() {
 function deleteCurrentCard() {
   if(!confirm("Permanently remove this card?")) return;
   const c = STATE.currentCard;
-  
   if(c._custom) {
     const topicCards = STATE.customCards[STATE.activeDecks.find(d => d.id === c._realDeckId).topicId];
     if(topicCards) {
@@ -1514,7 +1532,6 @@ function deleteCurrentCard() {
       if(idx > -1) topicCards.splice(idx, 1);
     }
   } 
-  
   STATE.blacklist.add(c._uid);
   saveData();
   updateStats();
@@ -1531,7 +1548,6 @@ function toggleGameSetting(type) {
         document.getElementById('gameInputArea').style.display = STATE.mode === 'type' ? 'block' : 'none';
         if(STATE.mode === 'type') document.getElementById('gameInput').focus();
     }
-    
     changeToggle(type, type === 'dir' ? STATE.direction : STATE.mode, false); 
     saveData();
     updateGameMiniSettings();
@@ -1540,47 +1556,73 @@ function toggleGameSetting(type) {
 function updateGameMiniSettings() {
     const btnDir = document.getElementById('miniBtnDir');
     const btnMode = document.getElementById('miniBtnMode');
-    
     btnDir.textContent = (STATE.direction === 'es-en') ? 'Swap: ES ➡ EN' : 'Swap: EN ➡ ES';
     btnMode.textContent = (STATE.mode === 'reveal') ? 'Mode: Reveal' : 'Mode: Type';
-    
     btnDir.classList.remove('active');
     btnMode.classList.remove('active');
-    
     if(STATE.direction === 'en-es') btnDir.classList.add('active');
     if(STATE.mode === 'type') btnMode.classList.add('active');
 }
 
 
 // --- WORDS MANAGER UI ---
-function openWordsManager() {
-  document.getElementById('settings-main').style.display = 'none';
-  document.getElementById('settings-words-manager').style.display = 'block';
-  populateTopicFilter();
-  populateDifficultyFilter();
-  renderWordList();
-}
-
-function closeWordsManager() {
-  document.getElementById('settings-words-manager').style.display = 'none';
-  document.getElementById('settings-main').style.display = 'block';
+function openSettings() {
+    switchPanel('settings');
 }
 
 function openWordsManagerFromHeader(filter) {
-  switchPanel('settings');
-  openWordsManager();
+  switchPanel('words');
   document.getElementById('filterStatus').value = filter || 'all';
   renderWordList();
 }
 
+// Logic to play specific filtered list
+function playFilteredList() {
+    // Collect UIDs currently shown in manager
+    const container = document.getElementById('wordListContainer');
+    // We can re-run the filter logic to get the list, it's cleaner
+    const fStatus = document.getElementById('filterStatus').value;
+    const fTopic = document.getElementById('filterTopic').value;
+    const fSearch = document.getElementById('searchWords').value.toLowerCase().trim();
+    
+    let uids = [];
+    STATE.activeDecks.forEach(d => {
+        d.cards.forEach(c => {
+           const uid = getCardId(d.id, c);
+           if(STATE.blacklist.has(uid)) return;
+           const p = STATE.progress[uid] || { scoreEsEn: 0, scoreEnEs: 0, seen: 0 };
+           const maxScore = Math.max(p.scoreEsEn || 0, p.scoreEnEs || 0); 
+
+           if(fStatus === 'known' && maxScore < 4) return;
+           if(fStatus === 'learning' && (maxScore >= 4 || p.seen === 0)) return;
+           if(fStatus === 'starred' && !STATE.starred.has(uid)) return;
+
+           if(fTopic !== 'all' && d.topicId !== fTopic) return;
+           if(fSearch && !c.es.toLowerCase().includes(fSearch) && !c.en.toLowerCase().includes(fSearch)) return;
+
+           uids.push(uid);
+        });
+    });
+    
+    startFilteredSession(uids);
+}
+
 function renderWordList() {
   const container = document.getElementById('wordListContainer');
+  const btnPlay = document.getElementById('btnPlayFilter');
   const fStatus = document.getElementById('filterStatus').value;
   const fTopic = document.getElementById('filterTopic').value;
-  const fDiff = document.getElementById('filterDifficulty').value;
-  const fSort = document.getElementById('filterSort').value;
+  const fSearch = document.getElementById('searchWords').value.toLowerCase().trim();
   
   container.innerHTML = 'Loading...';
+
+  // Only show "Play" button if filtered to Learning or Starred
+  if(fStatus === 'learning' || fStatus === 'starred') {
+      btnPlay.style.display = 'block';
+      btnPlay.textContent = `▶ Play ${fStatus === 'starred' ? 'Starred' : 'Learning'} Words`;
+  } else {
+      btnPlay.style.display = 'none';
+  }
 
   const allCardsMap = new Map();
   STATE.activeDecks.forEach(d => {
@@ -1589,50 +1631,43 @@ function renderWordList() {
        if(STATE.blacklist.has(uid)) return;
        
        const p = STATE.progress[uid] || { scoreEsEn: 0, scoreEnEs: 0, seen: 0 };
-       
-       // Average Score for sorting/display simplified
        const maxScore = Math.max(p.scoreEsEn || 0, p.scoreEnEs || 0); 
        
-       // Status Filter
        if(fStatus === 'known' && maxScore < 4) return;
        if(fStatus === 'learning' && (maxScore >= 4 || p.seen === 0)) return;
+       if(fStatus === 'starred' && !STATE.starred.has(uid)) return;
 
-       // Topic Filter
        if(fTopic !== 'all' && d.topicId !== fTopic) return;
        
-       // Difficulty Filter
-       if(fDiff === 'custom') {
-           if(!c._custom) return;
-       } else if(fDiff !== 'all') {
-           if(d.difficultyId !== fDiff) return;
-       }
+       // Search Filter
+       if(fSearch && !c.es.toLowerCase().includes(fSearch) && !c.en.toLowerCase().includes(fSearch)) return;
 
-       allCardsMap.set(uid, { ...c, _deckName: d.name, _diffId: d.difficultyId, _score: maxScore, _uid: uid });
+       allCardsMap.set(uid, { ...c, _deckName: d.name, _score: maxScore, _uid: uid });
     });
   });
   
   let list = Array.from(allCardsMap.values());
-  
-  if(fSort === 'az') {
-    list.sort((a,b) => a.es.localeCompare(b.es));
-  } else if (fSort === 'diff') {
-     list.sort((a,b) => a._score - b._score);
-  }
+  // Sort A-Z default
+  list.sort((a,b) => a.es.localeCompare(b.es));
   
   container.innerHTML = '';
   if(list.length === 0) {
     container.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted)">No words match filter.</div>';
+    btnPlay.style.display = 'none'; // Hide play button if no words
     return;
   }
   
-  const renderLimit = list.slice(0, 100); 
-  
+  // Update button text with count
+  if(btnPlay.style.display !== 'none') {
+      btnPlay.textContent = `▶ Play ${list.length} ${fStatus === 'starred' ? 'Starred' : 'Learning'} Words`;
+  }
+
+  const renderLimit = list.slice(0, 100);
   renderLimit.forEach(c => {
     const scoreClass = c._score >= 4 ? 'score-4' : (c._score === 3 ? 'score-3' : (c._score > 0 ? 'score-1' : 'score-0'));
-    
     let bgClass = '';
     if(c._custom) bgClass = 'bg-custom';
-    else if(c._diffId) bgClass = `bg-diff-${c._diffId}`; 
+    else if(STATE.starred.has(c._uid)) bgClass = 'bg-diff-proficient'; // Visual hint for starred in list
 
     const el = document.createElement('div');
     el.className = `word-row ${bgClass}`;
@@ -1646,6 +1681,7 @@ function renderWordList() {
         <div class="word-sub">
           ${c._deckName}
           ${c._custom ? '<span class="word-tag">Custom</span>' : ''}
+          ${STATE.starred.has(c._uid) ? '<span class="word-tag" style="color:#facc15">★</span>' : ''}
         </div>
       </div>
       <button class="btn-icon" onclick="deleteWordByUid('${c._uid}')">🗑</button>
@@ -1674,44 +1710,22 @@ function deleteWordByUid(uid) {
 
 function populateTopicFilter() {
   const sel = document.getElementById('filterTopic');
+  const addSel = document.getElementById('addTopicSelect');
   sel.innerHTML = '<option value="all">All Categories</option>';
+  addSel.innerHTML = '';
+  
   if(STATE.decksRaw.topics) {
     STATE.decksRaw.topics.forEach(t => {
+      // Filter
       const opt = document.createElement('option');
       opt.value = t.id;
       opt.textContent = t.label;
       sel.appendChild(opt);
-    });
-  }
-}
-
-function populateDifficultyFilter() {
-    const sel = document.getElementById('filterDifficulty');
-    sel.innerHTML = '<option value="all">All Difficulties</option>';
-    if(STATE.decksRaw.difficulties) {
-        STATE.decksRaw.difficulties.forEach(d => {
-            const opt = document.createElement('option');
-            opt.value = d.id;
-            opt.textContent = d.label;
-            sel.appendChild(opt);
-        });
-    }
-    const optCustom = document.createElement('option');
-    optCustom.value = 'custom';
-    optCustom.textContent = 'Manually added';
-    sel.appendChild(optCustom);
-}
-
-// --- ADD CARD UI ---
-function populateAddDropdown() {
-  const sel = document.getElementById('addTopicSelect');
-  sel.innerHTML = '';
-  if(STATE.decksRaw.topics) {
-    STATE.decksRaw.topics.forEach(t => {
-      const opt = document.createElement('option');
-      opt.value = t.id;
-      opt.textContent = t.label;
-      sel.appendChild(opt);
+      // Add Dropdown
+      const opt2 = document.createElement('option');
+      opt2.value = t.id;
+      opt2.textContent = t.label;
+      addSel.appendChild(opt2);
     });
   }
 }
@@ -1742,16 +1756,12 @@ function onAddSubmit() {
   }
   
   const newCard = { es, en, exampleEs: exEs, exampleEn: exEn, _custom: true };
-  
   if(!STATE.customCards[topicId]) STATE.customCards[topicId] = [];
   STATE.customCards[topicId].push(newCard);
   
   STATE.activeDecks.forEach(d => {
-    if(d.topicId === topicId) {
-       d.cards.push(newCard);
-    }
+    if(d.topicId === topicId) { d.cards.push(newCard); }
   });
-  
   saveData();
   updateStats();
   
@@ -1764,10 +1774,9 @@ function onAddSubmit() {
   document.getElementById('addExEs').value = '';
   document.getElementById('addExEn').value = '';
   document.getElementById('addEs').focus();
-  
+  renderWordList(); // Refresh list if open
   setTimeout(() => document.getElementById('addMsg').textContent = '', 2000);
 }
-
 
 // --- UTILS ---
 function switchPanel(panelId) {
@@ -1779,9 +1788,7 @@ function switchPanel(panelId) {
   if(navBtn) navBtn.classList.add('active');
   
   if(panelId === 'decks') renderDecks();
-  if(panelId === 'settings') { 
-    closeWordsManager();
-  }
+  if(panelId === 'words') renderWordList();
 }
 
 function changeToggle(group, val, shouldSave=true) {
@@ -1789,12 +1796,10 @@ function changeToggle(group, val, shouldSave=true) {
     if(btn.dataset.val === val) btn.classList.add('active');
     else btn.classList.remove('active');
   });
-  
   if(group === 'dir') STATE.direction = val;
   if(group === 'mode') STATE.mode = val;
   
   updateGameMiniSettings(); 
-  
   if(shouldSave) saveData();
 }
 
@@ -1802,7 +1807,7 @@ function toggleSetting(key) {
   STATE[key] = !STATE[key];
   saveData();
   updateCheckUI(key, STATE[key]);
-  renderDecks(); 
+  renderDecks();
 }
 
 function updateCheckUI(key, val) {
@@ -1819,35 +1824,18 @@ function updateCheckUI(key, val) {
 
 function updateStats() {
   let known = 0, learning = 0;
-  // Stats reflect CURRENT direction setting (simple heuristic)
   const isEs = STATE.direction === 'es-en';
-
   Object.entries(STATE.progress).forEach(([uid, p]) => {
     if(STATE.blacklist.has(uid)) return;
     const score = isEs ? (p.scoreEsEn||0) : (p.scoreEnEs||0);
-    
-    if(score >= 4) {
-        known++;
-    } else if (p.seen > 0) { 
-        learning++;
-    }
+    if(score >= 4) known++;
+    else if (p.seen > 0) learning++;
   });
   
-  let total = 0;
-  const uniqueAll = new Set();
-  STATE.activeDecks.forEach(d => {
-      d.cards.forEach(c => {
-          const uid = getCardId(d.id, c);
-          if(!STATE.blacklist.has(uid)) uniqueAll.add(uid);
-      });
-  });
-  total = uniqueAll.size;
-
   document.getElementById('statKnown').textContent = known;
   document.getElementById('statLearning').textContent = learning;
-  document.getElementById('statTotal').textContent = total;
-
-  updatePersonalStatsUI(); // Also update the dashboard if visible
+  document.getElementById('statStarred').textContent = STATE.starred.size;
+  updatePersonalStatsUI();
 }
 
 function getCardId(deckId, card) {
@@ -1866,7 +1854,6 @@ function bindEvents() {
   document.querySelectorAll('.nav-tab').forEach(btn => {
     btn.onclick = () => switchPanel(btn.dataset.panel);
   });
-  
   document.querySelectorAll('.toggle-btn').forEach(btn => {
     btn.onclick = () => changeToggle(btn.dataset.group, btn.dataset.val);
   });
