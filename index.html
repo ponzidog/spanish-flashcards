@@ -209,6 +209,7 @@
 
     .deck-title { font-weight: 600; font-size: 14px; }
     .deck-count { font-size: 12px; color: var(--text-muted); }
+    .deck-section-title { margin: 0 0 15px 0; font-size: 18px; font-weight: 600; color: #fff; }
 
     /* Breadcrumbs */
     .breadcrumbs { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
@@ -280,6 +281,12 @@
       padding: 10px; background: rgba(30,41,59,0.5); border-radius: var(--radius-sm);
       border: 1px solid rgba(148,163,184,0.1);
     }
+    /* Difficulty Colors */
+    .word-row.bg-diff-beginner { background: rgba(34, 197, 94, 0.08); border-color: rgba(34, 197, 94, 0.1); }
+    .word-row.bg-diff-intermediate { background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.1); }
+    .word-row.bg-diff-advanced { background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.1); }
+    .word-row.bg-custom { background: rgba(234, 179, 8, 0.08); border-color: rgba(234, 179, 8, 0.1); }
+
     .word-info { flex: 1; }
     .word-main { font-weight: 600; font-size: 14px; color: var(--text-main); }
     .word-sub { font-size: 11px; color: var(--text-muted); }
@@ -336,6 +343,19 @@
     }
     .input-answer:focus { border-color: var(--accent); }
 
+    /* Mini In-Game Settings */
+    .mini-controls {
+        display: flex; gap: 10px; justify-content: center; margin-top: 10px; width: 100%;
+    }
+    .mini-btn {
+        background: transparent; border: 1px solid rgba(148,163,184,0.15);
+        color: var(--text-muted); font-size: 11px; padding: 4px 10px;
+        border-radius: 99px; cursor: pointer; transition: 0.2s;
+        text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .mini-btn:hover { border-color: var(--text-muted); color: var(--text-main); }
+    .mini-btn.active { background: rgba(34,197,94,0.1); color: #86efac; border-color: rgba(34,197,94,0.3); }
+
     /* Overlay */
     .overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.9); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
     .overlay-content { background: #1e293b; padding: 30px; border-radius: var(--radius-lg); text-align: center; max-width: 90%; width: 400px; border: 1px solid rgba(148,163,184,0.2); }
@@ -380,6 +400,7 @@
   <div class="panel-container">
     
     <div id="panel-decks" class="panel active">
+      <h2 class="deck-section-title">Let's start learning!</h2>
       <div id="deckBreadcrumbs" class="breadcrumbs"></div>
       <div id="deckGrid" class="deck-grid">
         <div style="padding:20px; color:var(--text-muted)">Loading...</div>
@@ -409,6 +430,11 @@
               <div class="examples" id="gameExamples"></div>
             </div>
           </div>
+        </div>
+        
+        <div class="mini-controls" id="gameMiniControls">
+            <button class="mini-btn" id="miniBtnDir" onclick="toggleGameSetting('dir')">Swap: ES ➡ EN</button>
+            <button class="mini-btn" id="miniBtnMode" onclick="toggleGameSetting('mode')">Mode: Reveal</button>
         </div>
 
         <div class="action-row" id="gameControlsStart">
@@ -468,6 +494,9 @@
            <button class="back-btn" onclick="closeWordsManager()">‹ Back to Settings</button>
         </div>
         <div class="filter-bar">
+         <select id="filterDifficulty" class="input-answer filter-input" onchange="renderWordList()">
+           <option value="all">All Difficulties</option>
+           </select>
          <select id="filterStatus" class="input-answer filter-input" onchange="renderWordList()">
            <option value="all">All Status</option>
            <option value="known">Known / Mastered</option>
@@ -489,20 +518,20 @@
         <div class="setting-group">
           <div class="setting-header">Content Manager</div>
           <button class="setting-nav-btn" onclick="openWordsManager()">
-             <span>🗂 Manage All Words</span>
-             <span style="opacity:0.5; font-size:18px">›</span>
+              <span>🗂 Manage All Words</span>
+              <span style="opacity:0.5; font-size:18px">›</span>
           </button>
         </div>
 
         <div class="setting-group">
           <div class="setting-header">Custom Content</div>
           <div class="setting-check-btn" id="btnToggleIncludeCustom" onclick="toggleSetting('includeCustom')">
-             <span>Include my added words in decks</span>
-             <span class="status-icon">✓</span>
+              <span>Include my added words in decks</span>
+              <span class="status-icon">✓</span>
           </div>
           <div class="setting-check-btn" id="btnToggleOnlyCustom" onclick="toggleSetting('onlyCustom')">
-             <span>Play ONLY my added words</span>
-             <span class="status-icon">○</span>
+              <span>Play ONLY my added words</span>
+              <span class="status-icon">○</span>
           </div>
         </div>
 
@@ -591,6 +620,7 @@ async function init() {
   renderDecks();
   updateStats();
   populateAddDropdown();
+  updateGameMiniSettings();
 }
 
 // --- DATA HANDLING ---
@@ -620,8 +650,8 @@ function loadLocalData() {
   
   // Load settings
   const settings = JSON.parse(localStorage.getItem('sf_settings') || '{}');
-  if(settings.dir) changeToggle('dir', settings.dir);
-  if(settings.mode) changeToggle('mode', settings.mode);
+  if(settings.dir) changeToggle('dir', settings.dir, false);
+  if(settings.mode) changeToggle('mode', settings.mode, false);
   
   STATE.includeCustom = settings.includeCustom !== false;
   STATE.onlyCustom = settings.onlyCustom === true;
@@ -898,6 +928,9 @@ function renderGameCard() {
   document.getElementById('gameInput').value = '';
   document.getElementById('gameFeedback').textContent = '';
   
+  // Show mini controls
+  document.getElementById('gameMiniControls').style.display = 'flex';
+
   const deckName = STATE.activeDecks.find(d => d.id === c._realDeckId)?.name || "";
   document.getElementById('gameDeckName').textContent = deckName;
   
@@ -918,6 +951,28 @@ function renderGameCard() {
     ex = `"${c.exampleEs}"<br>"${c.exampleEn}"`;
   }
   document.getElementById('gameExamples').innerHTML = ex;
+  
+  // Focus input if typing
+  if(STATE.mode === 'type') {
+    setTimeout(() => document.getElementById('gameInput').focus(), 50);
+  }
+}
+
+// Helper to clean strings for typing comparison
+function cleanText(str) {
+    // 1. Remove context inside parens e.g. "to play (game)" -> "to play"
+    let s = str.replace(/\s*\(.*?\)\s*/g, '');
+    
+    // 2. Normalize accents: é -> e, ü -> u
+    s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    // 3. Lowercase
+    s = s.toLowerCase();
+    
+    // 4. Remove punctuation including inverted ones
+    s = s.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¿¡?]/g, "");
+    
+    return s.trim();
 }
 
 function showAnswer(force = false) {
@@ -925,12 +980,15 @@ function showAnswer(force = false) {
   
   if(STATE.mode === 'type' && !force) {
     const input = document.getElementById('gameInput');
-    const val = input.value.trim().toLowerCase();
-    const isEs = STATE.direction === 'es-en';
-    const target = (isEs ? STATE.currentCard.en : STATE.currentCard.es).toLowerCase();
-    const clean = str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const val = cleanText(input.value);
     
-    if(clean(val) === clean(target)) {
+    const isEs = STATE.direction === 'es-en';
+    const rawTarget = isEs ? STATE.currentCard.en : STATE.currentCard.es;
+    
+    // Split targets by "/" to handle synonyms
+    const targets = rawTarget.split('/').map(t => cleanText(t));
+    
+    if(targets.includes(val)) {
       document.getElementById('gameFeedback').textContent = "✅ Correct!";
       document.getElementById('gameFeedback').style.color = "#4ade80";
       markCard(true); 
@@ -943,6 +1001,7 @@ function showAnswer(force = false) {
 
   document.getElementById('gameReveal').style.display = 'block';
   document.getElementById('gameControlsStart').style.display = 'none';
+  document.getElementById('gameMiniControls').style.display = 'none'; // Hide settings when revealed
   
   if(STATE.mode === 'reveal') {
     document.getElementById('gameControlsJudge').style.display = 'flex';
@@ -977,7 +1036,7 @@ function markCard(success) {
      
      // If struggle mode, remove from list if correct
      if(STATE.isStruggleMode) {
-        STATE.struggleList = STATE.struggleList.filter(id => id !== uid);
+       STATE.struggleList = STATE.struggleList.filter(id => id !== uid);
      }
 
   } else {
@@ -1046,11 +1105,49 @@ function deleteCurrentCard() {
   nextCard();
 }
 
+// --- GAME MINI SETTINGS ---
+function toggleGameSetting(type) {
+    if(type === 'dir') {
+        STATE.direction = (STATE.direction === 'es-en') ? 'en-es' : 'es-en';
+        // Need to update UI immediately for current card
+        renderGameCard(); 
+    } else if(type === 'mode') {
+        STATE.mode = (STATE.mode === 'reveal') ? 'type' : 'reveal';
+        // Update input area visibility
+        document.getElementById('gameInputArea').style.display = STATE.mode === 'type' ? 'block' : 'none';
+        if(STATE.mode === 'type') document.getElementById('gameInput').focus();
+    }
+    
+    // Sync with global settings UI
+    changeToggle(type, type === 'dir' ? STATE.direction : STATE.mode, false); // false = don't double save
+    saveData();
+    updateGameMiniSettings();
+}
+
+function updateGameMiniSettings() {
+    // Update text/style of mini buttons
+    const btnDir = document.getElementById('miniBtnDir');
+    const btnMode = document.getElementById('miniBtnMode');
+    
+    btnDir.textContent = (STATE.direction === 'es-en') ? 'Swap: ES ➡ EN' : 'Swap: EN ➡ ES';
+    btnMode.textContent = (STATE.mode === 'reveal') ? 'Mode: Reveal' : 'Mode: Type';
+    
+    // Reset classes
+    btnDir.classList.remove('active');
+    btnMode.classList.remove('active');
+    
+    // Highlight if non-default
+    if(STATE.direction === 'en-es') btnDir.classList.add('active');
+    if(STATE.mode === 'type') btnMode.classList.add('active');
+}
+
+
 // --- WORDS MANAGER UI ---
 function openWordsManager() {
   document.getElementById('settings-main').style.display = 'none';
   document.getElementById('settings-words-manager').style.display = 'block';
   populateTopicFilter();
+  populateDifficultyFilter();
   renderWordList();
 }
 
@@ -1070,6 +1167,7 @@ function renderWordList() {
   const container = document.getElementById('wordListContainer');
   const fStatus = document.getElementById('filterStatus').value;
   const fTopic = document.getElementById('filterTopic').value;
+  const fDiff = document.getElementById('filterDifficulty').value;
   const fSort = document.getElementById('filterSort').value;
   
   container.innerHTML = 'Loading...';
@@ -1083,14 +1181,21 @@ function renderWordList() {
        const score = (STATE.progress[uid] || {}).score || 0;
        const p = STATE.progress[uid] || {seen: 0};
        
+       // Status Filter
        if(fStatus === 'known' && score < 4) return;
-       if(fStatus === 'learning' && score >= 4) return; // Only show mastered in known
-       // Wait, current learning logic is score < 4 AND seen > 0
        if(fStatus === 'learning' && (score >= 4 || p.seen === 0)) return;
 
+       // Topic Filter
        if(fTopic !== 'all' && d.topicId !== fTopic) return;
        
-       allCardsMap.set(uid, { ...c, _deckName: d.name, _score: score, _uid: uid });
+       // Difficulty Filter
+       if(fDiff === 'custom') {
+           if(!c._custom) return;
+       } else if(fDiff !== 'all') {
+           if(d.difficultyId !== fDiff) return;
+       }
+
+       allCardsMap.set(uid, { ...c, _deckName: d.name, _diffId: d.difficultyId, _score: score, _uid: uid });
     });
   });
   
@@ -1112,8 +1217,14 @@ function renderWordList() {
   
   renderLimit.forEach(c => {
     const scoreClass = c._score >= 4 ? 'score-4' : (c._score === 3 ? 'score-3' : (c._score > 0 ? 'score-1' : 'score-0'));
+    
+    // Determine Background Color Class
+    let bgClass = '';
+    if(c._custom) bgClass = 'bg-custom';
+    else if(c._diffId) bgClass = `bg-diff-${c._diffId}`; // e.g., bg-diff-beginner
+
     const el = document.createElement('div');
-    el.className = 'word-row';
+    el.className = `word-row ${bgClass}`;
     el.innerHTML = `
       <div class="word-info">
         <div class="word-main">
@@ -1161,6 +1272,24 @@ function populateTopicFilter() {
       sel.appendChild(opt);
     });
   }
+}
+
+function populateDifficultyFilter() {
+    const sel = document.getElementById('filterDifficulty');
+    sel.innerHTML = '<option value="all">All Difficulties</option>';
+    if(STATE.decksRaw.difficulties) {
+        STATE.decksRaw.difficulties.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.id;
+            opt.textContent = d.label;
+            sel.appendChild(opt);
+        });
+    }
+    // Add Manually Added Option
+    const optCustom = document.createElement('option');
+    optCustom.value = 'custom';
+    optCustom.textContent = 'Manually added';
+    sel.appendChild(optCustom);
 }
 
 // --- ADD CARD UI ---
@@ -1246,7 +1375,7 @@ function switchPanel(panelId) {
   }
 }
 
-function changeToggle(group, val) {
+function changeToggle(group, val, shouldSave=true) {
   document.querySelectorAll(`.toggle-btn[data-group="${group}"]`).forEach(btn => {
     if(btn.dataset.val === val) btn.classList.add('active');
     else btn.classList.remove('active');
@@ -1254,7 +1383,10 @@ function changeToggle(group, val) {
   
   if(group === 'dir') STATE.direction = val;
   if(group === 'mode') STATE.mode = val;
-  saveData();
+  
+  updateGameMiniSettings(); // Ensure game view stays in sync
+  
+  if(shouldSave) saveData();
 }
 
 function toggleSetting(key) {
