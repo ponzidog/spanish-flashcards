@@ -1240,10 +1240,12 @@ function startSession(deckId, isMix = false) {
 }
 
 function startPracticeStruggle() {
-  if(STATE.sessionStruggleIds.length === 0) return;
+  if(STATE.sessionStruggleIds.length === 0) return;  
+  // Reset session data so the game treats these cards as not yet answered
+  STATE.sessionData = {}; 
   STATE.isStruggleMode = true;
   STATE.lastCardUid = null;
-  STATE.streak = 0;
+  STATE.streak = 0;  
   document.getElementById('overlay').style.display = 'none';
   nextCard();
 }
