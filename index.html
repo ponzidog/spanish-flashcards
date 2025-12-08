@@ -218,12 +218,26 @@
       content: '★'; position: absolute; top: 10px; right: 10px; color: var(--gold); font-size: 16px;
     }
 
-    /* Specific Layout for Difficulty Cards */
+    /* Specific Layout for Difficulty Cards (UPDATED) */
     .deck-card.diff-card {
-        flex-direction: row; align-items: center; gap: 15px; padding: 20px;
+        flex-direction: row; 
+        align-items: center; 
+        gap: 16px; 
+        padding: 16px 20px; /* Nicer padding */
     }
-    .diff-emoji { font-size: 36px; line-height: 1; }
-    .diff-text-col { display: flex; flex-direction: column; gap: 4px; }
+    .diff-emoji { 
+        font-size: 28px; /* Smaller emoji */
+        line-height: 1; 
+        min-width: 32px; /* Fixed width to prevent misalignment */
+        text-align: center;
+    }
+    .diff-text-col { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 2px; 
+        flex: 1; /* Takes remaining space */
+        min-width: 0; /* Prevents text overflow breaking layout */
+    }
     .diff-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
     .diff-sub { font-size: 12px; color: var(--text-muted); }
 
@@ -1078,12 +1092,28 @@ function showAnswer(force = false) {
     const input = document.getElementById('gameInput');
     const val = cleanText(input.value);
     
+    // Check Direction: ES-EN means target is English
     const isEs = STATE.direction === 'es-en';
     const rawTarget = isEs ? STATE.currentCard.en : STATE.currentCard.es;
     
     const targets = rawTarget.split('/').map(t => cleanText(t));
     
-    if(targets.includes(val)) {
+    // Logic: If answering in English (Target), "the" is optional.
+    // We remove leading "the" from both user input and target before comparing.
+    const cleanThe = (s) => s.replace(/^the\s+/, '');
+
+    let isCorrect = false;
+
+    if(isEs) {
+        // Target is English -> apply flexible "the" rule
+        const valNoThe = cleanThe(val);
+        isCorrect = targets.some(t => cleanThe(t) === valNoThe);
+    } else {
+        // Target is Spanish -> strict "el/la" required
+        isCorrect = targets.includes(val);
+    }
+    
+    if(isCorrect) {
       document.getElementById('gameFeedback').textContent = "✅ Correct!";
       document.getElementById('gameFeedback').style.color = "#4ade80";
       markCard(true); 
