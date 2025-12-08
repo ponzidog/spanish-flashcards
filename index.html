@@ -729,7 +729,8 @@ const domHeaderDesc = document.getElementById('headerDesc');
 
 function getDifficultyIcon(label) {
     const l = label.toLowerCase();
-    if(l.includes('beginner') || l.includes('basic')) return '🐣';
+    if(l.includes('beginner')) return '🐣';
+    if(l.includes('basic')) return '🌱'; // Basic = Seedling
     if(l.includes('intermediate')) return '🧗';
     if(l.includes('advanced')) return '🚀';
     if(l.includes('expert')) return '🧠';
@@ -863,9 +864,6 @@ function getMasteryStatusForCards(cards, deckIdRef) {
     if(allEsEn && allEnEs) return 'gold';
     
     // Green = ONE direction mastered (specifically the active one, or broadly at least one)
-    // Prompt says: "finished... in ONE practice direction... make it green"
-    // To be precise with the prompt "Mark green if mastered in current direction" seems best for immediate feedback,
-    // OR "Green if either is mastered". Let's do: Green if *at least one* side is fully mastered.
     if(allEsEn || allEnEs) return 'green';
     
     return null;
