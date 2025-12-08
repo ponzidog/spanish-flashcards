@@ -237,6 +237,14 @@
       cursor: pointer; margin-bottom: 8px; font-size: 13px; color: var(--text-muted);
     }
     .setting-check-btn.checked { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); color: #bbf7d0; }
+    
+    .setting-nav-btn {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 14px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(148,163,184,0.2);
+      border-radius: var(--radius-sm); color: var(--text-main); font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: 0.2s;
+    }
+    .setting-nav-btn:hover { background: rgba(30, 41, 59, 0.8); border-color: var(--accent); }
 
     /* Add Card Form */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -263,7 +271,7 @@
     .toggle-ex-btn:hover { border-color: var(--accent); color: var(--accent); }
 
     /* Words Manager */
-    .word-manager-container { max-height: 400px; overflow-y: auto; margin-top: 10px; }
+    .word-manager-container { max-height: 500px; overflow-y: auto; margin-top: 10px; }
     .filter-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .filter-input { flex: 1; min-width: 120px; padding: 8px; font-size: 13px; }
     .word-list { display: flex; flex-direction: column; gap: 6px; }
@@ -355,9 +363,9 @@
         <p class="deck-description" id="headerDesc">Select a difficulty to begin.</p>
       </div>
       <div class="stats-row">
-        <div class="stat-pill accent" onclick="openSettingsWithFilter('known')">Known: <strong id="statKnown">0</strong></div>
-        <div class="stat-pill danger" onclick="openSettingsWithFilter('learning')">Learning: <strong id="statLearning">0</strong></div>
-        <div class="stat-pill" onclick="openSettingsWithFilter('all')">Total: <strong id="statTotal">0</strong></div>
+        <div class="stat-pill accent" onclick="openWordsManagerFromHeader('known')">Known: <strong id="statKnown">0</strong></div>
+        <div class="stat-pill danger" onclick="openWordsManagerFromHeader('learning')">Learning: <strong id="statLearning">0</strong></div>
+        <div class="stat-pill" onclick="openWordsManagerFromHeader('all')">Total: <strong id="statTotal">0</strong></div>
       </div>
     </div>
 
@@ -455,8 +463,10 @@
 
     <div id="panel-settings" class="panel">
       
-      <div class="setting-group">
-        <div class="setting-header">All Words Manager</div>
+      <div id="settings-words-manager" style="display:none">
+        <div class="breadcrumbs" style="margin-bottom:15px">
+           <button class="back-btn" onclick="closeWordsManager()">‹ Back to Settings</button>
+        </div>
         <div class="filter-bar">
          <select id="filterStatus" class="input-answer filter-input" onchange="renderWordList()">
            <option value="all">All Status</option>
@@ -475,38 +485,49 @@
           </div>
       </div>
 
-      <div class="setting-group">
-        <div class="setting-header">Custom Content</div>
-        <div class="setting-check-btn" id="btnToggleIncludeCustom" onclick="toggleSetting('includeCustom')">
-           <span>Include my added words in decks</span>
-           <span class="status-icon">✓</span>
+      <div id="settings-main">
+        <div class="setting-group">
+          <div class="setting-header">Content Manager</div>
+          <button class="setting-nav-btn" onclick="openWordsManager()">
+             <span>🗂 Manage All Words</span>
+             <span style="opacity:0.5; font-size:18px">›</span>
+          </button>
         </div>
-        <div class="setting-check-btn" id="btnToggleOnlyCustom" onclick="toggleSetting('onlyCustom')">
-           <span>Play ONLY my added words</span>
-           <span class="status-icon">○</span>
+
+        <div class="setting-group">
+          <div class="setting-header">Custom Content</div>
+          <div class="setting-check-btn" id="btnToggleIncludeCustom" onclick="toggleSetting('includeCustom')">
+             <span>Include my added words in decks</span>
+             <span class="status-icon">✓</span>
+          </div>
+          <div class="setting-check-btn" id="btnToggleOnlyCustom" onclick="toggleSetting('onlyCustom')">
+             <span>Play ONLY my added words</span>
+             <span class="status-icon">○</span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-header">Practice Direction</div>
+          <div class="toggle-row">
+            <button class="toggle-btn active" data-group="dir" data-val="es-en">Spanish → English</button>
+            <button class="toggle-btn" data-group="dir" data-val="en-es">English → Spanish</button>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-header">Answer Mode</div>
+          <div class="toggle-row">
+            <button class="toggle-btn active" data-group="mode" data-val="reveal">Self Check</button>
+            <button class="toggle-btn" data-group="mode" data-val="type">Type Answer</button>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-header">Data</div>
+          <button class="btn-action danger" id="btnResetData" style="width:100%">Reset All Progress</button>
         </div>
       </div>
 
-      <div class="setting-group">
-        <div class="setting-header">Practice Direction</div>
-        <div class="toggle-row">
-          <button class="toggle-btn active" data-group="dir" data-val="es-en">Spanish → English</button>
-          <button class="toggle-btn" data-group="dir" data-val="en-es">English → Spanish</button>
-        </div>
-      </div>
-
-      <div class="setting-group">
-        <div class="setting-header">Answer Mode</div>
-        <div class="toggle-row">
-          <button class="toggle-btn active" data-group="mode" data-val="reveal">Self Check</button>
-          <button class="toggle-btn" data-group="mode" data-val="type">Type Answer</button>
-        </div>
-      </div>
-
-      <div class="setting-group">
-        <div class="setting-header">Data</div>
-        <button class="btn-action danger" id="btnResetData" style="width:100%">Reset All Progress</button>
-      </div>
     </div>
 
   </div>
@@ -539,7 +560,7 @@ const STATE = {
   blacklist: new Set(), // Deleted card IDs
   
   // Session State
-  sessionData: {}, // { uid: { count: 0, struggle: false, postStruggleCount: 0 } }
+  sessionData: {}, // { uid: { count: 0, struggle: false, postCount: 0 } }
   sessionStats: { correctFirst: 0, struggle: 0 },
   struggleList: [], 
   lastCardUid: null,
@@ -1027,8 +1048,21 @@ function deleteCurrentCard() {
 }
 
 // --- WORDS MANAGER UI ---
-function openSettingsWithFilter(filter) {
+function openWordsManager() {
+  document.getElementById('settings-main').style.display = 'none';
+  document.getElementById('settings-words-manager').style.display = 'block';
+  populateTopicFilter();
+  renderWordList();
+}
+
+function closeWordsManager() {
+  document.getElementById('settings-words-manager').style.display = 'none';
+  document.getElementById('settings-main').style.display = 'block';
+}
+
+function openWordsManagerFromHeader(filter) {
   switchPanel('settings');
+  openWordsManager();
   document.getElementById('filterStatus').value = filter || 'all';
   renderWordList();
 }
@@ -1203,7 +1237,10 @@ function switchPanel(panelId) {
   if(navBtn) navBtn.classList.add('active');
   
   if(panelId === 'decks') renderDecks();
-  if(panelId === 'settings') { populateTopicFilter(); renderWordList(); }
+  if(panelId === 'settings') { 
+    // Ensure we start at main settings view
+    closeWordsManager();
+  }
 }
 
 function changeToggle(group, val) {
