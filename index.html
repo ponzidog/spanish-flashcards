@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Spanish Flashcards – Level Trainer</title>
+  <title>Spanish Flashcards – Mastery Trainer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
   <meta name="theme-color" content="#0f172a" />
@@ -199,13 +199,33 @@
     .deck-card:hover { background: rgba(30, 41, 59, 0.9); border-color: rgba(148, 163, 184, 0.3); transform: translateY(-2px); }
     .deck-card.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.05); }
     
-    .deck-card.level-complete {
+    /* Green Mastery (One Direction) */
+    .deck-card.mastered-green {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(34, 197, 94, 0.1));
+    }
+    .deck-card.mastered-green::after {
+      content: '✔'; position: absolute; top: 10px; right: 10px; color: var(--accent); font-size: 14px;
+    }
+
+    /* Gold Mastery (Both Directions) */
+    .deck-card.mastered-gold {
       border-color: var(--gold);
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(234, 179, 8, 0.05));
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(234, 179, 8, 0.15));
+      box-shadow: 0 0 15px rgba(234, 179, 8, 0.1);
     }
-    .deck-card.level-complete::after {
-      content: '★'; position: absolute; top: 8px; right: 10px; color: var(--gold); font-size: 14px;
+    .deck-card.mastered-gold::after {
+      content: '★'; position: absolute; top: 10px; right: 10px; color: var(--gold); font-size: 16px;
     }
+
+    /* Specific Layout for Difficulty Cards */
+    .deck-card.diff-card {
+        flex-direction: row; align-items: center; gap: 15px; padding: 20px;
+    }
+    .diff-emoji { font-size: 36px; line-height: 1; }
+    .diff-text-col { display: flex; flex-direction: column; gap: 4px; }
+    .diff-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
+    .diff-sub { font-size: 12px; color: var(--text-muted); }
 
     .deck-title { font-weight: 600; font-size: 14px; }
     .deck-count { font-size: 12px; color: var(--text-muted); }
@@ -343,13 +363,13 @@
     }
     .input-answer:focus { border-color: var(--accent); }
 
-    /* Mini In-Game Settings */
+    /* Mini In-Game Settings (Now Below Buttons) */
     .mini-controls {
-        display: flex; gap: 10px; justify-content: center; margin-top: 10px; width: 100%;
+        display: flex; gap: 10px; justify-content: center; width: 100%; margin-top: 10px;
     }
     .mini-btn {
         background: transparent; border: 1px solid rgba(148,163,184,0.15);
-        color: var(--text-muted); font-size: 11px; padding: 4px 10px;
+        color: var(--text-muted); font-size: 11px; padding: 6px 14px;
         border-radius: 99px; cursor: pointer; transition: 0.2s;
         text-transform: uppercase; letter-spacing: 0.5px;
     }
@@ -432,11 +452,6 @@
           </div>
         </div>
         
-        <div class="mini-controls" id="gameMiniControls">
-            <button class="mini-btn" id="miniBtnDir" onclick="toggleGameSetting('dir')">Swap: ES ➡ EN</button>
-            <button class="mini-btn" id="miniBtnMode" onclick="toggleGameSetting('mode')">Mode: Reveal</button>
-        </div>
-
         <div class="action-row" id="gameControlsStart">
           <button class="btn-action ghost" id="btnDeleteCard" title="Permanently Delete">🗑 Remove</button>
           <button class="btn-action primary" id="btnShowAnswer">Show Answer</button>
@@ -449,6 +464,11 @@
         
         <div class="action-row" id="gameControlsNext" style="display:none">
            <button class="btn-action primary" id="btnNextCard">Next Card ➡</button>
+        </div>
+
+        <div class="mini-controls" id="gameMiniControls">
+            <button class="mini-btn" id="miniBtnDir" onclick="toggleGameSetting('dir')">Swap: ES ➡ EN</button>
+            <button class="mini-btn" id="miniBtnMode" onclick="toggleGameSetting('mode')">Mode: Reveal</button>
         </div>
       </div>
     </div>
@@ -585,7 +605,7 @@ const STATE = {
   decksRaw: [], // Loaded from JSON
   activeDecks: [], // Flattened list
   customCards: {}, // { topicId: [cards] } 
-  progress: {}, // { cardId: { score, seen, ... } }
+  progress: {}, // { cardId: { scoreEsEn, scoreEnEs, seen } }
   blacklist: new Set(), // Deleted card IDs
   
   // Session State
@@ -643,7 +663,23 @@ function loadLocalData() {
   if(custom) STATE.customCards = JSON.parse(custom);
 
   const prog = localStorage.getItem('sf_progress');
-  if(prog) STATE.progress = JSON.parse(prog);
+  if(prog) {
+    const rawProg = JSON.parse(prog);
+    // Migration: If score is a number, assume it was es_en
+    STATE.progress = {};
+    Object.keys(rawProg).forEach(uid => {
+        const item = rawProg[uid];
+        if(typeof item.score === 'number') {
+            STATE.progress[uid] = { 
+                scoreEsEn: item.score, 
+                scoreEnEs: 0, 
+                seen: item.seen || 0 
+            };
+        } else {
+            STATE.progress[uid] = item;
+        }
+    });
+  }
 
   const black = localStorage.getItem('sf_blacklist');
   if(black) STATE.blacklist = new Set(JSON.parse(black));
@@ -691,6 +727,15 @@ const domGrid = document.getElementById('deckGrid');
 const domBread = document.getElementById('deckBreadcrumbs');
 const domHeaderDesc = document.getElementById('headerDesc');
 
+function getDifficultyIcon(label) {
+    const l = label.toLowerCase();
+    if(l.includes('beginner') || l.includes('basic')) return '🐣';
+    if(l.includes('intermediate')) return '🧗';
+    if(l.includes('advanced')) return '🚀';
+    if(l.includes('expert')) return '🧠';
+    return '🎓';
+}
+
 function renderDecks() {
   domGrid.innerHTML = '';
   domBread.innerHTML = '';
@@ -700,12 +745,29 @@ function renderDecks() {
     domHeaderDesc.textContent = "Select your difficulty level.";
     if(!STATE.decksRaw.difficulties) return;
     STATE.decksRaw.difficulties.forEach(diff => {
-      const el = createCard(diff.label, "Difficulty", () => {
+      // Logic for completion color
+      const status = checkDifficultyCompletion(diff.id);
+      
+      const el = document.createElement('div');
+      el.className = 'deck-card diff-card';
+      if(status === 'gold') el.classList.add('mastered-gold');
+      else if(status === 'green') el.classList.add('mastered-green');
+
+      const icon = getDifficultyIcon(diff.label);
+      
+      el.innerHTML = `
+        <div class="diff-emoji">${icon}</div>
+        <div class="diff-text-col">
+            <div class="diff-title">${diff.label}</div>
+            <div class="diff-sub">Difficulty</div>
+        </div>
+      `;
+      el.onclick = () => {
         STATE.selDiff = diff.id;
         STATE.view = 'level';
         saveData();
         renderDecks();
-      });
+      };
       domGrid.appendChild(el);
     });
     return;
@@ -720,15 +782,16 @@ function renderDecks() {
     // Find levels
     const levels = new Set(STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff).map(d => d.levelIndex));
     [...levels].sort().forEach(lvl => {
-      // Check Completion
-      const isComplete = checkLevelComplete(STATE.selDiff, lvl);
+      const status = checkLevelCompletion(STATE.selDiff, lvl);
       
       const el = createCard(`Level ${lvl}`, `${diffObj.label}`, () => {
         STATE.selLevel = lvl;
         renderDecks();
       });
       
-      if(isComplete) el.classList.add('level-complete');
+      if(status === 'gold') el.classList.add('mastered-gold');
+      else if(status === 'green') el.classList.add('mastered-green');
+      
       domGrid.appendChild(el);
     });
     return;
@@ -747,11 +810,17 @@ function renderDecks() {
     let mixCount = 0;
     decks.forEach(d => { mixCount += getPlayableCount(d); });
     
+    // Check Level Completion for Mix Deck Color
+    const levelStatus = checkLevelCompletion(STATE.selDiff, STATE.selLevel);
+
     // Add Mix Deck Option
     const mixEl = createCard("⚡ Mix All Topics", `${mixCount} cards`, () => {
        startSession(null, true); 
     });
     mixEl.classList.add('active');
+    if(levelStatus === 'gold') mixEl.classList.add('mastered-gold');
+    else if(levelStatus === 'green') mixEl.classList.add('mastered-green');
+
     domGrid.appendChild(mixEl);
 
     decks.forEach(d => {
@@ -760,29 +829,64 @@ function renderDecks() {
       const label = topic ? topic.label : d.name;
       const count = getPlayableCount(d);
       
+      const status = checkDeckCompletion(d);
+
       const el = createCard(label, `${count} cards`, () => {
         startSession(d.id);
       });
+      
+      if(status === 'gold') el.classList.add('mastered-gold');
+      else if(status === 'green') el.classList.add('mastered-green');
+
       domGrid.appendChild(el);
     });
   }
 }
 
-function checkLevelComplete(diffId, levelIdx) {
-  const decks = STATE.activeDecks.filter(d => d.difficultyId === diffId && d.levelIndex === levelIdx);
-  if(decks.length === 0) return false;
-  let totalBase = 0, masteredBase = 0;
-  
-  decks.forEach(d => {
-    d.cards.forEach(c => {
-      if(c._custom) return;
-      totalBase++;
-      const uid = getCardId(d.id, c);
-      const score = (STATE.progress[uid] || {}).score || 0;
-      if(score >= 4) masteredBase++;
+// --- MASTERY CHECK HELPERS ---
+// Returns 'gold', 'green', or null
+function getMasteryStatusForCards(cards, deckIdRef) {
+    const coreCards = cards.filter(c => !c._custom);
+    if(coreCards.length === 0) return null; // Only custom cards don't count for colors
+
+    let allEsEn = true;
+    let allEnEs = true;
+
+    coreCards.forEach(c => {
+        const uid = getCardId(c._realDeckId || deckIdRef, c);
+        const p = STATE.progress[uid] || {};
+        if((p.scoreEsEn || 0) < 4) allEsEn = false;
+        if((p.scoreEnEs || 0) < 4) allEnEs = false;
     });
-  });
-  return totalBase > 0 && totalBase === masteredBase;
+
+    // Gold = Both directions mastered
+    if(allEsEn && allEnEs) return 'gold';
+    
+    // Green = ONE direction mastered (specifically the active one, or broadly at least one)
+    // Prompt says: "finished... in ONE practice direction... make it green"
+    // To be precise with the prompt "Mark green if mastered in current direction" seems best for immediate feedback,
+    // OR "Green if either is mastered". Let's do: Green if *at least one* side is fully mastered.
+    if(allEsEn || allEnEs) return 'green';
+    
+    return null;
+}
+
+function checkDeckCompletion(deck) {
+    return getMasteryStatusForCards(deck.cards, deck.id);
+}
+
+function checkLevelCompletion(diffId, levelIdx) {
+    const decks = STATE.activeDecks.filter(d => d.difficultyId === diffId && d.levelIndex === levelIdx);
+    if(decks.length === 0) return null;
+    const allCards = decks.flatMap(d => d.cards.map(c => ({...c, _realDeckId: d.id})));
+    return getMasteryStatusForCards(allCards, null);
+}
+
+function checkDifficultyCompletion(diffId) {
+    const decks = STATE.activeDecks.filter(d => d.difficultyId === diffId);
+    if(decks.length === 0) return null;
+    const allCards = decks.flatMap(d => d.cards.map(c => ({...c, _realDeckId: d.id})));
+    return getMasteryStatusForCards(allCards, null);
 }
 
 function createCard(title, sub, onClick) {
@@ -857,15 +961,18 @@ function nextCard() {
     pool = getPoolFromCurrentSession();
   }
   
-  // Filter Pool based on NEW RULES (2x Limit)
+  // Filter Pool
   const playable = pool.filter(c => {
-    // 2. No Repeats (if possible)
+    // No Repeats (if possible)
     if(pool.length > 1 && c._uid === STATE.lastCardUid) return false;
     
-    if(STATE.isStruggleMode) return true; // In struggle mode, just go until done
+    if(STATE.isStruggleMode) return true;
 
     // Session Limit Logic
-    const score = (STATE.progress[c._uid] || {}).score || 0;
+    const p = STATE.progress[c._uid] || {};
+    // Check score based on CURRENT direction
+    const score = (STATE.direction === 'es-en') ? (p.scoreEsEn || 0) : (p.scoreEnEs || 0);
+
     const sData = STATE.sessionData[c._uid] || { count: 0, struggle: false, postCount: 0 };
     
     // Mastered Words (Score >= 4)
@@ -878,8 +985,6 @@ function nextCard() {
          if(sData.postCount >= 2) return false;
        }
     }
-    // Learning Words (Score < 4) - Keep showing until mastered or session ends
-    
     return true;
   });
 
@@ -934,7 +1039,9 @@ function renderGameCard() {
   const deckName = STATE.activeDecks.find(d => d.id === c._realDeckId)?.name || "";
   document.getElementById('gameDeckName').textContent = deckName;
   
-  const score = (STATE.progress[c._uid] || {}).score || 0;
+  const p = STATE.progress[c._uid] || {};
+  const score = isEs ? (p.scoreEsEn || 0) : (p.scoreEnEs || 0);
+
   let strLabel = "New Word";
   if(score > 0) strLabel = "Learning";
   if(score >= 4) strLabel = "Mastered";
@@ -952,7 +1059,6 @@ function renderGameCard() {
   }
   document.getElementById('gameExamples').innerHTML = ex;
   
-  // Focus input if typing
   if(STATE.mode === 'type') {
     setTimeout(() => document.getElementById('gameInput').focus(), 50);
   }
@@ -960,18 +1066,10 @@ function renderGameCard() {
 
 // Helper to clean strings for typing comparison
 function cleanText(str) {
-    // 1. Remove context inside parens e.g. "to play (game)" -> "to play"
     let s = str.replace(/\s*\(.*?\)\s*/g, '');
-    
-    // 2. Normalize accents: é -> e, ü -> u
     s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    
-    // 3. Lowercase
     s = s.toLowerCase();
-    
-    // 4. Remove punctuation including inverted ones
     s = s.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¿¡?]/g, "");
-    
     return s.trim();
 }
 
@@ -985,7 +1083,6 @@ function showAnswer(force = false) {
     const isEs = STATE.direction === 'es-en';
     const rawTarget = isEs ? STATE.currentCard.en : STATE.currentCard.es;
     
-    // Split targets by "/" to handle synonyms
     const targets = rawTarget.split('/').map(t => cleanText(t));
     
     if(targets.includes(val)) {
@@ -1001,7 +1098,7 @@ function showAnswer(force = false) {
 
   document.getElementById('gameReveal').style.display = 'block';
   document.getElementById('gameControlsStart').style.display = 'none';
-  document.getElementById('gameMiniControls').style.display = 'none'; // Hide settings when revealed
+  document.getElementById('gameMiniControls').style.display = 'none'; // Hide settings
   
   if(STATE.mode === 'reveal') {
     document.getElementById('gameControlsJudge').style.display = 'flex';
@@ -1012,41 +1109,46 @@ function showAnswer(force = false) {
 
 function markCard(success) {
   const uid = STATE.currentCard._uid;
-  if(!STATE.progress[uid]) STATE.progress[uid] = { score: 0, seen: 0 };
+  if(!STATE.progress[uid]) STATE.progress[uid] = { scoreEsEn: 0, scoreEnEs: 0, seen: 0 };
   if(!STATE.sessionData[uid]) STATE.sessionData[uid] = { count: 0, struggle: false, postCount: 0 };
   
   STATE.progress[uid].seen++;
   const diff = Date.now() - STATE.revealTime;
+  const isEs = STATE.direction === 'es-en';
 
   // Session Tracking
   STATE.sessionData[uid].count++;
   if(STATE.sessionData[uid].struggle) STATE.sessionData[uid].postCount++;
+
+  let currentScore = isEs ? STATE.progress[uid].scoreEsEn : STATE.progress[uid].scoreEnEs;
 
   if(success) {
      if(STATE.sessionData[uid].count === 1) STATE.sessionStats.correctFirst++;
      
      // TIME LOGIC
      if(diff <= 3000) {
-       STATE.progress[uid].score = 4;
+       currentScore = 4;
      } else {
-       // >3s: Set to 3 (Review Needed) unless already mastered
-       if(STATE.progress[uid].score < 4) STATE.progress[uid].score = 3; 
+       if(currentScore < 4) currentScore = 3; 
        if(!STATE.struggleList.includes(uid)) STATE.struggleList.push(uid);
      }
      
-     // If struggle mode, remove from list if correct
      if(STATE.isStruggleMode) {
        STATE.struggleList = STATE.struggleList.filter(id => id !== uid);
      }
 
   } else {
      // Still Learning
-     STATE.progress[uid].score = Math.max(0, STATE.progress[uid].score - 1);
+     currentScore = Math.max(0, currentScore - 1);
      STATE.sessionData[uid].struggle = true;
-     STATE.sessionData[uid].postCount = 0; // Reset recovery count
+     STATE.sessionData[uid].postCount = 0; 
      STATE.sessionStats.struggle++;
      if(!STATE.struggleList.includes(uid)) STATE.struggleList.push(uid);
   }
+
+  // Update State
+  if(isEs) STATE.progress[uid].scoreEsEn = currentScore;
+  else STATE.progress[uid].scoreEnEs = currentScore;
   
   saveData();
   updateStats();
@@ -1109,34 +1211,28 @@ function deleteCurrentCard() {
 function toggleGameSetting(type) {
     if(type === 'dir') {
         STATE.direction = (STATE.direction === 'es-en') ? 'en-es' : 'es-en';
-        // Need to update UI immediately for current card
         renderGameCard(); 
     } else if(type === 'mode') {
         STATE.mode = (STATE.mode === 'reveal') ? 'type' : 'reveal';
-        // Update input area visibility
         document.getElementById('gameInputArea').style.display = STATE.mode === 'type' ? 'block' : 'none';
         if(STATE.mode === 'type') document.getElementById('gameInput').focus();
     }
     
-    // Sync with global settings UI
-    changeToggle(type, type === 'dir' ? STATE.direction : STATE.mode, false); // false = don't double save
+    changeToggle(type, type === 'dir' ? STATE.direction : STATE.mode, false); 
     saveData();
     updateGameMiniSettings();
 }
 
 function updateGameMiniSettings() {
-    // Update text/style of mini buttons
     const btnDir = document.getElementById('miniBtnDir');
     const btnMode = document.getElementById('miniBtnMode');
     
     btnDir.textContent = (STATE.direction === 'es-en') ? 'Swap: ES ➡ EN' : 'Swap: EN ➡ ES';
     btnMode.textContent = (STATE.mode === 'reveal') ? 'Mode: Reveal' : 'Mode: Type';
     
-    // Reset classes
     btnDir.classList.remove('active');
     btnMode.classList.remove('active');
     
-    // Highlight if non-default
     if(STATE.direction === 'en-es') btnDir.classList.add('active');
     if(STATE.mode === 'type') btnMode.classList.add('active');
 }
@@ -1178,12 +1274,14 @@ function renderWordList() {
        const uid = getCardId(d.id, c);
        if(STATE.blacklist.has(uid)) return;
        
-       const score = (STATE.progress[uid] || {}).score || 0;
-       const p = STATE.progress[uid] || {seen: 0};
+       const p = STATE.progress[uid] || { scoreEsEn: 0, scoreEnEs: 0, seen: 0 };
+       
+       // Average Score for sorting/display simplified
+       const maxScore = Math.max(p.scoreEsEn || 0, p.scoreEnEs || 0); 
        
        // Status Filter
-       if(fStatus === 'known' && score < 4) return;
-       if(fStatus === 'learning' && (score >= 4 || p.seen === 0)) return;
+       if(fStatus === 'known' && maxScore < 4) return;
+       if(fStatus === 'learning' && (maxScore >= 4 || p.seen === 0)) return;
 
        // Topic Filter
        if(fTopic !== 'all' && d.topicId !== fTopic) return;
@@ -1195,7 +1293,7 @@ function renderWordList() {
            if(d.difficultyId !== fDiff) return;
        }
 
-       allCardsMap.set(uid, { ...c, _deckName: d.name, _diffId: d.difficultyId, _score: score, _uid: uid });
+       allCardsMap.set(uid, { ...c, _deckName: d.name, _diffId: d.difficultyId, _score: maxScore, _uid: uid });
     });
   });
   
@@ -1218,10 +1316,9 @@ function renderWordList() {
   renderLimit.forEach(c => {
     const scoreClass = c._score >= 4 ? 'score-4' : (c._score === 3 ? 'score-3' : (c._score > 0 ? 'score-1' : 'score-0'));
     
-    // Determine Background Color Class
     let bgClass = '';
     if(c._custom) bgClass = 'bg-custom';
-    else if(c._diffId) bgClass = `bg-diff-${c._diffId}`; // e.g., bg-diff-beginner
+    else if(c._diffId) bgClass = `bg-diff-${c._diffId}`; 
 
     const el = document.createElement('div');
     el.className = `word-row ${bgClass}`;
@@ -1285,7 +1382,6 @@ function populateDifficultyFilter() {
             sel.appendChild(opt);
         });
     }
-    // Add Manually Added Option
     const optCustom = document.createElement('option');
     optCustom.value = 'custom';
     optCustom.textContent = 'Manually added';
@@ -1370,7 +1466,6 @@ function switchPanel(panelId) {
   
   if(panelId === 'decks') renderDecks();
   if(panelId === 'settings') { 
-    // Ensure we start at main settings view
     closeWordsManager();
   }
 }
@@ -1384,7 +1479,7 @@ function changeToggle(group, val, shouldSave=true) {
   if(group === 'dir') STATE.direction = val;
   if(group === 'mode') STATE.mode = val;
   
-  updateGameMiniSettings(); // Ensure game view stays in sync
+  updateGameMiniSettings(); 
   
   if(shouldSave) saveData();
 }
@@ -1410,9 +1505,14 @@ function updateCheckUI(key, val) {
 
 function updateStats() {
   let known = 0, learning = 0;
+  // Stats reflect CURRENT direction setting (simple heuristic)
+  const isEs = STATE.direction === 'es-en';
+
   Object.entries(STATE.progress).forEach(([uid, p]) => {
     if(STATE.blacklist.has(uid)) return;
-    if(p.score >= 4) {
+    const score = isEs ? (p.scoreEsEn||0) : (p.scoreEnEs||0);
+    
+    if(score >= 4) {
         known++;
     } else if (p.seen > 0) { 
         learning++;
