@@ -323,6 +323,7 @@
     .sd-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
     .sd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .sd-item { display: flex; flex-direction: column; gap: 4px; }
+    .sd-item.span-2 { grid-row: span 2; justify-content: center; } /* Added for layout */
     .sd-val { font-size: 18px; font-weight: 700; color: var(--text-main); }
     .sd-label { font-size: 11px; color: var(--text-muted); }
     .rank-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 99px; margin-top: 8px; overflow: hidden; }
@@ -639,7 +640,7 @@
       <div id="personalStatsArea" class="stats-dashboard" style="display:none">
         <div class="sd-title">Your Journey</div>
         <div class="sd-grid">
-           <div class="sd-item">
+           <div class="sd-item span-2"> <!-- Added class span-2 -->
               <div class="sd-label">Mastery Rank</div>
               <div class="sd-val" id="psRank">Novice</div>
               <div class="rank-bar"><div class="rank-fill" id="psRankBar"></div></div>
