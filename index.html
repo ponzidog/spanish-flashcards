@@ -765,6 +765,7 @@
         <div class="action-row" id="gameControlsStart">
           <button class="btn-action ghost" id="btnDeleteCard" title="Permanently Delete">🗑 Remove</button>
           <button class="btn-action primary" id="btnShowAnswer">Show Answer</button>
+          <button class="btn-action primary" id="btnPickDeck" style="display:none" onclick="switchPanel('decks')">Pick a Deck</button>
         </div>
 
         <div class="action-row" id="gameControlsJudge" style="display:none">
@@ -1072,6 +1073,11 @@ async function init() {
   updateStats();
   updateGameMiniSettings();
   initTTS(); // Initialize Text to Speech
+  
+  // Auto-resume session if exists
+  if (STATE.currentDeckId || STATE.isStruggleMode || STATE.customSessionList) {
+      resumeSavedSession();
+  }
 }
 
 // --- LOADING SCREEN ---
@@ -1181,12 +1187,27 @@ function loadLocalData() {
   const struggle = localStorage.getItem('sf_struggle');
   if(struggle) STATE.struggleList = new Set(JSON.parse(struggle));
 
+  // Active Session Persistence
+  const activeSession = JSON.parse(localStorage.getItem('sf_active_session') || 'null');
+  if(activeSession) {
+      STATE.currentDeckId = activeSession.currentDeckId;
+      STATE.isStruggleMode = activeSession.isStruggleMode;
+      STATE.customSessionList = activeSession.customSessionList;
+      STATE.sessionData = activeSession.sessionData || {};
+      STATE.lastCardUid = activeSession.lastCardUid;
+      STATE.sessionStats = activeSession.sessionStats || { correctFirst: 0, struggle: 0 };
+      STATE.sessionStruggleIds = activeSession.sessionStruggleIds || [];
+      STATE.streak = activeSession.streak || 0;
+      STATE.selDiff = activeSession.selDiff;
+      STATE.selLevel = activeSession.selLevel;
+  }
+
   const settings = JSON.parse(localStorage.getItem('sf_settings') || '{}');
   if(settings.dir) changeToggle('dir', settings.dir, false);
   if(settings.mode) changeToggle('mode', settings.mode, false);
   STATE.includeCustom = settings.includeCustom !== false;
   STATE.onlyCustom = settings.onlyCustom === true;
-  if(settings.selDiff) STATE.selDiff = settings.selDiff;
+  if(settings.selDiff && !activeSession) STATE.selDiff = settings.selDiff; // Prefer active session context
 
   // Streak Data
   STATE.dayStreak = parseInt(localStorage.getItem('sf_dayStreak') || '0');
@@ -1208,6 +1229,25 @@ function saveData() {
   localStorage.setItem('sf_dayStreak', STATE.dayStreak.toString());
   if(STATE.lastActiveDate) localStorage.setItem('sf_lastActiveDate', STATE.lastActiveDate);
   localStorage.setItem('sf_lastRankIndex', STATE.lastRankIndex.toString());
+
+  // Save Active Session State
+  if (STATE.currentDeckId || STATE.isStruggleMode || STATE.customSessionList) {
+      const activeSession = {
+          currentDeckId: STATE.currentDeckId,
+          isStruggleMode: STATE.isStruggleMode,
+          customSessionList: STATE.customSessionList,
+          sessionData: STATE.sessionData,
+          lastCardUid: STATE.lastCardUid,
+          sessionStats: STATE.sessionStats,
+          sessionStruggleIds: STATE.sessionStruggleIds,
+          streak: STATE.streak,
+          selDiff: STATE.selDiff,
+          selLevel: STATE.selLevel
+      };
+      localStorage.setItem('sf_active_session', JSON.stringify(activeSession));
+  } else {
+      localStorage.removeItem('sf_active_session');
+  }
 
   const settings = {
     dir: STATE.direction,
@@ -1637,6 +1677,33 @@ function confirmStartSession(resume) {
     nextCard();
 }
 
+function resumeSavedSession() {
+    switchPanel('game');
+    // Find the last card in the deck/session if possible
+    let cardToRestore = null;
+    if (STATE.lastCardUid) {
+        // Search all active decks
+        STATE.activeDecks.forEach(d => {
+            d.cards.forEach(c => {
+                if (getCardId(d.id, c) === STATE.lastCardUid) {
+                    cardToRestore = { ...c, _realDeckId: d.id, _uid: STATE.lastCardUid };
+                }
+            });
+        });
+    }
+
+    // Update bar
+    const pool = getPoolFromCurrentSession(); // Total available
+    updateProgressBar(pool.length); 
+
+    if (cardToRestore) {
+        STATE.currentCard = cardToRestore;
+        renderGameCard();
+    } else {
+        nextCard();
+    }
+}
+
 function startPracticeStruggle() {
   if(STATE.sessionStruggleIds.length === 0) return;  
   STATE.sessionData = {}; 
@@ -1751,6 +1818,8 @@ function nextCard() {
 
   // 3. Check for Completion
   if(remaining.length === 0) { 
+      // Clear saved active session
+      localStorage.removeItem('sf_active_session');
       // Clear saved progress for this deck since we finished it
       if(!STATE.isStruggleMode && !STATE.customSessionList) {
         const isMix = !STATE.currentDeckId;
@@ -1776,6 +1845,7 @@ function nextCard() {
   STATE.currentCard = card;
   STATE.lastCardUid = card._uid;
   renderGameCard();
+  saveData(); // Save active session state here
 }
 
 function getPoolFromCurrentSession() {
@@ -1800,14 +1870,45 @@ function getPoolFromCurrentSession() {
 
 function renderGameCard() {
   const c = STATE.currentCard;
+  
+  // --- EMPTY STATE (First Load / No Session) ---
+  if (!c) {
+      document.getElementById('gameFrontLabel').textContent = "Welcome";
+      document.getElementById('gameFrontText').textContent = "Pick a deck to start";
+      document.getElementById('gameBackText').textContent = "";
+      document.getElementById('gameExamples').innerHTML = "";
+      document.getElementById('gameDeckName').textContent = "";
+      document.getElementById('gameStrength').textContent = "";
+      document.getElementById('streakIndicator').textContent = "";
+      
+      // Hide standard controls
+      document.getElementById('gameControlsStart').style.display = 'flex';
+      document.getElementById('btnShowAnswer').style.display = 'none';
+      document.getElementById('btnDeleteCard').style.display = 'none';
+      
+      // Show Pick Deck Button
+      document.getElementById('btnPickDeck').style.display = 'block';
+      
+      // Hide other sections
+      document.getElementById('gameReveal').style.display = 'none';
+      document.getElementById('gameControlsJudge').style.display = 'none';
+      document.getElementById('gameControlsNext').style.display = 'none';
+      document.getElementById('gameMiniControls').style.display = 'none';
+      document.getElementById('sessionProgressBar').style.width = '0%';
+      return;
+  } 
+  
+  // --- NORMAL RENDER ---
+  document.getElementById('btnPickDeck').style.display = 'none'; // Hide pick button
+  document.getElementById('btnShowAnswer').style.display = 'block';
+  
   const isEs = STATE.direction === 'es-en';
   
   document.getElementById('gameReveal').style.display = 'none';
   document.getElementById('gameControlsJudge').style.display = 'none';
   document.getElementById('gameControlsNext').style.display = 'none';
   document.getElementById('gameControlsStart').style.display = 'flex';
-  document.getElementById('btnShowAnswer').style.display = 'block';
-
+  
   const btnEdit = document.getElementById('btnEditCard');
   if(c._custom) btnEdit.style.display = 'block';
   else btnEdit.style.display = 'none';
@@ -1847,9 +1948,6 @@ function renderGameCard() {
   document.getElementById('gameFrontLabel').textContent = isEs ? "Spanish" : "English";
   
   // --- UPDATED TTS LOGIC FOR GAME CARD ---
-  // If direction is ES->EN, the front text is Spanish.
-  // If direction is EN->ES, the front text is English.
-  
   const frontText = isEs ? c.es : c.en;
   // Use replace to escape single quotes in JS call
   const cleanEs = c.es.replace(/'/g, "\\'");
