@@ -290,6 +290,27 @@
     .deck-count { font-size: 10px; color: var(--text-muted); }
     .deck-section-title { margin: 0 0 15px 0; font-size: 18px; font-weight: 600; color: #fff; }
 
+    /* New Deck Features */
+    .deck-progress-track {
+        width: 100%; height: 4px; background: rgba(148,163,184,0.2);
+        border-radius: 99px; margin: 4px 0; overflow: hidden;
+    }
+    .deck-progress-fill {
+        height: 100%; background: var(--accent); width: 0%;
+        transition: width 0.3s ease;
+    }
+    .dir-indicators {
+        display: flex; gap: 4px; justify-content: center; margin-top: 2px;
+    }
+    .dir-box {
+        font-size: 8px; background: rgba(15,23,42,0.4); border: 1px solid rgba(148,163,184,0.2);
+        color: var(--text-muted); padding: 1px 4px; border-radius: 4px;
+        text-transform: uppercase; font-weight: 600;
+    }
+    .dir-box.completed {
+        background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.4); color: #86efac;
+    }
+
     /* --- Stats Dashboard --- */
     .stats-dashboard {
       background: linear-gradient(to right, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.5));
@@ -441,15 +462,15 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; min-height: 400px;
     }
     
-    /* Progress Bar */
-    .game-progress-container {
-        width: 100%; max-width: 500px;
-        display: flex; flex-direction: column; gap: 4px;
-        margin-bottom: 10px;
+    /* Progress Bar Styles */
+    .session-progress-track {
+        width: 100%; max-width: 500px; height: 6px; background: rgba(148,163,184,0.2);
+        border-radius: 99px; margin-bottom: 5px; overflow: hidden;
     }
-    .gp-info { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .gp-bar-bg { width: 100%; height: 6px; background: rgba(148,163,184,0.15); border-radius: 99px; overflow: hidden; }
-    .gp-bar-fill { height: 100%; background: var(--accent); width: 0%; border-radius: 99px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .session-progress-fill {
+        height: 100%; background: var(--accent); width: 0%;
+        transition: width 0.3s ease;
+    }
 
     .flashcard {
       width: 100%; max-width: 500px; min-height: 280px;
@@ -624,8 +645,12 @@
               <div class="rank-bar"><div class="rank-fill" id="psRankBar"></div></div>
            </div>
            <div class="sd-item">
-              <div class="sd-label">Current Streak</div>
+              <div class="sd-label">Word Streak</div>
               <div class="sd-val" id="psStreak">🔥 0</div>
+           </div>
+           <div class="sd-item">
+              <div class="sd-label">Day Streak</div>
+              <div class="sd-val" id="psDayStreak">📅 0</div>
            </div>
         </div>
       </div>
@@ -637,15 +662,9 @@
 
     <div id="panel-game" class="panel">
       <div class="game-area">
-        
-        <div class="game-progress-container" id="gameProgressBlock" style="display:none">
-           <div class="gp-info">
-               <span id="gpLabel">Progress</span>
-               <span id="gpPct">0%</span>
-           </div>
-           <div class="gp-bar-bg">
-               <div class="gp-bar-fill" id="gpBarFill"></div>
-           </div>
+        <!-- Added Progress Bar -->
+        <div class="session-progress-track">
+           <div class="session-progress-fill" id="sessionProgressBar"></div>
         </div>
 
         <div class="flashcard" id="gameCard">
@@ -839,17 +858,19 @@
     </div>
   </div>
   
-  <div class="overlay" id="refreshModal" style="z-index:205">
-      <div class="overlay-content">
-          <h2 style="margin-top:0; font-size:20px">Welcome Back! 👋</h2>
-          <p style="color:var(--text-muted); font-size:14px; line-height:1.5; margin-bottom:20px;">
-              It’s been <strong id="refreshDays">X</strong> day(s) since you’ve played this deck. Want to refresh your mind by starting over?
-          </p>
-          <div class="action-row">
-              <button class="btn-action ghost" onclick="confirmRefreshSession(false)">Continue</button>
-              <button class="btn-action primary" onclick="confirmRefreshSession(true)">Start Over</button>
-          </div>
+  <!-- New Resume Modal -->
+  <div class="overlay" id="resumeModal">
+    <div class="overlay-content">
+      <h2 style="margin-top:0">Welcome Back! 👋</h2>
+      <p style="color:var(--text-muted); font-size:14px; line-height:1.5; margin-bottom:20px;">
+          It's been <strong id="resumeDays" style="color:#fff">0 day(s)</strong> since you played this deck. 
+          Want to refresh your mind by starting over, or continue from where you left off?
+      </p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn-action success" onclick="confirmStartSession(true)">Continue from here</button>
+        <button class="btn-action ghost" onclick="confirmStartSession(false)">Start Over</button>
       </div>
+    </div>
   </div>
 
   <div class="global-edit-modal" id="globalEditModal">
@@ -877,11 +898,15 @@ const STATE = {
   activeDecks: [],
   customCards: {}, 
   progress: {}, 
-  deckSessions: {}, // { deckId: { lastPlayed: ts, completed: [uid1, uid2...] } }
   blacklist: new Set(),
   starred: new Set(),
-  struggleList: new Set(), // Persistent struggle list
+  struggleList: new Set(), 
+  deckProgress: {}, 
   
+  // Persistence for Day Streak
+  dayStreak: 0,
+  lastActiveDate: null,
+
   // Session State
   sessionData: {}, 
   sessionStats: { correctFirst: 0, struggle: 0 },
@@ -904,7 +929,6 @@ const STATE = {
   currentDeckId: null,
   currentCard: null,
   isStruggleMode: false,
-  pendingDeckId: null, // Used for Refresh Modal
   
   // Settings
   direction: 'es-en',
@@ -915,6 +939,9 @@ const STATE = {
 
 let editingCardUid = null;
 let loadStartTime = Date.now();
+// Temporary holding variable for deck start flow
+let pendingDeckId = null;
+let pendingIsMix = false;
 
 const FUN_FACTS = [
     "Spanish is the second most spoken native language in the world, beating English!",
@@ -994,8 +1021,9 @@ function loadLocalData() {
   const prog = localStorage.getItem('sf_progress');
   if(prog) STATE.progress = JSON.parse(prog);
   
-  const sess = localStorage.getItem('sf_deck_sessions');
-  if(sess) STATE.deckSessions = JSON.parse(sess);
+  // Load deck saves
+  const dp = localStorage.getItem('sf_deck_progress');
+  if(dp) STATE.deckProgress = JSON.parse(dp);
 
   const black = localStorage.getItem('sf_blacklist');
   if(black) STATE.blacklist = new Set(JSON.parse(black));
@@ -1013,6 +1041,10 @@ function loadLocalData() {
   STATE.onlyCustom = settings.onlyCustom === true;
   if(settings.selDiff) STATE.selDiff = settings.selDiff;
 
+  // Streak Data
+  STATE.dayStreak = parseInt(localStorage.getItem('sf_dayStreak') || '0');
+  STATE.lastActiveDate = localStorage.getItem('sf_lastActiveDate');
+
   updateCheckUI('includeCustom', STATE.includeCustom);
   updateCheckUI('onlyCustom', STATE.onlyCustom);
 }
@@ -1020,10 +1052,14 @@ function loadLocalData() {
 function saveData() {
   localStorage.setItem('sf_custom', JSON.stringify(STATE.customCards));
   localStorage.setItem('sf_progress', JSON.stringify(STATE.progress));
-  localStorage.setItem('sf_deck_sessions', JSON.stringify(STATE.deckSessions));
+  localStorage.setItem('sf_deck_progress', JSON.stringify(STATE.deckProgress));
   localStorage.setItem('sf_blacklist', JSON.stringify([...STATE.blacklist]));
   localStorage.setItem('sf_starred', JSON.stringify([...STATE.starred]));
   localStorage.setItem('sf_struggle', JSON.stringify([...STATE.struggleList]));
+  
+  localStorage.setItem('sf_dayStreak', STATE.dayStreak.toString());
+  if(STATE.lastActiveDate) localStorage.setItem('sf_lastActiveDate', STATE.lastActiveDate);
+
   const settings = {
     dir: STATE.direction,
     mode: STATE.mode,
@@ -1157,7 +1193,11 @@ function renderDecks() {
       const count = getPlayableCount(d);
       const status = checkDeckCompletion(d);
       const icon = getTopicEmoji(d.topicId);
-      const el = createCard(icon, label, `${count} cards`, () => { checkDeckSession(d.id); });
+      
+      // Calculate specific stats for this deck to render indicators
+      const stats = getDeckStats(d);
+
+      const el = createCard(icon, label, `${count} cards`, () => { startSession(d.id); }, stats);
       if(status === 'gold') el.classList.add('mastered-gold');
       else if(status === 'green') el.classList.add('mastered-green');
       domGrid.appendChild(el);
@@ -1196,6 +1236,8 @@ function updatePersonalStatsUI() {
 
     document.getElementById('psRank').textContent = currentRank.name;
     document.getElementById('psStreak').textContent = `🔥 ${STATE.streak}`;
+    document.getElementById('psDayStreak').textContent = `📅 ${STATE.dayStreak}`;
+
     if(nextRank) {
         const totalNeeded = nextRank.limit - prevLimit;
         const currentProgress = known - prevLimit;
@@ -1220,6 +1262,32 @@ function getMasteryStatusForCards(cards, deckIdRef) {
     if(allEsEn || allEnEs) return 'green';
     return null;
 }
+
+function getDeckStats(deck) {
+    const coreCards = deck.cards.filter(c => !c._custom);
+    if(coreCards.length === 0) return { esen: false, enes: false, percent: 0 };
+
+    let countEsEn = 0;
+    let countEnEs = 0;
+    
+    coreCards.forEach(c => {
+        const uid = getCardId(deck.id, c);
+        const p = STATE.progress[uid] || {};
+        if((p.scoreEsEn || 0) >= 4) countEsEn++;
+        if((p.scoreEnEs || 0) >= 4) countEnEs++;
+    });
+
+    const totalPoss = coreCards.length * 2;
+    const current = countEsEn + countEnEs;
+    const pct = Math.round((current / totalPoss) * 100);
+
+    return {
+        esen: countEsEn === coreCards.length,
+        enes: countEnEs === coreCards.length,
+        percent: pct
+    };
+}
+
 function checkDeckCompletion(deck) { return getMasteryStatusForCards(deck.cards, deck.id); }
 function checkLevelCompletion(diffId, levelIdx) {
     const decks = STATE.activeDecks.filter(d => d.difficultyId === diffId && d.levelIndex === levelIdx);
@@ -1234,10 +1302,27 @@ function checkDifficultyCompletion(diffId) {
     return getMasteryStatusForCards(allCards, null);
 }
 
-function createCard(icon, title, sub, onClick) {
+function createCard(icon, title, sub, onClick, stats = null) {
   const div = document.createElement('div');
   div.className = 'deck-card';
-  div.innerHTML = `<div class="deck-icon">${icon}</div><div class="deck-title">${title}</div><div class="deck-count">${sub}</div>`;
+  
+  let html = `<div class="deck-icon">${icon}</div><div class="deck-title">${title}</div>`;
+  
+  // Add Progress Bar and Indicators if stats exist
+  if (stats) {
+      html += `
+        <div class="deck-progress-track">
+            <div class="deck-progress-fill" style="width:${stats.percent}%"></div>
+        </div>
+        <div class="dir-indicators">
+            <div class="dir-box ${stats.esen ? 'completed' : ''}">ES→EN</div>
+            <div class="dir-box ${stats.enes ? 'completed' : ''}">EN→ES</div>
+        </div>
+      `;
+  }
+  
+  html += `<div class="deck-count">${sub}</div>`;
+  div.innerHTML = html;
   div.onclick = onClick;
   return div;
 }
@@ -1262,82 +1347,71 @@ function getPlayableCount(deck) {
 
 // --- GAME LOGIC ---
 
-// New function to check for "Refresh Mind" scenario
-function checkDeckSession(deckId) {
-    const session = STATE.deckSessions[deckId];
-    if (session && session.lastPlayed && session.completed.length > 0) {
-        // Calculate total cards in this deck to see if it's already finished
-        const deck = STATE.activeDecks.find(d => d.id === deckId);
-        const total = getPlayableCount(deck);
-        
-        if (session.completed.length < total) {
-            const now = Date.now();
-            const diffDays = (now - session.lastPlayed) / (1000 * 60 * 60 * 24);
-            
-            if (diffDays > 1) {
-                STATE.pendingDeckId = deckId;
-                document.getElementById('refreshDays').textContent = Math.floor(diffDays);
-                document.getElementById('refreshModal').style.display = 'flex';
-                return;
-            }
+// New Logic: Check for save state
+function startSession(deckId, isMix = false) {
+    pendingDeckId = deckId;
+    pendingIsMix = isMix;
+
+    // Construct a save key for this specific deck/mix configuration
+    const saveKey = isMix ? `mix_${STATE.selDiff}_${STATE.selLevel}` : deckId;
+    
+    // Check if we have saved progress
+    if(STATE.deckProgress[saveKey]) {
+        const last = STATE.deckProgress[saveKey].lastPlayed;
+        const now = Date.now();
+        const days = Math.floor((now - last) / (1000 * 60 * 60 * 24));
+
+        if(days >= 1) {
+            // > 1 Day: Ask user
+            document.getElementById('resumeDays').textContent = days + (days === 1 ? ' day' : ' days');
+            document.getElementById('resumeModal').style.display = 'flex';
+            return;
+        } else {
+            // < 1 Day: Auto Resume
+            confirmStartSession(true);
+            return;
         }
     }
-    // No prompt needed, proceed naturally
-    startSession(deckId, false, false);
+
+    // No save: Start Fresh
+    confirmStartSession(false);
 }
 
-function confirmRefreshSession(startOver) {
-    document.getElementById('refreshModal').style.display = 'none';
-    if(STATE.pendingDeckId) {
-        startSession(STATE.pendingDeckId, false, startOver);
-        STATE.pendingDeckId = null;
+function confirmStartSession(resume) {
+    document.getElementById('resumeModal').style.display = 'none';
+    const deckId = pendingDeckId;
+    const isMix = pendingIsMix;
+    const saveKey = isMix ? `mix_${STATE.selDiff}_${STATE.selLevel}` : deckId;
+
+    STATE.currentDeckId = deckId;
+    STATE.isStruggleMode = false;
+    STATE.customSessionList = null;
+    STATE.lastCardUid = null;
+    STATE.streak = 0;
+    STATE.sessionStats = { correctFirst: 0, struggle: 0 };
+    STATE.sessionData = {}; // Clear memory
+
+    if(resume && STATE.deckProgress[saveKey]) {
+        // Hydrate session data from save
+        const savedUids = STATE.deckProgress[saveKey].correctUids || [];
+        savedUids.forEach(uid => {
+            STATE.sessionData[uid] = { count: 1, correctInSession: true }; // Mark as done
+        });
+    } else {
+        // Start fresh: Clear save
+        if(STATE.deckProgress[saveKey]) {
+            delete STATE.deckProgress[saveKey];
+            saveData();
+        }
     }
-}
 
-function startSession(deckId, isMix = false, forceReset = false) {
-  STATE.currentDeckId = deckId;
-  STATE.sessionData = {};
-  STATE.lastCardUid = null;
-  STATE.isStruggleMode = false;
-  STATE.customSessionList = null;
-  STATE.sessionStats = { correctFirst: 0, struggle: 0 };
-  STATE.sessionStruggleIds = [];
-  STATE.streak = 0;
-  
-  if(!isMix && !deckId) return;
-
-  // Restore Session if applicable (Only for specific decks, not Mix)
-  if(deckId && !isMix) {
-      if(forceReset) {
-          // Reset persistence
-          delete STATE.deckSessions[deckId];
-          saveData();
-      } else if(STATE.deckSessions[deckId]) {
-          // Restore completed UIDs
-          STATE.deckSessions[deckId].completed.forEach(uid => {
-             // Create basic session data marked as correct
-             STATE.sessionData[uid] = { count: 1, struggle: false, postCount: 0, correctInSession: true };
-          });
-      }
-  }
-
-  const pool = getPoolFromCurrentSession();
-  if(pool.length === 0 && Object.keys(STATE.sessionData).length === 0) { alert("No cards available!"); return; }
-  
-  switchPanel('game');
-  updateDeckProgress(); // Init progress bar
-  
-  // If we restored a session that is fully complete
-  if(pool.length === 0) {
-      // Technically shouldn't happen due to checkDeckSession logic, but safety net
-      delete STATE.deckSessions[deckId];
-      saveData();
-      STATE.sessionData = {};
-      startSession(deckId, false, false);
-      return;
-  }
-
-  nextCard();
+    if(!isMix && !deckId) return;
+    const pool = getPoolFromCurrentSession();
+    if(pool.length === 0) { alert("No cards available!"); return; }
+    
+    switchPanel('game');
+    updateProgressBar(pool.length); // Init bar
+    nextCard();
 }
 
 function startPracticeStruggle() {
@@ -1347,8 +1421,10 @@ function startPracticeStruggle() {
   STATE.lastCardUid = null;
   STATE.streak = 0;  
   document.getElementById('overlay').style.display = 'none';
-  // Hide progress bar in struggle mode as it's a sub-session
-  document.getElementById('gameProgressBlock').style.display = 'none';
+  
+  // Progress bar for struggle mode is simple (0 to start)
+  updateProgressBar(STATE.sessionStruggleIds.length);
+  
   nextCard();
 }
 
@@ -1364,14 +1440,56 @@ function startFilteredSession(uidList) {
     
     if(uidList.length === 0) { alert("No cards in list."); return; }
     switchPanel('game');
-    document.getElementById('gameProgressBlock').style.display = 'flex';
-    updateDeckProgress();
+    updateProgressBar(uidList.length);
     nextCard();
+}
+
+function updateProgressBar(totalOverride = null) {
+    // Determine context total and current
+    let total = 0;
+    let current = 0;
+
+    if(STATE.customSessionList) {
+        total = STATE.customSessionList.length;
+        current = STATE.customSessionList.filter(uid => STATE.sessionData[uid]?.correctInSession).length;
+    } else if (STATE.isStruggleMode) {
+        // In struggle mode, total is the starting list, current is how many correct now
+        total = totalOverride || STATE.sessionStruggleIds.length; 
+        // We need to track how many removed from struggle list effectively
+        // Actually simpler: 
+        current = Object.values(STATE.sessionData).filter(d => d.correctInSession).length;
+    } else {
+        // Normal Session
+        // Total is pool size + already done
+        // We need to re-calculate total pool including those filtered out
+        const isMix = !STATE.currentDeckId;
+        const relevantDecks = isMix 
+            ? STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel)
+            : [STATE.activeDecks.find(d => d.id === STATE.currentDeckId)];
+            
+        let validCardsCount = 0;
+        relevantDecks.forEach(d => {
+            if(!d) return;
+            d.cards.forEach(c => {
+                const uid = getCardId(d.id, c);
+                if(STATE.blacklist.has(uid)) return;
+                if(STATE.onlyCustom && !c._custom) return;
+                if(!STATE.includeCustom && c._custom) return;
+                validCardsCount++;
+            });
+        });
+        total = validCardsCount;
+        current = Object.values(STATE.sessionData).filter(d => d.correctInSession).length;
+    }
+
+    const pct = total === 0 ? 0 : Math.round((current / total) * 100);
+    document.getElementById('sessionProgressBar').style.width = `${pct}%`;
 }
 
 function nextCard() {
   let pool = [];
   
+  // 1. Get the pool of cards based on the current mode
   if (STATE.customSessionList) {
       const allDecks = STATE.activeDecks;
       pool = [];
@@ -1398,22 +1516,39 @@ function nextCard() {
     pool = getPoolFromCurrentSession();
   }
   
+  // 2. Filter: Keep cards that are NOT yet marked correct in this specific session
   const remaining = pool.filter(c => {
     const sData = STATE.sessionData[c._uid];
     if (!sData) return true;
     return sData.correctInSession !== true;
   });
 
-  updateDeckProgress();
+  // Update Progress Bar
+  updateProgressBar();
 
+  // 3. Check for Completion
   if(remaining.length === 0) { 
+      // Clear saved progress for this deck since we finished it
+      if(!STATE.isStruggleMode && !STATE.customSessionList) {
+        const isMix = !STATE.currentDeckId;
+        const saveKey = isMix ? `mix_${STATE.selDiff}_${STATE.selLevel}` : STATE.currentDeckId;
+        if(STATE.deckProgress[saveKey]) {
+            delete STATE.deckProgress[saveKey];
+            saveData();
+        }
+      }
       showDeckComplete(); 
       return; 
   }
   
+  // 4. Constraint: Don't show the same card twice in a row, UNLESS it is the only card left
   let candidates = remaining.filter(c => c._uid !== STATE.lastCardUid);
-  if (candidates.length === 0) candidates = remaining;
   
+  if (candidates.length === 0) {
+      candidates = remaining;
+  }
+  
+  // 5. Pick and Render
   const card = candidates[Math.floor(Math.random() * candidates.length)];
   STATE.currentCard = card;
   STATE.lastCardUid = card._uid;
@@ -1422,14 +1557,7 @@ function nextCard() {
 
 function getPoolFromCurrentSession() {
   let pool = [];
-  const isMix = !STATE.currentDeckId && !STATE.customSessionList;
-  
-  if (STATE.customSessionList) {
-      // Pool is handled inside nextCard mostly, but for progress calculation we need total size
-      // We will skip this calc here to avoid duplicate logic complexity
-      return []; 
-  }
-  
+  const isMix = !STATE.currentDeckId;
   const relevantDecks = isMix 
     ? STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel)
     : [STATE.activeDecks.find(d => d.id === STATE.currentDeckId)];
@@ -1445,38 +1573,6 @@ function getPoolFromCurrentSession() {
     });
   });
   return pool;
-}
-
-function updateDeckProgress() {
-    let total = 0;
-    let completed = 0;
-    
-    if(STATE.isStruggleMode) {
-        document.getElementById('gameProgressBlock').style.display = 'none';
-        return;
-    }
-
-    if(STATE.customSessionList) {
-        total = STATE.customSessionList.length;
-        completed = 0;
-        STATE.customSessionList.forEach(uid => {
-            if(STATE.sessionData[uid] && STATE.sessionData[uid].correctInSession) completed++;
-        });
-    } else {
-        const pool = getPoolFromCurrentSession();
-        total = pool.length;
-        // Count how many in this pool are marked correct in session data
-        pool.forEach(c => {
-            if(STATE.sessionData[c._uid] && STATE.sessionData[c._uid].correctInSession) completed++;
-        });
-    }
-
-    if(total === 0) total = 1; // prevent div/0
-    const pct = Math.round((completed / total) * 100);
-    
-    document.getElementById('gameProgressBlock').style.display = 'flex';
-    document.getElementById('gpPct').textContent = `${pct}%`;
-    document.getElementById('gpBarFill').style.width = `${pct}%`;
 }
 
 function renderGameCard() {
@@ -1567,6 +1663,9 @@ function showAnswer(force = false) {
       markCard(true, true); 
       return; 
     } else {
+      // HIDE INPUT to prevent copy paste
+      document.getElementById('gameInputArea').style.display = 'none';
+
       document.getElementById('gameFeedback').textContent = `❌ Incorrect.`;
       document.getElementById('gameFeedback').style.color = "#f87171";
       triggerCardFeedback(false);
@@ -1597,6 +1696,7 @@ function markCard(success, autoAdvance = true) {
   const uid = STATE.currentCard._uid;
   if(!STATE.progress[uid]) STATE.progress[uid] = { scoreEsEn: 0, scoreEnEs: 0, seen: 0 };
   
+  // Ensure session data exists
   if(!STATE.sessionData[uid]) {
       STATE.sessionData[uid] = { count: 0, struggle: false, postCount: 0, correctInSession: false };
   }
@@ -1609,19 +1709,8 @@ function markCard(success, autoAdvance = true) {
   let currentScore = isEs ? STATE.progress[uid].scoreEsEn : STATE.progress[uid].scoreEnEs;
 
   if(success) {
-      // MARK CORRECT IN SESSION
+      // MARK CORRECT
       STATE.sessionData[uid].correctInSession = true;
-
-      // Update Persistence if applicable (Not in Mix mode, not in Struggle practice)
-      if(STATE.currentDeckId && !STATE.isStruggleMode && !STATE.customSessionList) {
-          if(!STATE.deckSessions[STATE.currentDeckId]) {
-              STATE.deckSessions[STATE.currentDeckId] = { lastPlayed: Date.now(), completed: [] };
-          }
-          const ds = STATE.deckSessions[STATE.currentDeckId];
-          ds.lastPlayed = Date.now();
-          if(!ds.completed.includes(uid)) ds.completed.push(uid);
-          saveData();
-      }
 
       STATE.streak++;
       triggerCardFeedback(true);
@@ -1639,26 +1728,35 @@ function markCard(success, autoAdvance = true) {
         STATE.sessionStruggleIds = STATE.sessionStruggleIds.filter(id => id !== uid);
       }
 
+      // STRUGGLE LOGIC: Remove only if correct on first try
       if(STATE.sessionData[uid].count === 1) {
           STATE.struggleList.delete(uid);
       }
       
-  } else {
-      STATE.sessionData[uid].correctInSession = false;
-
-      // Update Persistence: If they got it wrong, remove from completed in this session if it was there?
-      // User requested "The progress bar can also go back".
-      if(STATE.currentDeckId && !STATE.isStruggleMode) {
-          if(STATE.deckSessions[STATE.currentDeckId]) {
-             const ds = STATE.deckSessions[STATE.currentDeckId];
-             ds.lastPlayed = Date.now();
-             const idx = ds.completed.indexOf(uid);
-             if(idx > -1) {
-                 ds.completed.splice(idx, 1);
-                 saveData();
-             }
+      // Update Day Streak
+      const today = new Date().toDateString();
+      if(STATE.lastActiveDate !== today) {
+          if(!STATE.lastActiveDate) {
+              STATE.dayStreak = 1;
+          } else {
+              // Check if yesterday
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              if(STATE.lastActiveDate === yesterday.toDateString()) {
+                  STATE.dayStreak++;
+              } else {
+                  // Reset if gap > 1 day
+                  STATE.dayStreak = 1;
+              }
           }
+          STATE.lastActiveDate = today;
+          // Save immediately handled below
       }
+
+  } else {
+      // MARK INCORRECT
+      // Note: If they previously got it right in this session (re-review?) we unmark it
+      STATE.sessionData[uid].correctInSession = false;
 
       STATE.streak = 0;
       if(!autoAdvance) triggerCardFeedback(false); 
@@ -1675,10 +1773,28 @@ function markCard(success, autoAdvance = true) {
   if(isEs) STATE.progress[uid].scoreEsEn = currentScore;
   else STATE.progress[uid].scoreEnEs = currentScore;
   
-  saveData();
+  // Save Persistent Progress for Deck Resume
+  // We only save if we are in a normal deck session (not filtered, not practice)
+  if(!STATE.isStruggleMode && !STATE.customSessionList) {
+      const isMix = !STATE.currentDeckId;
+      const saveKey = isMix ? `mix_${STATE.selDiff}_${STATE.selLevel}` : STATE.currentDeckId;
+      
+      // Get all UIDs marked correct in this session
+      const correctUids = Object.keys(STATE.sessionData).filter(k => STATE.sessionData[k].correctInSession);
+      
+      STATE.deckProgress[saveKey] = {
+          lastPlayed: Date.now(),
+          correctUids: correctUids
+      };
+      saveData();
+  } else {
+      // We still save general progress
+      saveData();
+  }
+
   updateStats();
   updatePersonalStatsUI();
-  updateDeckProgress(); // Update the bar
+  updateProgressBar(); // Update bar immediately
   
   if(autoAdvance) nextCard();
   else {
@@ -1776,15 +1892,6 @@ function saveGlobalEdit() {
             STATE.blacklist.delete(editingCardUid);
             STATE.blacklist.add(newUid);
         }
-        // Update session tracking for ID change
-        if(STATE.deckSessions[deckId]) {
-            const ds = STATE.deckSessions[deckId];
-            const idx = ds.completed.indexOf(editingCardUid);
-            if(idx > -1) {
-                ds.completed.splice(idx, 1);
-                ds.completed.push(newUid);
-            }
-        }
     }
 
     saveData();
@@ -1814,13 +1921,6 @@ function showDeckComplete() {
   } else {
     btnStruggle.style.display = 'none';
   }
-  
-  // Clear persistent session data as deck is done
-  if(STATE.currentDeckId && STATE.deckSessions[STATE.currentDeckId]) {
-      delete STATE.deckSessions[STATE.currentDeckId];
-      saveData();
-  }
-
   launchConfetti();
 }
 
@@ -1928,9 +2028,8 @@ function applyFilter(type, val) {
     
     // Update active class in dropdown
     const headers = document.querySelectorAll('.fd-item');
-    // Simplified Active State logic for UI feedback
     headers.forEach(h => {
-        if(h.textContent.toLowerCase().includes(val)) h.classList.add('active'); // Approximate match for demo
+        if(h.textContent.toLowerCase().includes(val)) h.classList.add('active');
         else h.classList.remove('active'); 
     });
     
