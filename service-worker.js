@@ -1,24 +1,26 @@
-const CACHE_NAME = "spanish-flashcards-v2"; // Bump this version (v2, v3) whenever you update decks.json
+const CACHE_NAME = "spanish-flashcards-v4"; // I bumped the version to force an update
 
-// 1. FIXED: Added 'decks.json' so the app data works offline
+// We ONLY cache the two files absolutely required for the game to run.
+// We REMOVED manifest.json from this list. If the manifest is missing/broken,
+// the app might not look pretty on the home screen, but it WON'T crash offline.
 const ASSETS_TO_CACHE = [
   "./",
-  "./index.html",
-  "./decks.json",     // <--- CRITICAL: Prevents "No Internet" errors
-  "./manifest.json"
+  "./index.html", // Ensure this matches your actual HTML filename on GitHub
+  "./decks.json"
 ];
 
-// Install: cache core assets immediately
+// Install: Cache critical files
 self.addEventListener("install", (event) => {
+  self.skipWaiting(); // Force this new service worker to activate immediately
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log("Service Worker: Caching Files");
+      console.log("Caching essential game files...");
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
 });
 
-// Activate: cleanup old caches (runs when you change CACHE_NAME)
+// Activate: Delete old caches to save space and ensure you get the latest version
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -29,50 +31,29 @@ self.addEventListener("activate", (event) => {
       )
     )
   );
+  self.clients.claim(); // Take control of the page immediately
 });
 
-// Fetch: serve from cache first, fall back to network
+// Fetch: The "Stale-While-Revalidate" Strategy
+// 1. Try to get the file from the Internet (so you get updates).
+// 2. If Internet works, save a copy to the Cache for later.
+// 3. If Internet FAILS (offline), instantly serve the file from Cache.
 self.addEventListener("fetch", (event) => {
-  const request = event.request;
-
-  // Only handle GET and same-origin requests
-  if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) {
-    return;
-  }
+  if (event.request.method !== "GET") return;
 
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      // Return cached file if found
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      // If not in cache, fetch from network
-      return fetch(request)
-        .then((networkResponse) => {
-          // Check if valid response
-          if (
-            !networkResponse ||
-            networkResponse.status !== 200 ||
-            networkResponse.type !== "basic"
-          ) {
-            return networkResponse;
-          }
-
-          // Clone response to save it to cache for next time
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
-          });
-
-          return networkResponse;
-        })
-        .catch(() => {
-          // 2. FIXED: Removed the specific fallback that returned HTML for everything.
-          // Returning index.html when the app asks for decks.json causes a crash.
-          // If the file isn't in the cache and the network fails, we simply return nothing
-          // (browser will handle the offline error naturally).
-        });
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        // If we got a valid response from the web, clone it and cache it
+        if (networkResponse && networkResponse.status === 200) {
+            const resClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        // Network failed (Airplane mode)? Return the cached version.
+        return caches.match(event.request);
+      })
   );
 });
