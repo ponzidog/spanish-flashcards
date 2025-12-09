@@ -267,14 +267,15 @@
       color: var(--gold); font-size: 14px;
     }
 
-    /* Red Struggle Card Style */
+    /* Red Struggle/Custom Card Style */
     .deck-card.mastered-red {
         border-color: var(--danger);
         background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(239, 68, 68, 0.15));
     }
-    .deck-card.mastered-red::after {
-        content: '⚠'; position: absolute; top: 6px; right: 6px;
-        color: var(--danger); font-size: 12px;
+    /* Blue Custom Card Style */
+    .deck-card.custom-blue {
+        border-color: #38bdf8;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(56, 189, 248, 0.15));
     }
 
     .deck-card.diff-card {
@@ -765,7 +766,7 @@
         <div class="action-row" id="gameControlsStart">
           <button class="btn-action ghost" id="btnDeleteCard" title="Permanently Delete">🗑 Remove</button>
           <button class="btn-action primary" id="btnShowAnswer">Show Answer</button>
-          <button class="btn-action primary" id="btnPickDeck" style="display:none" onclick="switchPanel('decks')">Pick a Deck</button>
+          <button class="btn-action primary" id="btnPickDeck" style="display:none" onclick="startNewDeckFlow()">Pick a Deck</button>
         </div>
 
         <div class="action-row" id="gameControlsJudge" style="display:none">
@@ -1074,9 +1075,10 @@ async function init() {
   updateGameMiniSettings();
   initTTS(); // Initialize Text to Speech
   
-  // Auto-resume session if exists
+  // Note: We do NOT force switchPanel('game') here. 
+  // We just load the state so if user taps "Play", resumeSavedSession logic works.
   if (STATE.currentDeckId || STATE.isStruggleMode || STATE.customSessionList) {
-      resumeSavedSession();
+      // Just ensure pool calculation is ready if needed, but don't switch view.
   }
 }
 
@@ -1207,7 +1209,7 @@ function loadLocalData() {
   if(settings.mode) changeToggle('mode', settings.mode, false);
   STATE.includeCustom = settings.includeCustom !== false;
   STATE.onlyCustom = settings.onlyCustom === true;
-  if(settings.selDiff && !activeSession) STATE.selDiff = settings.selDiff; // Prefer active session context
+  if(settings.selDiff && !activeSession) STATE.selDiff = settings.selDiff; 
 
   // Streak Data
   STATE.dayStreak = parseInt(localStorage.getItem('sf_dayStreak') || '0');
@@ -1294,6 +1296,51 @@ function getTopicEmoji(topicId) {
     return map[topicId] || '📝';
 }
 
+function calculateGroupProgress(groupType, id) {
+    let totalItems = 0;
+    let masteredItems = 0;
+    
+    // Iterate all decks to find matches
+    STATE.activeDecks.forEach(d => {
+        if(groupType === 'difficulty' && d.difficultyId !== id) return;
+        if(groupType === 'level' && d.difficultyId === STATE.selDiff && d.levelIndex !== id) return;
+        
+        // Count cards in this deck
+        d.cards.forEach(c => {
+            if(c._custom && !STATE.includeCustom) return;
+            const uid = getCardId(d.id, c);
+            if(STATE.blacklist.has(uid)) return;
+            
+            // Total 'sides' to master is 2 (ES->EN and EN->ES)
+            totalItems += 2;
+            const p = STATE.progress[uid] || {};
+            if((p.scoreEsEn||0) >= 4) masteredItems++;
+            if((p.scoreEnEs||0) >= 4) masteredItems++;
+        });
+    });
+    
+    if(totalItems === 0) return 0;
+    return Math.round((masteredItems / totalItems) * 100);
+}
+
+function startCustomSession() {
+    // Collect all custom cards
+    let uids = [];
+    STATE.activeDecks.forEach(d => {
+        d.cards.forEach(c => {
+            if(c._custom) {
+                uids.push(getCardId(d.id, c));
+            }
+        });
+    });
+    
+    if(uids.length === 0) {
+        alert("No custom cards found. Add some in the 'Words' tab!");
+        return;
+    }
+    startFilteredSession(uids);
+}
+
 function renderDecks() {
   domGrid.innerHTML = '';
   domBread.innerHTML = '';
@@ -1306,35 +1353,38 @@ function renderDecks() {
     
     if(!STATE.decksRaw.difficulties) return;
     
-    if(STATE.starred.size > 0) {
-        const starEl = createCard('⭐', 'Starred Words', `${STATE.starred.size} cards`, () => {
-             openWordsManagerFromHeader('starred');
+    // --- Custom Words Card (Replacing Starred) ---
+    const customCount = Object.values(STATE.customCards).flat().length;
+    if(customCount > 0) {
+        const customEl = createCard('✨', 'Custom Words', `${customCount} cards`, () => {
+             startCustomSession();
         });
-        starEl.classList.add('mastered-gold');
-        domGrid.appendChild(starEl);
+        customEl.classList.add('custom-blue');
+        domGrid.appendChild(customEl);
     }
 
-    // --- NEW: Struggle Words Deck ---
+    // --- Struggle Words Deck ---
     if(STATE.struggleList.size > 0) {
         const struggleEl = createCard('🧗', 'Struggle Words', `${STATE.struggleList.size} cards`, () => {
-             openWordsManagerFromHeader('struggle');
+             startPracticeStruggle();
         });
         struggleEl.classList.add('mastered-red');
         domGrid.appendChild(struggleEl);
     }
 
     STATE.decksRaw.difficulties.forEach(diff => {
-      const status = checkDifficultyCompletion(diff.id);
+      const pct = calculateGroupProgress('difficulty', diff.id);
+      
       const el = document.createElement('div');
       el.className = 'deck-card diff-card';
-      if(status === 'gold') el.classList.add('mastered-gold');
-      else if(status === 'green') el.classList.add('mastered-green');
-
+      // Basic Progress Bar for Difficulty
       el.innerHTML = `
         <div class="diff-emoji">${getDifficultyIcon(diff.label)}</div>
         <div class="diff-text-col">
             <div class="diff-title">${diff.label}</div>
-            <div class="diff-sub">Difficulty</div>
+            <div class="deck-progress-track" style="margin-top:4px">
+                <div class="deck-progress-fill" style="width:${pct}%"></div>
+            </div>
         </div>
       `;
       el.onclick = () => {
@@ -1357,13 +1407,22 @@ function renderDecks() {
     
     const levels = new Set(STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff).map(d => d.levelIndex));
     [...levels].sort().forEach(lvl => {
-      const status = checkLevelCompletion(STATE.selDiff, lvl);
-      const el = createCard('📶', `Level ${lvl}`, `${diffObj.label}`, () => {
+      const pct = calculateGroupProgress('level', lvl);
+      
+      const el = document.createElement('div');
+      el.className = 'deck-card';
+      // Progress Bar for Level (No sub text)
+      el.innerHTML = `
+        <div class="deck-icon">📶</div>
+        <div class="deck-title">Level ${lvl}</div>
+        <div class="deck-progress-track" style="width:100%; margin-top:8px">
+            <div class="deck-progress-fill" style="width:${pct}%"></div>
+        </div>
+      `;
+      el.onclick = () => {
         STATE.selLevel = lvl;
         renderDecks();
-      });
-      if(status === 'gold') el.classList.add('mastered-gold');
-      else if(status === 'green') el.classList.add('mastered-green');
+      };
       domGrid.appendChild(el);
     });
     return;
@@ -1392,7 +1451,6 @@ function renderDecks() {
       const status = checkDeckCompletion(d);
       const icon = getTopicEmoji(d.topicId);
       
-      // Calculate specific stats for this deck to render indicators
       const stats = getDeckStats(d);
 
       const el = createCard(icon, label, `${count} cards`, () => { startSession(d.id); }, stats);
@@ -1434,16 +1492,12 @@ function updatePersonalStatsUI() {
 
     const currentRank = RANKS[currentRankIndex];
     const nextRank = RANKS[currentRankIndex + 1];
-    const prevLimit = currentRank.limit; // Or actually the limit of previous to calc progress bar correctly
-
+    
     document.getElementById('psRank').textContent = currentRank.name;
     document.getElementById('psStreak').textContent = `🔥 ${STATE.streak}`;
     document.getElementById('psDayStreak').textContent = `📅 ${STATE.dayStreak}`;
 
     if(nextRank) {
-        // Correct calculation for progress within current tier
-        // E.g. Novice ends at 20. Apprentice ends at 50.
-        // If I have 25 words. I am 5 words into the 30 word gap.
         const gap = nextRank.limit - currentRank.limit; 
         const progressInGap = known - currentRank.limit;
         const percent = Math.min(100, Math.max(0, (progressInGap / gap) * 100));
@@ -1472,7 +1526,6 @@ function renderRanksPanel() {
         const item = document.createElement('div');
         
         let statusClass = '';
-        let isCompleted = known >= rank.limit;
         
         let isCurrent = false;
         if (index === 0 && known < RANKS[1].limit) isCurrent = true;
@@ -1678,7 +1731,20 @@ function confirmStartSession(resume) {
 }
 
 function resumeSavedSession() {
-    switchPanel('game');
+    // If user clicked "Play" and we have an active session in localstorage, render it.
+    // Ensure we are in game panel
+    
+    let pool = [];
+    if(STATE.isStruggleMode) {
+        // Reconstruct pool for struggle
+        // (Simplified re-fetch logic for brevity, ideally share function)
+    } else if (STATE.customSessionList) {
+        // Custom
+    } else {
+        // Deck
+        pool = getPoolFromCurrentSession();
+    }
+    
     // Find the last card in the deck/session if possible
     let cardToRestore = null;
     if (STATE.lastCardUid) {
@@ -1692,16 +1758,16 @@ function resumeSavedSession() {
         });
     }
 
-    // Update bar
-    const pool = getPoolFromCurrentSession(); // Total available
-    updateProgressBar(pool.length); 
-
     if (cardToRestore) {
         STATE.currentCard = cardToRestore;
-        renderGameCard();
     } else {
+        // Fallback if card not found
         nextCard();
+        return;
     }
+    
+    renderGameCard();
+    updateProgressBar();
 }
 
 function startPracticeStruggle() {
@@ -1712,7 +1778,7 @@ function startPracticeStruggle() {
   STATE.streak = 0;  
   document.getElementById('overlay').style.display = 'none';
   
-  // Progress bar for struggle mode is simple (0 to start)
+  switchPanel('game');
   updateProgressBar(STATE.sessionStruggleIds.length);
   
   nextCard();
@@ -1743,15 +1809,10 @@ function updateProgressBar(totalOverride = null) {
         total = STATE.customSessionList.length;
         current = STATE.customSessionList.filter(uid => STATE.sessionData[uid]?.correctInSession).length;
     } else if (STATE.isStruggleMode) {
-        // In struggle mode, total is the starting list, current is how many correct now
         total = totalOverride || STATE.sessionStruggleIds.length; 
-        // We need to track how many removed from struggle list effectively
-        // Actually simpler: 
         current = Object.values(STATE.sessionData).filter(d => d.correctInSession).length;
     } else {
         // Normal Session
-        // Total is pool size + already done
-        // We need to re-calculate total pool including those filtered out
         const isMix = !STATE.currentDeckId;
         const relevantDecks = isMix 
             ? STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel)
@@ -1820,6 +1881,8 @@ function nextCard() {
   if(remaining.length === 0) { 
       // Clear saved active session
       localStorage.removeItem('sf_active_session');
+      STATE.currentCard = null; // Clear current card
+      
       // Clear saved progress for this deck since we finished it
       if(!STATE.isStruggleMode && !STATE.customSessionList) {
         const isMix = !STATE.currentDeckId;
@@ -1868,6 +1931,13 @@ function getPoolFromCurrentSession() {
   return pool;
 }
 
+function startNewDeckFlow() {
+    switchPanel('decks');
+    STATE.selDiff = null;
+    STATE.selLevel = null;
+    renderDecks();
+}
+
 function renderGameCard() {
   const c = STATE.currentCard;
   
@@ -1901,6 +1971,7 @@ function renderGameCard() {
   // --- NORMAL RENDER ---
   document.getElementById('btnPickDeck').style.display = 'none'; // Hide pick button
   document.getElementById('btnShowAnswer').style.display = 'block';
+  document.getElementById('btnDeleteCard').style.display = 'block';
   
   const isEs = STATE.direction === 'es-en';
   
@@ -1949,12 +2020,10 @@ function renderGameCard() {
   
   // --- UPDATED TTS LOGIC FOR GAME CARD ---
   const frontText = isEs ? c.es : c.en;
-  // Use replace to escape single quotes in JS call
   const cleanEs = c.es.replace(/'/g, "\\'");
   
   let frontHtml = frontText;
   if(isEs) {
-      // Front is Spanish -> Add TTS
       frontHtml = `<button class="btn-tts" onclick="speakSpanish('${cleanEs}')" title="Listen">🔊</button> ${c.es}`;
   }
   document.getElementById('gameFrontText').innerHTML = frontHtml;
@@ -1964,7 +2033,6 @@ function renderGameCard() {
   const backText = isEs ? c.en : c.es;
   let backHtml = backText;
   if(!isEs) {
-      // Back is Spanish (EN->ES mode) -> Add TTS
       backHtml = `<button class="btn-tts" onclick="speakSpanish('${cleanEs}')" title="Listen">🔊</button> ${c.es}`;
   }
   document.getElementById('gameBackText').innerHTML = backHtml;
@@ -2005,9 +2073,7 @@ function showAnswer(force = false) {
       markCard(true, true); 
       return; 
     } else {
-      // HIDE INPUT to prevent copy paste
       document.getElementById('gameInputArea').style.display = 'none';
-
       document.getElementById('gameFeedback').textContent = `❌ Incorrect.`;
       document.getElementById('gameFeedback').style.color = "#f87171";
       triggerCardFeedback(false);
@@ -2038,7 +2104,6 @@ function markCard(success, autoAdvance = true) {
   const uid = STATE.currentCard._uid;
   if(!STATE.progress[uid]) STATE.progress[uid] = { scoreEsEn: 0, scoreEnEs: 0, seen: 0 };
   
-  // Ensure session data exists
   if(!STATE.sessionData[uid]) {
       STATE.sessionData[uid] = { count: 0, struggle: false, postCount: 0, correctInSession: false };
   }
@@ -2051,13 +2116,10 @@ function markCard(success, autoAdvance = true) {
   let currentScore = isEs ? STATE.progress[uid].scoreEsEn : STATE.progress[uid].scoreEnEs;
 
   if(success) {
-      // MARK CORRECT
       STATE.sessionData[uid].correctInSession = true;
-
       STATE.streak++;
       triggerCardFeedback(true);
       if(STATE.sessionData[uid].count === 1) STATE.sessionStats.correctFirst++;
-      
       currentScore = 4;
       
       if(STATE.streak > 0 && STATE.streak % 5 === 0) {
@@ -2070,73 +2132,45 @@ function markCard(success, autoAdvance = true) {
         STATE.sessionStruggleIds = STATE.sessionStruggleIds.filter(id => id !== uid);
       }
 
-      // STRUGGLE LOGIC: Remove only if correct on first try
       if(STATE.sessionData[uid].count === 1) {
           STATE.struggleList.delete(uid);
       }
       
-      // Update Day Streak
       const today = new Date().toDateString();
       if(STATE.lastActiveDate !== today) {
           if(!STATE.lastActiveDate) {
               STATE.dayStreak = 1;
           } else {
-              // Check if yesterday
               const yesterday = new Date();
               yesterday.setDate(yesterday.getDate() - 1);
               if(STATE.lastActiveDate === yesterday.toDateString()) {
                   STATE.dayStreak++;
               } else {
-                  // Reset if gap > 1 day
                   STATE.dayStreak = 1;
               }
           }
           STATE.lastActiveDate = today;
-          // Save immediately handled below
       }
 
   } else {
-      // MARK INCORRECT
-      // Note: If they previously got it right in this session (re-review?) we unmark it
       STATE.sessionData[uid].correctInSession = false;
-
       STATE.streak = 0;
       if(!autoAdvance) triggerCardFeedback(false); 
-      
       currentScore = Math.max(0, currentScore - 1); 
       STATE.sessionData[uid].struggle = true;
       STATE.sessionData[uid].postCount = 0; 
       STATE.sessionStats.struggle++;
       if(!STATE.sessionStruggleIds.includes(uid)) STATE.sessionStruggleIds.push(uid);
-
       STATE.struggleList.add(uid);
   }
 
   if(isEs) STATE.progress[uid].scoreEsEn = currentScore;
   else STATE.progress[uid].scoreEnEs = currentScore;
   
-  // Save Persistent Progress for Deck Resume
-  // We only save if we are in a normal deck session (not filtered, not practice)
-  if(!STATE.isStruggleMode && !STATE.customSessionList) {
-      const isMix = !STATE.currentDeckId;
-      const saveKey = isMix ? `mix_${STATE.selDiff}_${STATE.selLevel}` : STATE.currentDeckId;
-      
-      // Get all UIDs marked correct in this session
-      const correctUids = Object.keys(STATE.sessionData).filter(k => STATE.sessionData[k].correctInSession);
-      
-      STATE.deckProgress[saveKey] = {
-          lastPlayed: Date.now(),
-          correctUids: correctUids
-      };
-      saveData();
-  } else {
-      // We still save general progress
-      saveData();
-  }
-
+  saveData(); // Save persistence
   updateStats();
   updatePersonalStatsUI();
-  updateProgressBar(); // Update bar immediately
+  updateProgressBar(); 
   
   if(autoAdvance) nextCard();
   else {
@@ -2584,6 +2618,12 @@ function switchPanel(panelId) {
       renderRanksPanel();
       // Keep 'decks' tab active visually
       panelId = 'decks';
+  }
+  
+  if (panelId === 'game' && !STATE.currentCard) {
+      renderGameCard(); // Force render empty state
+  } else if (panelId === 'game' && STATE.currentCard) {
+      renderGameCard(); // Ensure card is refreshed (e.g. settings change)
   }
 
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
