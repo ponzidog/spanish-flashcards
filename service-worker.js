@@ -1,26 +1,24 @@
-const CACHE_NAME = "spanish-flashcards-v1";
+const CACHE_NAME = "spanish-flashcards-v2"; // Bump this version (v2, v3) whenever you update decks.json
 
-// Add any extra assets you want cached on first load
+// 1. FIXED: Added 'decks.json' so the app data works offline
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
+  "./decks.json",     // <--- CRITICAL: Prevents "No Internet" errors
   "./manifest.json"
-  // If you add separate CSS/JS files or icons, list them here too, e.g.:
-  // "./styles.css",
-  // "./icons/icon-192.png",
-  // "./icons/icon-512.png"
 ];
 
-// Install: cache core assets
+// Install: cache core assets immediately
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
+      console.log("Service Worker: Caching Files");
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
 });
 
-// Activate: cleanup old caches if you change CACHE_NAME
+// Activate: cleanup old caches (runs when you change CACHE_NAME)
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -33,25 +31,26 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch: cache-first strategy for same-origin requests
+// Fetch: serve from cache first, fall back to network
 self.addEventListener("fetch", (event) => {
   const request = event.request;
 
-  // Only handle GET and same-origin
+  // Only handle GET and same-origin requests
   if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) {
     return;
   }
 
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
+      // Return cached file if found
       if (cachedResponse) {
         return cachedResponse;
       }
 
-      // If not in cache, fetch from network and cache it
+      // If not in cache, fetch from network
       return fetch(request)
         .then((networkResponse) => {
-          // Only cache successful, basic (same-origin) responses
+          // Check if valid response
           if (
             !networkResponse ||
             networkResponse.status !== 200 ||
@@ -60,6 +59,7 @@ self.addEventListener("fetch", (event) => {
             return networkResponse;
           }
 
+          // Clone response to save it to cache for next time
           const responseClone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(request, responseClone);
@@ -68,9 +68,10 @@ self.addEventListener("fetch", (event) => {
           return networkResponse;
         })
         .catch(() => {
-          // Optional: provide a fallback response if offline and not cached
-          // e.g., a simple offline page
-          return caches.match("./index.html");
+          // 2. FIXED: Removed the specific fallback that returned HTML for everything.
+          // Returning index.html when the app asks for decks.json causes a crash.
+          // If the file isn't in the cache and the network fails, we simply return nothing
+          // (browser will handle the offline error naturally).
         });
     })
   );
