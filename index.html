@@ -1490,7 +1490,7 @@ function renderDecks() {
 
       const el = createCard(icon, label, `${count} cards`, () => { startSession(d.id); }, stats);
       if(status === 'gold') el.classList.add('mastered-gold');
-      else if(status.green) el.classList.add('mastered-green');
+      else if(status === 'green') el.classList.add('mastered-green'); // Fixed here
       domGrid.appendChild(el);
     });
   }
