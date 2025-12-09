@@ -267,6 +267,16 @@
       color: var(--gold); font-size: 14px;
     }
 
+    /* Red Struggle Card Style */
+    .deck-card.mastered-red {
+        border-color: var(--danger);
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(239, 68, 68, 0.15));
+    }
+    .deck-card.mastered-red::after {
+        content: '⚠'; position: absolute; top: 6px; right: 6px;
+        color: var(--danger); font-size: 12px;
+    }
+
     .deck-card.diff-card {
         flex-direction: row;
         align-items: center; 
@@ -323,11 +333,49 @@
     .sd-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
     .sd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .sd-item { display: flex; flex-direction: column; gap: 4px; }
-    .sd-item.span-2 { grid-row: span 2; justify-content: center; } /* Added for layout */
+    .sd-item.span-2 { grid-row: span 2; justify-content: center; cursor: pointer; transition: transform 0.2s; } 
+    .sd-item.span-2:hover { transform: scale(1.02); }
     .sd-val { font-size: 18px; font-weight: 700; color: var(--text-main); }
     .sd-label { font-size: 11px; color: var(--text-muted); }
     .rank-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 99px; margin-top: 8px; overflow: hidden; }
     .rank-fill { height: 100%; background: var(--gold); border-radius: 99px; width: 0%; transition: width 1s ease; }
+
+    /* Rank List Page */
+    .rank-list { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+    .rank-card-item {
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        display: flex; align-items: center; gap: 15px;
+    }
+    .rank-card-item.completed { opacity: 0.7; }
+    .rank-card-item.locked { opacity: 0.4; filter: grayscale(1); }
+    .rank-card-item.current {
+        background: rgba(234, 179, 8, 0.1);
+        border-color: rgba(234, 179, 8, 0.3);
+        box-shadow: 0 0 15px rgba(234, 179, 8, 0.1);
+    }
+    .rank-icon-large { font-size: 28px; width: 40px; text-align: center; }
+    .rank-info-col { flex: 1; }
+    .rank-name-title { font-weight: 700; font-size: 15px; color: var(--text-main); }
+    .rank-desc { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .rank-progress-wrap { height: 4px; background: rgba(0,0,0,0.3); border-radius: 99px; margin-top: 8px; overflow: hidden; }
+    .rank-progress-bar { height: 100%; background: var(--gold); width: 0%; }
+
+    /* Notification Banner */
+    .notification-banner {
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150px);
+        background: linear-gradient(135deg, #ca8a04, #854d0e);
+        color: white; padding: 16px 24px; border-radius: 99px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        display: flex; align-items: center; gap: 12px; z-index: 2000;
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.27);
+        pointer-events: none; opacity: 0; min-width: 280px; justify-content: center;
+    }
+    .notification-banner.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+    .notif-icon { font-size: 20px; }
+    .notif-text { font-weight: 600; font-size: 14px; }
 
     /* Breadcrumbs */
     .breadcrumbs { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
@@ -640,8 +688,8 @@
       <div id="personalStatsArea" class="stats-dashboard" style="display:none">
         <div class="sd-title">Your Journey</div>
         <div class="sd-grid">
-           <div class="sd-item span-2"> <!-- Added class span-2 -->
-              <div class="sd-label">Mastery Rank</div>
+           <div class="sd-item span-2" onclick="switchPanel('ranks')">
+              <div class="sd-label">Mastery Rank ℹ️</div>
               <div class="sd-val" id="psRank">Novice</div>
               <div class="rank-bar"><div class="rank-fill" id="psRankBar"></div></div>
            </div>
@@ -659,6 +707,15 @@
       <div id="deckGrid" class="deck-grid">
         <div style="padding:20px; color:var(--text-muted)">Loading...</div>
       </div>
+    </div>
+
+    <!-- NEW RANK PAGE -->
+    <div id="panel-ranks" class="panel">
+        <div class="breadcrumbs" style="margin-bottom:15px">
+           <button class="back-btn" onclick="switchPanel('decks')">‹ Back to Decks</button>
+        </div>
+        <h2 class="deck-section-title">Mastery Ranks</h2>
+        <div id="ranksListContainer" class="rank-list"></div>
     </div>
 
     <div id="panel-game" class="panel">
@@ -888,6 +945,11 @@
       </div>
   </div>
 
+  <div id="rankNotification" class="notification-banner">
+      <div class="notif-icon">🏆</div>
+      <div class="notif-text">Rank Up! You are now a <span id="notifRankName">Master</span>!</div>
+  </div>
+
 </div>
 
 <script>
@@ -907,6 +969,7 @@ const STATE = {
   // Persistence for Day Streak
   dayStreak: 0,
   lastActiveDate: null,
+  lastRankIndex: 0,
 
   // Session State
   sessionData: {}, 
@@ -937,6 +1000,15 @@ const STATE = {
   includeCustom: true,
   onlyCustom: false
 };
+
+const RANKS = [
+    { name: "Novice", limit: 20, icon: "👶" },
+    { name: "Apprentice", limit: 50, icon: "🌱" },
+    { name: "Scholar", limit: 100, icon: "📚" },
+    { name: "Expert", limit: 300, icon: "🎓" },
+    { name: "Master", limit: 600, icon: "🦁" },
+    { name: "Grandmaster", limit: 1000, icon: "👑" }
+];
 
 let editingCardUid = null;
 let loadStartTime = Date.now();
@@ -1045,6 +1117,7 @@ function loadLocalData() {
   // Streak Data
   STATE.dayStreak = parseInt(localStorage.getItem('sf_dayStreak') || '0');
   STATE.lastActiveDate = localStorage.getItem('sf_lastActiveDate');
+  STATE.lastRankIndex = parseInt(localStorage.getItem('sf_lastRankIndex') || '0');
 
   updateCheckUI('includeCustom', STATE.includeCustom);
   updateCheckUI('onlyCustom', STATE.onlyCustom);
@@ -1060,6 +1133,7 @@ function saveData() {
   
   localStorage.setItem('sf_dayStreak', STATE.dayStreak.toString());
   if(STATE.lastActiveDate) localStorage.setItem('sf_lastActiveDate', STATE.lastActiveDate);
+  localStorage.setItem('sf_lastRankIndex', STATE.lastRankIndex.toString());
 
   const settings = {
     dir: STATE.direction,
@@ -1124,6 +1198,15 @@ function renderDecks() {
         });
         starEl.classList.add('mastered-gold');
         domGrid.appendChild(starEl);
+    }
+
+    // --- NEW: Struggle Words Deck ---
+    if(STATE.struggleList.size > 0) {
+        const struggleEl = createCard('🧗', 'Struggle Words', `${STATE.struggleList.size} cards`, () => {
+             openWordsManagerFromHeader('struggle');
+        });
+        struggleEl.classList.add('mastered-red');
+        domGrid.appendChild(struggleEl);
     }
 
     STATE.decksRaw.difficulties.forEach(diff => {
@@ -1206,8 +1289,8 @@ function renderDecks() {
   }
 }
 
-// --- STATS UI ---
-function updatePersonalStatsUI() {
+// --- STATS UI & RANKS ---
+function getKnownWordCount() {
     let known = 0;
     const isEs = STATE.direction === 'es-en';
     Object.entries(STATE.progress).forEach(([uid, p]) => {
@@ -1215,38 +1298,109 @@ function updatePersonalStatsUI() {
         const score = isEs ? (p.scoreEsEn||0) : (p.scoreEnEs||0);
         if(score >= 4) known++;
     });
+    return known;
+}
 
-    const ranks = [
-        { name: "Novice", limit: 20 },
-        { name: "Apprentice", limit: 50 },
-        { name: "Scholar", limit: 100 },
-        { name: "Expert", limit: 300 },
-        { name: "Master", limit: 600 },
-        { name: "Grandmaster", limit: 1000 }
-    ];
-    let currentRank = ranks[0];
-    let nextRank = ranks[1];
-    let prevLimit = 0;
-    for(let i=0; i<ranks.length; i++) {
-        if(known >= ranks[i].limit) {
-            currentRank = ranks[i];
-            nextRank = ranks[i+1] || null;
-            prevLimit = ranks[i].limit;
+function updatePersonalStatsUI() {
+    const known = getKnownWordCount();
+    let currentRankIndex = 0;
+    
+    for(let i=0; i<RANKS.length; i++) {
+        if(known >= RANKS[i].limit) {
+            currentRankIndex = i;
         } else { break; }
     }
+
+    // Detect Rank Up
+    if(currentRankIndex > STATE.lastRankIndex) {
+        STATE.lastRankIndex = currentRankIndex;
+        saveData();
+        showRankNotification(RANKS[currentRankIndex].name);
+    }
+
+    const currentRank = RANKS[currentRankIndex];
+    const nextRank = RANKS[currentRankIndex + 1];
+    const prevLimit = currentRank.limit; // Or actually the limit of previous to calc progress bar correctly
 
     document.getElementById('psRank').textContent = currentRank.name;
     document.getElementById('psStreak').textContent = `🔥 ${STATE.streak}`;
     document.getElementById('psDayStreak').textContent = `📅 ${STATE.dayStreak}`;
 
     if(nextRank) {
-        const totalNeeded = nextRank.limit - prevLimit;
-        const currentProgress = known - prevLimit;
-        const percent = Math.min(100, Math.max(0, (currentProgress / totalNeeded) * 100));
+        // Correct calculation for progress within current tier
+        // E.g. Novice ends at 20. Apprentice ends at 50.
+        // If I have 25 words. I am 5 words into the 30 word gap.
+        const gap = nextRank.limit - currentRank.limit; 
+        const progressInGap = known - currentRank.limit;
+        const percent = Math.min(100, Math.max(0, (progressInGap / gap) * 100));
         document.getElementById('psRankBar').style.width = `${percent}%`;
     } else {
         document.getElementById('psRankBar').style.width = `100%`;
     }
+}
+
+function showRankNotification(rankName) {
+    const el = document.getElementById('rankNotification');
+    document.getElementById('notifRankName').textContent = rankName;
+    el.classList.add('show');
+    setTimeout(() => {
+        el.classList.remove('show');
+    }, 4000);
+}
+
+function renderRanksPanel() {
+    const container = document.getElementById('ranksListContainer');
+    container.innerHTML = '';
+    
+    const known = getKnownWordCount();
+    
+    RANKS.forEach((rank, index) => {
+        const item = document.createElement('div');
+        
+        let statusClass = '';
+        let isCompleted = known >= rank.limit;
+        // Check if this is the active current rank (completed previous but not next)
+        // Actually logic: If known > rank.limit, it is completed.
+        // Current rank is the highest completed threshold.
+        
+        let isCurrent = false;
+        if (index === 0 && known < RANKS[1].limit) isCurrent = true;
+        else if (known >= rank.limit && (!RANKS[index+1] || known < RANKS[index+1].limit)) {
+            isCurrent = true;
+        } else if (known >= rank.limit) {
+            statusClass = 'completed';
+        } else {
+            statusClass = 'locked';
+        }
+        
+        if(isCurrent) statusClass = 'current';
+
+        // Progress calc
+        let progressPct = 0;
+        if(known >= rank.limit) progressPct = 100;
+        else {
+            // For locked ranks, progress is 0 unless it's the immediate next one
+            // Ideally simply show global progress relative to this rank's requirement? 
+            // Or show progress from previous rank. Let's do % of total requirement for simplicity visually.
+            progressPct = Math.min(100, (known / rank.limit) * 100);
+        }
+
+        item.className = `rank-card-item ${statusClass}`;
+        item.innerHTML = `
+            <div class="rank-icon-large">${rank.icon}</div>
+            <div class="rank-info-col">
+                <div style="display:flex; justify-content:space-between;">
+                    <div class="rank-name-title">${rank.name}</div>
+                    <div style="font-size:11px; color:var(--text-muted)">${known} / ${rank.limit}</div>
+                </div>
+                <div class="rank-desc">${isCurrent ? "Current Rank" : (statusClass==='completed' ? "Completed" : "Locked")}</div>
+                <div class="rank-progress-wrap">
+                    <div class="rank-progress-bar" style="width:${progressPct}%"></div>
+                </div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
 }
 
 function getMasteryStatusForCards(cards, deckIdRef) {
@@ -2235,6 +2389,12 @@ function switchPanel(panelId) {
   document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
   document.getElementById('panel-'+panelId).classList.add('active');
   
+  if (panelId === 'ranks') {
+      renderRanksPanel();
+      // Keep 'decks' tab active visually
+      panelId = 'decks';
+  }
+
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
   const navBtn = document.querySelector(`.nav-tab[data-panel="${panelId}"]`);
   if(navBtn) navBtn.classList.add('active');
@@ -2275,13 +2435,7 @@ function updateCheckUI(key, val) {
 }
 
 function updateStats() {
-  let known = 0;
-  const isEs = STATE.direction === 'es-en';
-  Object.entries(STATE.progress).forEach(([uid, p]) => {
-    if(STATE.blacklist.has(uid)) return;
-    const score = isEs ? (p.scoreEsEn||0) : (p.scoreEnEs||0);
-    if(score >= 4) known++;
-  });
+  const known = getKnownWordCount();
   
   document.getElementById('statKnown').textContent = known;
   document.getElementById('statStruggle').textContent = STATE.struggleList.size;
