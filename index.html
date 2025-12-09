@@ -2721,5 +2721,41 @@ function bindEvents() {
 init();
 
 </script>
+  <script>
+  // 1. Register the Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js').then(reg => {
+      
+      // 2. Check if there is a sw waiting (we updated code but old one is still running)
+      if (reg.waiting) {
+        postMessageToWorker(reg.waiting);
+      }
+
+      // 3. Detect when a new sw is found
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          // If the new worker has finished installing...
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+             // ...notify it to skip waiting
+             postMessageToWorker(newWorker);
+          }
+        });
+      });
+    });
+
+    // 4. Reload the page when the new Service Worker takes control
+    let refreshing;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      window.location.reload();
+      refreshing = true;
+    });
+  }
+
+  function postMessageToWorker(worker) {
+    worker.postMessage({ action: 'skipWaiting' });
+  }
+</script>
 </body>
 </html>
