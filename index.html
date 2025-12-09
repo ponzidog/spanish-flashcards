@@ -505,6 +505,15 @@
     .btn-icon.del:hover { color: var(--danger); }
     .btn-icon.edit:hover { color: var(--gold); }
 
+    /* TTS Button Style */
+    .btn-tts {
+        background: transparent; border: none; font-size: 1.2em; cursor: pointer;
+        margin-right: 8px; filter: grayscale(1); transition: 0.2s;
+        vertical-align: middle; display: inline-block; padding: 0;
+    }
+    .btn-tts:hover { filter: grayscale(0); transform: scale(1.1); }
+    .btn-tts:active { transform: scale(0.9); }
+
     /* Game Card */
     .game-area {
       flex: 1;
@@ -931,6 +940,23 @@
     </div>
   </div>
 
+  <!-- Missing Voice Modal -->
+  <div class="overlay" id="noVoiceModal">
+    <div class="overlay-content">
+      <h2 style="margin-top:0">⚠️ No Spanish Voice Found</h2>
+      <p style="color:var(--text-muted); font-size:14px; line-height:1.5; margin-bottom:20px;">
+          Your device doesn't have a Spanish voice installed.
+      </p>
+      <div style="background:rgba(255,255,255,0.1); padding:15px; border-radius:8px; text-align:left; font-size:13px; margin-bottom:20px; color:#fff;">
+          <strong>How to fix:</strong><br>
+          1. Go to device <b>Settings</b>.<br>
+          2. Search for <b>"Text-to-speech"</b> or <b>"Spoken Content"</b>.<br>
+          3. Download a <b>Spanish</b> voice package.
+      </div>
+      <button class="btn-action primary" onclick="document.getElementById('noVoiceModal').style.display='none'">Okay, I'll check</button>
+    </div>
+  </div>
+
   <div class="global-edit-modal" id="globalEditModal">
       <div class="edit-box">
           <h3>Edit Card</h3>
@@ -1016,6 +1042,9 @@ let loadStartTime = Date.now();
 let pendingDeckId = null;
 let pendingIsMix = false;
 
+// TTS Variables
+let spanishVoices = [];
+
 const FUN_FACTS = [
     "Spanish is the second most spoken native language in the world, beating English!",
     "The letter 'ñ' is the only letter of Spanish origin.",
@@ -1042,6 +1071,7 @@ async function init() {
   renderDecks();
   updateStats();
   updateGameMiniSettings();
+  initTTS(); // Initialize Text to Speech
 }
 
 // --- LOADING SCREEN ---
@@ -1068,6 +1098,50 @@ function hideLoadingScreen() {
         clearInterval(factInterval);
         setTimeout(() => { screen.style.display = 'none'; }, 500);
     }, remaining);
+}
+
+// --- TTS LOGIC ---
+function initTTS() {
+    const load = () => {
+        const all = window.speechSynthesis.getVoices();
+        spanishVoices = all.filter(v => v.lang.startsWith('es'));
+    };
+    // Chrome loads voices asynchronously
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = load;
+    }
+    load();
+}
+
+function getBestVoice() {
+    if (spanishVoices.length === 0) return null;
+    // Priority: Google -> Premium -> Default
+    const google = spanishVoices.find(v => v.name.includes('Google'));
+    if (google) return google;
+    const premium = spanishVoices.find(v => v.name.includes('Premium') || v.name.includes('Enhanced'));
+    if (premium) return premium;
+    return spanishVoices[0];
+}
+
+function speakSpanish(text) {
+    if (spanishVoices.length === 0) {
+        // Try reloading just in case the async load was slow
+        const all = window.speechSynthesis.getVoices();
+        spanishVoices = all.filter(v => v.lang.startsWith('es'));
+    }
+
+    if (spanishVoices.length === 0) {
+        document.getElementById('noVoiceModal').style.display = 'flex';
+        return;
+    }
+
+    // Stop current speech
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = getBestVoice();
+    utterance.rate = 0.9; // Slightly slower is usually better for learning
+    window.speechSynthesis.speak(utterance);
 }
 
 // --- DATA HANDLING ---
@@ -1359,9 +1433,6 @@ function renderRanksPanel() {
         
         let statusClass = '';
         let isCompleted = known >= rank.limit;
-        // Check if this is the active current rank (completed previous but not next)
-        // Actually logic: If known > rank.limit, it is completed.
-        // Current rank is the highest completed threshold.
         
         let isCurrent = false;
         if (index === 0 && known < RANKS[1].limit) isCurrent = true;
@@ -1379,9 +1450,6 @@ function renderRanksPanel() {
         let progressPct = 0;
         if(known >= rank.limit) progressPct = 100;
         else {
-            // For locked ranks, progress is 0 unless it's the immediate next one
-            // Ideally simply show global progress relative to this rank's requirement? 
-            // Or show progress from previous rank. Let's do % of total requirement for simplicity visually.
             progressPct = Math.min(100, (known / rank.limit) * 100);
         }
 
@@ -1777,10 +1845,31 @@ function renderGameCard() {
   document.getElementById('gameStrength').textContent = strLabel;
   
   document.getElementById('gameFrontLabel').textContent = isEs ? "Spanish" : "English";
-  document.getElementById('gameFrontText').textContent = isEs ? c.es : c.en;
+  
+  // --- UPDATED TTS LOGIC FOR GAME CARD ---
+  // If direction is ES->EN, the front text is Spanish.
+  // If direction is EN->ES, the front text is English.
+  
+  const frontText = isEs ? c.es : c.en;
+  // Use replace to escape single quotes in JS call
+  const cleanEs = c.es.replace(/'/g, "\\'");
+  
+  let frontHtml = frontText;
+  if(isEs) {
+      // Front is Spanish -> Add TTS
+      frontHtml = `<button class="btn-tts" onclick="speakSpanish('${cleanEs}')" title="Listen">🔊</button> ${c.es}`;
+  }
+  document.getElementById('gameFrontText').innerHTML = frontHtml;
   
   document.getElementById('gameBackLabel').textContent = isEs ? "English" : "Spanish";
-  document.getElementById('gameBackText').textContent = isEs ? c.en : c.es;
+  
+  const backText = isEs ? c.en : c.es;
+  let backHtml = backText;
+  if(!isEs) {
+      // Back is Spanish (EN->ES mode) -> Add TTS
+      backHtml = `<button class="btn-tts" onclick="speakSpanish('${cleanEs}')" title="Listen">🔊</button> ${c.es}`;
+  }
+  document.getElementById('gameBackText').innerHTML = backHtml;
   
   let ex = "";
   if(c.exampleEs && c.exampleEn) { ex = `"${c.exampleEs}"<br>"${c.exampleEn}"`; }
@@ -2273,12 +2362,16 @@ function renderWordList() {
     else if(STATE.struggleList.has(c._uid)) bgClass = 'bg-diff-advanced'; // Visual hint for struggle
     else if(STATE.starred.has(c._uid)) bgClass = 'bg-diff-proficient'; 
 
+    // Safe escape for TTS
+    const cleanEs = c.es.replace(/'/g, "\\'");
+
     const el = document.createElement('div');
     el.className = `word-row ${bgClass}`;
     el.innerHTML = `
       <div class="word-info">
         <div class="word-main">
           <span class="word-score ${scoreClass}"></span>
+          <button class="btn-tts" onclick="speakSpanish('${cleanEs}')" title="Listen">🔊</button>
           ${c.es} 
           <span style="font-weight:400; color:var(--text-muted)">— ${c.en}</span>
         </div>
