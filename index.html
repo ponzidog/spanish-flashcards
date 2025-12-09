@@ -298,7 +298,7 @@
     .flashcard {
         flex: 1; 
         width: 100%;
-        min-height: 300px; /* Bigger height like original */
+        min-height: 340px; /* Bigger height like original */
         background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.6));
         border: 1px solid var(--glass-border);
         backdrop-filter: blur(20px);
@@ -1429,7 +1429,7 @@ function renderGameCard() {
       // Auto-Focus Logic: Increased to 300ms to ensure animation finishes before focus
       setTimeout(() => { 
           input.focus(); 
-      }, 200);
+      }, 300);
   } else {
       document.getElementById('gameInputArea').style.display = 'none';
   }
