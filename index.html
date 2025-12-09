@@ -1353,7 +1353,7 @@ function renderDecks() {
     
     if(!STATE.decksRaw.difficulties) return;
     
-    // --- Custom Words Card (Replacing Starred) ---
+    // --- Custom Words Card ---
     const customCount = Object.values(STATE.customCards).flat().length;
     if(customCount > 0) {
         const customEl = createCard('✨', 'Custom Words', `${customCount} cards`, () => {
@@ -1366,7 +1366,7 @@ function renderDecks() {
     // --- Struggle Words Deck ---
     if(STATE.struggleList.size > 0) {
         const struggleEl = createCard('🧗', 'Struggle Words', `${STATE.struggleList.size} cards`, () => {
-             startPracticeStruggle();
+             openWordsManagerFromHeader('struggle'); // FIXED: Changed to filter words manager
         });
         struggleEl.classList.add('mastered-red');
         domGrid.appendChild(struggleEl);
@@ -1455,7 +1455,7 @@ function renderDecks() {
 
       const el = createCard(icon, label, `${count} cards`, () => { startSession(d.id); }, stats);
       if(status === 'gold') el.classList.add('mastered-gold');
-      else if(status === 'green') el.classList.add('mastered-green');
+      else if(status.green) el.classList.add('mastered-green');
       domGrid.appendChild(el);
     });
   }
@@ -1731,24 +1731,12 @@ function confirmStartSession(resume) {
 }
 
 function resumeSavedSession() {
-    // If user clicked "Play" and we have an active session in localstorage, render it.
-    // Ensure we are in game panel
-    
-    let pool = [];
-    if(STATE.isStruggleMode) {
-        // Reconstruct pool for struggle
-        // (Simplified re-fetch logic for brevity, ideally share function)
-    } else if (STATE.customSessionList) {
-        // Custom
-    } else {
-        // Deck
-        pool = getPoolFromCurrentSession();
-    }
+    // This function is executed when the user clicks the "Play" tab and an active session exists.
     
     // Find the last card in the deck/session if possible
     let cardToRestore = null;
     if (STATE.lastCardUid) {
-        // Search all active decks
+        // Search all active decks to find the full card object
         STATE.activeDecks.forEach(d => {
             d.cards.forEach(c => {
                 if (getCardId(d.id, c) === STATE.lastCardUid) {
@@ -1761,13 +1749,15 @@ function resumeSavedSession() {
     if (cardToRestore) {
         STATE.currentCard = cardToRestore;
     } else {
-        // Fallback if card not found
+        // If the last card UID is stale (e.g., deleted or corrupted state), start the normal next card flow.
         nextCard();
         return;
     }
     
-    renderGameCard();
-    updateProgressBar();
+    // Calculate pool based on resumed state for correct progress bar and 'next card' logic
+    const pool = getPoolFromCurrentSession();
+    updateProgressBar(pool.length); 
+    renderGameCard(); // Render the resumed card
 }
 
 function startPracticeStruggle() {
@@ -2621,7 +2611,12 @@ function switchPanel(panelId) {
   }
   
   if (panelId === 'game' && !STATE.currentCard) {
-      renderGameCard(); // Force render empty state
+      // Resume logic check happens here when user clicks the tab
+      if (STATE.currentDeckId || STATE.isStruggleMode || STATE.customSessionList) {
+          resumeSavedSession();
+      } else {
+          renderGameCard(); // Force render empty state if no session
+      }
   } else if (panelId === 'game' && STATE.currentCard) {
       renderGameCard(); // Ensure card is refreshed (e.g. settings change)
   }
@@ -2719,43 +2714,44 @@ function bindEvents() {
 
 // Start
 init();
-
 </script>
-  <script>
-  // 1. Register the Service Worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js').then(reg => {
-      
-      // 2. Check if there is a sw waiting (we updated code but old one is still running)
-      if (reg.waiting) {
-        postMessageToWorker(reg.waiting);
-      }
 
-      // 3. Detect when a new sw is found
-      reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker.addEventListener('statechange', () => {
-          // If the new worker has finished installing...
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-             // ...notify it to skip waiting
-             postMessageToWorker(newWorker);
-          }
-        });
-      });
-    });
+<script>
+// Service Worker Registration (PWA/Offline Support)
+  // 1. Register the Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js').then(reg => {
+      
+      // 2. Check if there is a sw waiting (we updated code but old one is still running)
+      if (reg.waiting) {
+        postMessageToWorker(reg.waiting);
+      }
 
-    // 4. Reload the page when the new Service Worker takes control
-    let refreshing;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (refreshing) return;
-      window.location.reload();
-      refreshing = true;
-    });
-  }
+      // 3. Detect when a new sw is found
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          // If the new worker has finished installing...
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+             // ...notify it to skip waiting
+             postMessageToWorker(newWorker);
+          }
+        });
+      });
+    });
 
-  function postMessageToWorker(worker) {
-    worker.postMessage({ action: 'skipWaiting' });
-  }
+    // 4. Reload the page when the new Service Worker takes control
+    let refreshing;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      window.location.reload();
+      refreshing = true;
+    });
+  }
+
+  function postMessageToWorker(worker) {
+    worker.postMessage({ action: 'skipWaiting' });
+  }
 </script>
 </body>
 </html>
