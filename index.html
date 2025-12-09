@@ -1131,6 +1131,40 @@ function getBestVoice() {
     return spanishVoices[0];
 }
 
+function cleanupOrphanedData() {
+  // 1. Gather all currently valid Card UIDs from Decks + Custom Cards
+  const validUids = new Set();
+  STATE.activeDecks.forEach(d => {
+    d.cards.forEach(c => {
+      validUids.add(getCardId(d.id, c));
+    });
+  });
+
+  // 2. Remove "Ghosts" from Struggle List
+  let changed = false;
+  STATE.struggleList.forEach(uid => {
+    if(!validUids.has(uid)) {
+      console.log("Removing orphan struggle card:", uid);
+      STATE.struggleList.delete(uid);
+      changed = true;
+    }
+  });
+
+  // 3. Remove "Ghosts" from Starred List (good practice)
+  STATE.starred.forEach(uid => {
+    if(!validUids.has(uid)) {
+       STATE.starred.delete(uid);
+       changed = true;
+    }
+  });
+
+  // 4. Save and Update UI if we cleaned anything
+  if(changed) {
+    saveData();
+    updateStats();
+  }
+}
+
 function speakSpanish(text) {
     if (spanishVoices.length === 0) {
         // Try reloading just in case the async load was slow
@@ -1161,6 +1195,7 @@ async function loadRemoteData() {
     STATE.decksRaw = json;
     STATE.activeDecks = json.decks.map(d => ({ ...d, cards: [...d.cards] }));
     injectCustomCards();
+    cleanupOrphanedData();
     renderDecks();
     hideLoadingScreen();
   } catch (e) {
