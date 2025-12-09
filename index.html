@@ -29,6 +29,7 @@
       --spanish-red-glow: rgba(239, 68, 68, 0.4);
       --spanish-gold: #fbbf24;
       --spanish-gold-glow: rgba(251, 191, 36, 0.4);
+      --custom-blue: #38bdf8;
       
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
@@ -258,6 +259,15 @@
     }
     .deck-card.mastered-green::after { content: '✓'; position: absolute; top:5px; right:5px; color: #22c55e; }
 
+    .deck-card.mastered-red {
+        border-color: var(--spanish-red);
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(239, 68, 68, 0.15));
+    }
+    .deck-card.custom-blue {
+        border-color: var(--custom-blue);
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.05), rgba(56, 189, 248, 0.15));
+    }
+
     .deck-card.diff-card {
         flex-direction: row; justify-content: flex-start; gap: 15px; text-align: left;
     }
@@ -271,18 +281,29 @@
     .prog-bar-segment { flex: 1; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; }
     .prog-fill-seg { height: 100%; background: var(--spanish-gold); width: 0%; transition: width 0.3s; }
 
+    /* New Indicators for Level View */
+    .dir-indicators { display: flex; gap: 6px; margin-top: 8px; width: 100%; justify-content: center; }
+    .dir-box { 
+        font-size: 8px; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); 
+        color: var(--text-muted); text-transform: uppercase; font-weight: 600;
+    }
+    .dir-box.done { background: rgba(34,197,94,0.2); border-color: #22c55e; color: #86efac; }
+    .dir-box.bad { background: rgba(239,68,68,0.2); border-color: var(--spanish-red); color: #fca5a5; }
+
     /* --- GAME UI --- */
     .game-container {
         display: flex; flex-direction: column; height: 100%; justify-content: space-between; padding-top: 10px;
     }
     
     .flashcard {
-        flex: 1; max-height: 500px;
+        flex: 1; 
+        width: 100%;
+        min-height: 450px; /* Bigger height like original */
         background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.6));
         border: 1px solid var(--glass-border);
         backdrop-filter: blur(20px);
         border-radius: var(--radius-xl);
-        padding: 40px 20px;
+        padding: 30px; /* More padding */
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         text-align: center;
         position: relative;
@@ -333,7 +354,7 @@
     .input-game:focus { border-color: var(--spanish-gold); }
 
     /* In-Game Settings */
-    .mini-controls { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+    .mini-controls { display: flex; gap: 10px; justify-content: center; margin-top: 30px; /* Increased Spacing */ }
     .mini-btn {
         background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
         color: var(--text-muted); font-size: 11px; padding: 6px 12px;
@@ -365,6 +386,31 @@
     
     .nav-item.active { color: var(--spanish-gold); }
     .nav-item.active .nav-icon { transform: translateY(-2px); filter: drop-shadow(0 0 5px var(--spanish-gold-glow)); }
+
+    /* --- WORDS LANDING BUTTONS (Original Style) --- */
+    .big-nav-btn {
+        background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(148,163,184,0.2);
+        padding: 24px; border-radius: var(--radius-md);
+        text-align: left; cursor: pointer; transition: 0.2s;
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 15px;
+        width: 100%;
+    }
+    .big-nav-btn:hover { background: rgba(30,41,59,0.9); transform: translateY(-2px); border-color: var(--spanish-gold); }
+    .big-btn-title { font-size: 18px; font-weight: 600; color: #fff; display: block; margin-bottom: 4px; }
+    .big-btn-sub { font-size: 13px; color: var(--text-muted); }
+
+    /* --- ADD FORM (Original Style) --- */
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
+    .form-label { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-left: 4px; }
+    .input-add {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        color: #fff; padding: 12px; border-radius: 8px; /* Less round */
+        font-family: inherit; font-size: 15px; outline: none;
+        transition: 0.2s; width: 100%;
+    }
+    .input-add:focus { border-color: var(--spanish-gold); background: rgba(15, 23, 42, 0.8); }
 
     /* --- WORDS MANAGER LIST --- */
     .word-row-glass {
@@ -532,7 +578,8 @@
                 <div class="word-huge" id="gameFrontText">Hola</div>
                 
                 <div id="gameInputArea" style="display:none; width:100%; margin-top:15px;">
-                    <input type="text" class="input-game" id="gameInput" placeholder="Type answer..." autocomplete="off" onkeyup="this.value = this.value.toLowerCase()">
+                    <!-- Removed inline onkeyup lowercase logic, added autocapitalize="off" -->
+                    <input type="text" class="input-game" id="gameInput" placeholder="Type answer..." autocomplete="off" autocapitalize="off">
                     <div id="gameFeedback" style="height:20px; font-size:13px; margin-top:5px;"></div>
                 </div>
 
@@ -575,32 +622,58 @@
     <div id="panel-words" class="panel">
         <h2 style="margin-top:0">My Words</h2>
         
+        <!-- NEW VERTICAL LANDING FOR WORDS -->
         <div id="wordsLanding">
-            <div class="quick-grid">
-                <div class="quick-btn" onclick="toggleWordSection('add')">
-                    <div class="qb-text">＋ New Custom Card</div>
+            <button class="big-nav-btn" onclick="toggleWordSection('add')">
+                <div>
+                    <span class="big-btn-title">➕ Add New Cards</span>
+                    <span class="big-btn-sub">Create your own custom flashcards</span>
                 </div>
-                <div class="quick-btn" onclick="toggleWordSection('manage')">
-                    <div class="qb-text">📂 Browse All</div>
+            </button>
+            <button class="big-nav-btn" onclick="toggleWordSection('manage')">
+                <div>
+                    <span class="big-btn-title">📂 Manage All Words</span>
+                    <span class="big-btn-sub">Search, filter, and edit your collection</span>
                 </div>
-            </div>
+            </button>
         </div>
 
+        <!-- NEW ADD CARD FORM STYLE -->
         <div id="wordsAddSection" style="display:none; margin-top:20px;">
              <button class="crumb-btn" onclick="toggleWordSection('landing')">‹ Back</button>
-             <h3 style="color:var(--text-main)">Create Card</h3>
-             <input type="text" id="addEs" class="input-game" style="text-align:left; background:rgba(255,255,255,0.05)" placeholder="Spanish Word" onkeyup="this.value=this.value.toLowerCase()">
-             <input type="text" id="addEn" class="input-game" style="text-align:left; background:rgba(255,255,255,0.05)" placeholder="English Translation" onkeyup="this.value=this.value.toLowerCase()">
-             <select id="addTopicSelect" class="input-game" style="text-align:left; background:rgba(255,255,255,0.05); color:#94a3b8"></select>
+             <h3 style="color:var(--text-main); margin-bottom:20px;">Create Card</h3>
+             
+             <div class="form-group">
+                <label class="form-label">Spanish Word</label>
+                <!-- Removed onkeyup lowercase, added autocapitalize=off -->
+                <input type="text" id="addEs" class="input-add" placeholder="e.g. la mesa" autocapitalize="off" autocomplete="off">
+             </div>
+             
+             <div class="form-group">
+                <label class="form-label">English Translation</label>
+                <input type="text" id="addEn" class="input-add" placeholder="e.g. the table" autocapitalize="off" autocomplete="off">
+             </div>
+
+             <div class="form-group">
+                <label class="form-label">Topic</label>
+                <select id="addTopicSelect" class="input-add" style="color:#94a3b8"></select>
+             </div>
              
              <div id="divAddEx" style="display:none; margin-top:10px;">
-                <input id="addExEs" class="input-game" style="text-align:left; font-size:13px;" placeholder="Example ES">
-                <input id="addExEn" class="input-game" style="text-align:left; font-size:13px;" placeholder="Example EN">
+                <div class="form-group">
+                    <label class="form-label">Spanish Example</label>
+                    <input id="addExEs" class="input-add" placeholder="Example sentence..." autocapitalize="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">English Example</label>
+                    <input id="addExEn" class="input-add" placeholder="Translation..." autocapitalize="off">
+                </div>
              </div>
+             
              <button onclick="toggleAddEx()" style="background:none; border:none; color:var(--spanish-gold); font-size:12px; margin:10px 0; cursor:pointer">+ Add Examples</button>
 
              <button class="btn-hero-play" id="btnAddSubmit" style="margin-top:10px; padding:15px; font-size:15px;">Save Card</button>
-             <div id="addMsg" style="text-align:center; font-size:12px; height:20px;"></div>
+             <div id="addMsg" style="text-align:center; font-size:12px; height:20px; margin-top:10px"></div>
         </div>
 
         <div id="wordsManageSection" style="display:none; margin-top:20px;">
@@ -653,7 +726,7 @@
         </div>
 
         <button class="g-btn red" id="btnResetData" style="width:100%">Reset All Progress</button>
-        <div style="font-size:10px; color:#444; text-align:center; margin-top:20px;">v2.5 Midnight Edition</div>
+        <div style="font-size:10px; color:#444; text-align:center; margin-top:20px;">v2.6 Midnight Edition</div>
     </div>
 
     <div id="panel-ranks" class="panel">
@@ -674,7 +747,8 @@
         <span class="nav-icon">🎮</span>
         <span class="nav-label">Play</span>
     </button>
-    <button class="nav-item" data-panel="words" onclick="switchPanel('words'); toggleWordSection('manage');">
+    <!-- Updated onclick to go to Landing -->
+    <button class="nav-item" data-panel="words" onclick="switchPanel('words'); toggleWordSection('landing');">
         <span class="nav-icon">🗂</span>
         <span class="nav-label">Words</span>
     </button>
@@ -779,19 +853,19 @@ async function init() {
   populateTopicFilter(); 
   bindEvents();
   
-  cleanupOrphanedData(); // Fix Logic: Ensure data is clean on start
+  cleanupOrphanedData(); 
   updateStats();
   updateGameMiniSettings();
   initTTS(); 
   
-  // Default to Home
   switchPanel('home');
   
-  // Animate Daily Bar on Load
   setTimeout(() => {
       document.getElementById('loadingScreen').style.opacity = '0';
       setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
-      updateDailyBarUI();
+      
+      // Fix: Force animation update after loading
+      setTimeout(updateDailyBarUI, 100);
   }, 1500);
 }
 
@@ -904,7 +978,6 @@ function injectCustomCards() {
   });
 }
 
-// Logic fix: Ensure we remove data for cards that no longer exist (e.g. deleted customs)
 function cleanupOrphanedData() {
   const validUids = new Set();
   STATE.activeDecks.forEach(d => d.cards.forEach(c => validUids.add(getCardId(d.id, c))));
@@ -913,7 +986,6 @@ function cleanupOrphanedData() {
   STATE.struggleList.forEach(uid => { if(!validUids.has(uid)) { STATE.struggleList.delete(uid); changed = true; }});
   STATE.starred.forEach(uid => { if(!validUids.has(uid)) { STATE.starred.delete(uid); changed = true; }});
   
-  // Also clean progress to fix stats mismatch
   Object.keys(STATE.progress).forEach(uid => {
       if(!validUids.has(uid)) { delete STATE.progress[uid]; changed = true; }
   });
@@ -953,10 +1025,13 @@ function updateDailyBarUI() {
     const pct = (current / max) * 100;
     
     const bar = document.getElementById('dailyProgressBar');
-    bar.style.width = `${pct}%`;
+    // Ensure transition works by setting width
+    requestAnimationFrame(() => {
+        bar.style.width = `${pct}%`;
+    });
+    
     document.getElementById('dailyCountDisplay').textContent = STATE.dailyCount;
 
-    // Red -> Yellow -> Green gradient logic
     if (pct < 50) bar.style.background = '#ef4444'; // Red
     else if (pct < 100) bar.style.background = '#f59e0b'; // Orange/Yellow
     else bar.style.background = '#22c55e'; // Green
@@ -972,6 +1047,26 @@ function renderDecks() {
 
   if(!STATE.selDiff) {
     if(!STATE.decksRaw.difficulties) return;
+
+    // --- Custom Words Card ---
+    const customCount = Object.values(STATE.customCards).flat().length;
+    if(customCount > 0) {
+        const customEl = document.createElement('div');
+        customEl.className = 'deck-card custom-blue';
+        customEl.innerHTML = `<div class="deck-icon">✨</div><div class="deck-title">Custom Words</div><div class="deck-sub">${customCount} words</div>`;
+        customEl.onclick = () => startCustomSession();
+        domGrid.appendChild(customEl);
+    }
+
+    // --- Struggle Words Deck ---
+    if(STATE.struggleList.size > 0) {
+        const struggleEl = document.createElement('div');
+        struggleEl.className = 'deck-card mastered-red';
+        struggleEl.innerHTML = `<div class="deck-icon">🧗</div><div class="deck-title">Struggle Words</div><div class="deck-sub">${STATE.struggleList.size} cards</div>`;
+        struggleEl.onclick = () => openWordsManagerFromHeader('struggle');
+        domGrid.appendChild(struggleEl);
+    }
+
     STATE.decksRaw.difficulties.forEach(diff => {
       const pct = calculateGroupProgress('difficulty', diff.id);
       const el = document.createElement('div');
@@ -1032,13 +1127,14 @@ function renderDecks() {
       const count = getPlayableCount(d);
       const status = checkDeckCompletion(d);
       const icon = getTopicEmoji(d.topicId);
-      const stats = getDeckStats(d); // Returns detailed stats
+      const stats = getDeckStats(d); 
 
       const el = document.createElement('div');
       el.className = 'deck-card';
       if(status === 'gold') el.classList.add('mastered-gold');
       else if(status === 'green') el.classList.add('mastered-green');
       
+      // Added Indicators
       el.innerHTML = `
         <div class="deck-icon">${icon}</div>
         <div class="deck-title">${label}</div>
@@ -1046,6 +1142,10 @@ function renderDecks() {
         <div class="progress-split">
             <div class="prog-bar-segment" title="ES->EN"><div class="prog-fill-seg" style="width:${stats.pctEsEn}%"></div></div>
             <div class="prog-bar-segment" title="EN->ES"><div class="prog-fill-seg" style="width:${stats.pctEnEs}%"></div></div>
+        </div>
+        <div class="dir-indicators">
+            <div class="dir-box ${stats.isEsEnDone ? 'done' : ''}">ES→EN</div>
+            <div class="dir-box ${stats.isEnEsDone ? 'done' : ''}">EN→ES</div>
         </div>
       `;
       el.onclick = () => startSession(d.id);
@@ -1075,7 +1175,7 @@ function calculateGroupProgress(groupType, id) {
 
 function getDeckStats(deck) {
     const core = deck.cards.filter(c => !c._custom || STATE.includeCustom);
-    if(core.length === 0) return { pctEsEn: 0, pctEnEs: 0 };
+    if(core.length === 0) return { pctEsEn: 0, pctEnEs: 0, isEsEnDone: false, isEnEsDone: false };
     let cEs = 0, cEn = 0;
     core.forEach(c => {
         const uid = getCardId(deck.id, c);
@@ -1085,14 +1185,16 @@ function getDeckStats(deck) {
     });
     return {
         pctEsEn: Math.round((cEs/core.length)*100),
-        pctEnEs: Math.round((cEn/core.length)*100)
+        pctEnEs: Math.round((cEn/core.length)*100),
+        isEsEnDone: cEs === core.length,
+        isEnEsDone: cEn === core.length
     };
 }
 
 function checkDeckCompletion(d) {
     const s = getDeckStats(d);
-    if(s.pctEsEn === 100 && s.pctEnEs === 100) return 'gold';
-    if(s.pctEsEn === 100 || s.pctEnEs === 100) return 'green';
+    if(s.isEsEnDone && s.isEnEsDone) return 'gold';
+    if(s.isEsEnDone || s.isEnEsDone) return 'green';
     return null;
 }
 
@@ -1125,6 +1227,17 @@ function addBreadcrumb(label, onClick) {
 }
 
 // --- GAME LOGIC ---
+function startCustomSession() {
+    let uids = [];
+    STATE.activeDecks.forEach(d => {
+        d.cards.forEach(c => {
+            if(c._custom) uids.push(getCardId(d.id, c));
+        });
+    });
+    if(uids.length === 0) return alert("No custom cards found!");
+    startFilteredSession(uids);
+}
+
 function startSession(deckId, isMix = false) {
     pendingDeckId = deckId;
     pendingIsMix = isMix;
@@ -1308,12 +1421,12 @@ function renderGameCard() {
   
   if (STATE.mode === 'type') {
       document.getElementById('gameInputArea').style.display = 'block';
+      // Auto-Focus Logic
       setTimeout(() => input.focus(), 10);
   } else {
       document.getElementById('gameInputArea').style.display = 'none';
   }
 
-  // Update In-Game Settings UI
   document.getElementById('miniBtnDir').textContent = STATE.direction === 'es-en' ? 'Swap: ES ➡ EN' : 'Swap: EN ➡ ES';
   document.getElementById('miniBtnDir').className = STATE.direction === 'en-es' ? 'mini-btn active' : 'mini-btn';
   
@@ -1339,10 +1452,10 @@ function renderGameCard() {
 }
 
 function cleanText(str) {
-    let s = str.replace(/\s*\(.*?\)/g, ""); // Remove parens
-    s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove accents
+    let s = str.replace(/\s*\(.*?\)/g, ""); 
+    s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
     s = s.toLowerCase();
-    s = s.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¿¡?]/g, ""); // Remove punctuation
+    s = s.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¿¡?]/g, ""); 
     return s.trim();
 }
 
@@ -1355,7 +1468,7 @@ function showAnswer(force = false) {
     const targets = rawTarget.split('/').map(t => cleanText(t));
     const cleanThe = (s) => s.replace(/^(the|el|la|los|las|un|una)\s+/, '');
     
-    // Check if input matches any valid target (lenient on articles)
+    // Check match
     let isCorrect = targets.some(t => cleanThe(t) === cleanThe(val));
     
     if(isCorrect) {
@@ -1391,7 +1504,7 @@ function markCard(success, autoAdvance = true) {
   if(success) {
       STATE.sessionData[uid].correctInSession = true;
       STATE.streak++;
-      STATE.dailyCount++; // Increment Daily Goal
+      STATE.dailyCount++; 
       triggerCardFeedback(true);
       if(STATE.sessionData[uid].count === 1) STATE.sessionStats.correctFirst++;
       currentScore = 4;
@@ -1475,7 +1588,6 @@ function updateStats() {
   let known = 0;
   Object.entries(STATE.progress).forEach(([uid, p]) => {
       if(STATE.blacklist.has(uid)) return;
-      // Count as known if mastered in ANY direction (or strict if user prefers, logic here is generous)
       if((p.scoreEsEn||0)>=4 || (p.scoreEnEs||0)>=4) known++;
   });
   
@@ -1577,7 +1689,6 @@ function renderWordList() {
     container.innerHTML = '';
     let list = [];
     
-    // Iterate active decks AND custom cards properly
     STATE.activeDecks.forEach(d => d.cards.forEach(c => {
        const uid = getCardId(d.id, c);
        if(STATE.blacklist.has(uid)) return;
@@ -1593,7 +1704,6 @@ function renderWordList() {
        list.push({ ...c, _uid: uid });
     }));
     
-    // Sort
     list.sort((a,b) => STATE.sortAsc ? a.es.localeCompare(b.es) : b.es.localeCompare(a.es));
     
     if(STATE.activeFilter.status !== 'all' || STATE.activeFilter.topic !== 'all') {
@@ -1701,7 +1811,12 @@ function bindEvents() {
       
       saveData();
       document.getElementById('addMsg').textContent = "Card Added!";
-      document.getElementById('addEs').value = ''; document.getElementById('addEn').value = '';
+      document.getElementById('addMsg').style.color = "#4ade80";
+      
+      document.getElementById('addEs').value = ''; 
+      document.getElementById('addEn').value = '';
+      document.getElementById('addExEs').value = ''; 
+      document.getElementById('addExEn').value = '';
   };
   
   document.getElementById('btnResetData').onclick = () => { if(confirm("Reset ALL data?")) { localStorage.clear(); location.reload(); }};
@@ -1801,19 +1916,16 @@ function saveGlobalEdit() {
     const deckId = parts[0];
     const oldKey = parts.slice(1).join(':');
     
-    // Update active deck reference
     const deck = STATE.activeDecks.find(d => d.id === deckId);
     if(deck) {
         const c = deck.cards.find(x => x.es.replace(/\s/g,'') === oldKey);
         if(c) { c.es = es; c.en = en; }
     }
-    // Update custom cards
     Object.values(STATE.customCards).forEach(list => {
         const c = list.find(x => x.es.replace(/\s/g,'') === oldKey);
         if(c) { c.es = es; c.en = en; }
     });
     
-    // Remap stats if key changed
     const newUid = `${deckId}:${es.replace(/\s/g,'')}`;
     if(newUid !== editingCardUid) {
         if(STATE.progress[editingCardUid]) { STATE.progress[newUid] = STATE.progress[editingCardUid]; delete STATE.progress[editingCardUid]; }
@@ -1829,12 +1941,10 @@ function saveGlobalEdit() {
     if(document.getElementById('wordsManageSection').style.display === 'block') renderWordList();
 }
 
-// Start
 init();
 </script>
 
 <script>
-// SERVICE WORKER REGISTRATION (Offline Support)
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js').then(reg => {
         if (reg.waiting) postMessageToWorker(reg.waiting);
