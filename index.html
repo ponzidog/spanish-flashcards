@@ -157,7 +157,7 @@
     .home-hero {
         text-align: center; margin-top: 10px; margin-bottom: 30px;
     }
-    .greeting { font-size: 34px; font-weight: 800; margin-bottom: 4px; }
+    .greeting { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
     .sub-greeting { color: var(--text-muted); font-size: 14px; }
 
     /* Daily Bar */
@@ -312,19 +312,18 @@
     .flashcard {
         flex: 1; 
         width: 100%;
-        max-width: 500px; /* Added to match index-10 */
-        min-height: 280px; /* Reduced from 340px to match index-10 */
+        min-height: 340px; /* Bigger height like original */
         background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.6));
         border: 1px solid var(--glass-border);
         backdrop-filter: blur(20px);
-        border-radius: var(--radius-lg); /* Changed from XL to LG to match index-10 radius */
-        padding: 30px; 
+        border-radius: var(--radius-xl);
+        padding: 30px; /* More padding */
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         text-align: center;
         position: relative;
         box-shadow: 0 15px 40px -10px rgba(0,0,0,0.6);
         transition: all 0.3s;
-        margin: 0 auto 20px auto; /* Center the card */
+        margin-bottom: 20px;
     }
     
     .flashcard.correct { border-color: #22c55e; box-shadow: 0 0 30px rgba(34,197,94,0.3); }
@@ -337,14 +336,14 @@
     .status-dot.green { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
     .status-dot.white { background: rgba(255,255,255,0.3); box-shadow: none; }
 
-    .word-huge { font-size: 32px; font-weight: 700; color: #fff; margin: 20px 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5); line-height: 1.1; }
+    .word-huge { font-size: 32px; font-weight: 800; color: #fff; margin: 20px 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5); line-height: 1.1; }
     .lang-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--spanish-gold); font-weight: 600; }
     
     .reveal-box {
-        margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%;
+        margin-top: 25px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%;
         animation: fadeIn 0.3s;
     }
-    .reveal-answer { font-size: 26px; color: #bae6fd; font-weight: 700; margin-bottom: 8px; }
+    .reveal-answer { font-size: 28px; color: #bae6fd; font-weight: 700; margin-bottom: 8px; }
     .reveal-ex { font-size: 15px; color: var(--text-muted); font-style: italic; }
 
     /* Streak below card */
@@ -505,35 +504,7 @@
       cursor: pointer; margin-bottom: 8px; font-size: 13px; color: var(--text-muted);
     }
     .setting-check-btn.checked { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); color: #bbf7d0; }
-@media (max-width: 600px) {
-      .word-huge { font-size: 26px; }
-      .flashcard { min-height: 240px; padding: 20px; }
-    }
-/* New styles for the top of the card (prevents overlay) */
-    .card-meta-row {
-        display: flex; 
-        justify-content: space-between; 
-        width: 100%; 
-        align-items: center;
-        margin-bottom: 20px; /* Pushes content down so it doesn't overlap */
-    }
 
-    /* New style for the sound icon */
-    .btn-tts {
-        background: transparent; 
-        border: none; 
-        font-size: 0.8em; /* Slightly smaller than text */
-        cursor: pointer;
-        margin-right: 8px; 
-        opacity: 0.7; 
-        transition: 0.2s;
-        vertical-align: middle; 
-        display: inline-block; 
-        padding: 4px;
-    }
-    .btn-tts:hover { opacity: 1; transform: scale(1.1); }
-    .btn-tts:active { transform: scale(0.9); }
-    
   </style>
 </head>
 <body>
@@ -640,15 +611,12 @@
             </div>
 
             <div class="flashcard" id="gameCard">
-                <div class="card-meta-row">
+                <div style="display:flex; justify-content:space-between; width:100%; position:absolute; top:20px; left:0; padding:0 20px;">
                     <div style="display:flex; align-items:center; gap:6px;">
                          <div id="gameStatusDot" class="status-dot"></div>
                          <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;" id="gameDeckName">DECK</div>
                     </div>
-                    <div style="display:flex; gap:10px">
-                        <div id="btnEditCard" onclick="openEditForCurrentCard()" style="font-size:16px; color:var(--text-muted); cursor:pointer; display:none">✏️</div>
-                        <div id="btnStarCard" onclick="toggleStar()" style="font-size:18px; color:rgba(255,255,255,0.2); cursor:pointer">★</div>
-                    </div>
+                    <div id="btnStarCard" onclick="toggleStar()" style="font-size:18px; color:rgba(255,255,255,0.2); cursor:pointer">★</div>
                 </div>
 
                 <div class="lang-label" id="gameFrontLabel">Spanish</div>
@@ -665,7 +633,10 @@
                     <div class="reveal-ex" id="gameExamples"></div>
                 </div>
                 
-                <div style="flex:1"></div> 
+                <div style="position:absolute; bottom:15px; display:flex; gap:10px;">
+                   <button id="btnEditCard" onclick="openEditForCurrentCard()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:12px;">EDIT</button>
+                   <button id="btnSpeakCard" onclick="speakCurrentCard()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:12px;">🔊 LISTEN</button>
+                </div>
             </div>
             
             <div class="streak-display" id="streakIndicator"></div>
@@ -1826,8 +1797,7 @@ function renderGameCard() {
   
   document.getElementById('btnPickDeck').style.display = 'none';
   document.getElementById('btnShowAnswer').style.display = 'block';
-  
-  // Handle Return/Prev Button
+  // Replaced Delete with Return
   const btnPrev = document.getElementById('btnPrevCard');
   if(STATE.history.length > 0) {
       btnPrev.style.display = 'block';
@@ -1843,38 +1813,44 @@ function renderGameCard() {
   document.getElementById('gameControlsNext').style.display = 'none';
   document.getElementById('gameControlsStart').style.display = 'flex';
   
-  // Show Edit Pencil if custom
   document.getElementById('btnEditCard').style.display = c._custom ? 'block' : 'none';
   
-  // Star State
+  if (STATE.direction === 'en-es') {
+      document.getElementById('btnSpeakCard').style.display = 'none';
+  } else {
+      document.getElementById('btnSpeakCard').style.display = 'block';
+  }
   const btnStar = document.getElementById('btnStarCard');
   btnStar.style.color = STATE.starred.has(c._uid) ? 'var(--spanish-gold)' : 'rgba(255,255,255,0.2)';
 
-  // Status Dot
+  // --- Status Dot Indicator Logic ---
   const dot = document.getElementById('gameStatusDot');
-  dot.className = 'status-dot'; 
+  dot.className = 'status-dot'; // Reset
   if (STATE.struggleList.has(c._uid)) {
       dot.classList.add('red');
   } else {
       const p = STATE.progress[c._uid] || {};
       const score = (STATE.direction === 'es-en') ? (p.scoreEsEn||0) : (p.scoreEnEs||0);
-      if (score >= 4) dot.classList.add('green');
-      else dot.classList.add('white');
+      // Logic: if status is known (score >= 4), green. Else white.
+      if (score >= 4) {
+          dot.classList.add('green');
+      } else {
+          dot.classList.add('white');
+      }
   }
 
-  // Input Mode Reset
   const input = document.getElementById('gameInput');
   input.value = '';
   document.getElementById('gameFeedback').textContent = '';
   
   if (STATE.mode === 'type') {
       document.getElementById('gameInputArea').style.display = 'block';
+      // Auto Focus
       setTimeout(() => { input.focus(); }, 100);
   } else {
       document.getElementById('gameInputArea').style.display = 'none';
   }
 
-  // Mini Settings Text
   document.getElementById('miniBtnDir').textContent = STATE.direction === 'es-en' ? 'Swap: ES ➡ EN' : 'Swap: EN ➡ ES';
   document.getElementById('miniBtnDir').className = STATE.direction === 'en-es' ? 'mini-btn active' : 'mini-btn';
   
@@ -1884,21 +1860,14 @@ function renderGameCard() {
   document.getElementById('streakIndicator').textContent = STATE.streak >= 2 ? `🔥 ${STATE.streak}` : '';
   document.getElementById('gameDeckName').textContent = STATE.activeDecks.find(d => d.id === c._realDeckId)?.name || "";
   
-  // --- CONTENT RENDERING (With Audio Icon) ---
   const isEs = STATE.direction === 'es-en';
-  const cleanEs = c.es.replace(/'/g, "\\'"); // Escape quotes for JS string
-  const audioBtn = `<button class="btn-tts" onclick="speakSpanish('${cleanEs}')">🔊</button>`;
-
-  document.getElementById('gameFrontLabel').textContent = isEs ? "Spanish" : "English";
   
-  // Inject Audio button ONLY if the side is Spanish
-  let frontHtml = isEs ? `${audioBtn} ${c.es}` : c.en;
+  document.getElementById('gameFrontLabel').textContent = isEs ? "Spanish" : "English";
+  let frontHtml = isEs ? c.es : c.en;
   document.getElementById('gameFrontText').innerHTML = frontHtml;
   
   document.getElementById('gameBackLabel').textContent = isEs ? "English" : "Spanish";
-  
-  // Inject Audio button ONLY if the side is Spanish
-  let backHtml = isEs ? c.en : `${audioBtn} ${c.es}`;
+  let backHtml = isEs ? c.en : c.es;
   document.getElementById('gameBackText').innerHTML = backHtml;
   
   let ex = "";
