@@ -1143,8 +1143,29 @@ function startSmartSession() {
 
     // 3. Logic: Advance Level if Empty + Gate Check
     if(poolNew.length === 0) {
-        // Check Mastery Gate: Total Struggle List < 10?
-        if (STATE.struggleList.size < 10) {
+        
+        // --- CALCULATE RELEVANT STRUGGLE COUNT ---
+        let relevantStruggleCount = 0;
+        STATE.struggleList.forEach(uid => {
+            const parts = uid.split(':');
+            const dId = parts[0];
+            const d = STATE.activeDecks.find(deck => deck.id === dId);
+            if(!d) return;
+            
+            const card = d.cards.find(x => x.es.replace(/\s/g,'') === parts.slice(1).join(':'));
+            if(!card) return;
+            
+            // Count if Custom OR (Level <= Current Smart Level)
+            if(card._custom) {
+                relevantStruggleCount++;
+            } else {
+                const s = getLinearScore(d.difficultyId, d.levelIndex);
+                if(s <= currentFocusScore) relevantStruggleCount++;
+            }
+        });
+        
+        // Check Mastery Gate: Relevant Struggle List < 10?
+        if (relevantStruggleCount < 10) {
             // Can Advance!
             if (STATE.smartFocus.level < 3) {
                 STATE.smartFocus.level++;
