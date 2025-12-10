@@ -255,6 +255,7 @@
       position: relative; overflow: hidden;
       min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center;
       text-align: center;
+      user-select: none;
     }
     .deck-card:active { transform: scale(0.98); }
     
@@ -374,6 +375,7 @@
         border-radius: 99px; cursor: pointer; transition: 0.2s;
     }
     .mini-btn.active { background: rgba(34,197,94,0.1); color: #86efac; border-color: rgba(34,197,94,0.3); }
+    .mini-btn.danger { border-color:rgba(239,68,68,0.4); color:#fca5a5; }
 
     /* --- BOTTOM NAVIGATION --- */
     .bottom-nav {
@@ -513,7 +515,7 @@
             <span style="color:var(--spanish-red)">ES</span>
             <span style="color:var(--spanish-gold)">Flash</span>
         </div>
-        <button class="btn-settings-icon" onclick="switchPanel('settings')">⚙️</button>
+        <button class="btn-settings-icon" onclick="openWelcomeScreen()">⚙️</button>
     </div>
     
     <div class="header-stats-row">
@@ -562,7 +564,7 @@
                 <span>🚀 Smart Learning</span>
                 <span style="font-size:11px; font-weight:400; opacity:0.8; text-transform:uppercase; letter-spacing:0.5px">Play Daily Mix</span>
             </button>
-            <button class="btn-smart-settings" onclick="document.getElementById('welcomeScreen').style.display='flex'">
+            <button class="btn-smart-settings" onclick="openWelcomeScreen()">
                🎯
             </button>
         </div>
@@ -576,7 +578,7 @@
                     <div class="qb-sub">Custom</div>
                 </div>
             </div>
-            <div class="quick-btn" onclick="startPracticeStruggle()">
+            <div class="quick-btn" onclick="startPracticeStruggle(true)">
                 <div class="qb-icon" style="color:var(--spanish-red)">🧠</div>
                 <div>
                     <div class="qb-text">Fix Mistakes</div>
@@ -627,7 +629,7 @@
             <div class="streak-display" id="streakIndicator"></div>
 
             <div class="game-actions" id="gameControlsStart">
-                <button class="g-btn ghost" id="btnDeleteCard">Remove</button>
+                <button class="g-btn ghost" id="btnPrevCard">Return</button>
                 <button class="g-btn primary" id="btnShowAnswer">Show Answer</button>
                 <button class="g-btn primary" id="btnPickDeck" style="display:none" onclick="startNewDeckFlow()">Browse Library</button>
             </div>
@@ -644,6 +646,7 @@
             <div class="mini-controls">
                 <button class="mini-btn" id="miniBtnDir" onclick="toggleGameSetting('dir')">Swap: ES ➡ EN</button>
                 <button class="mini-btn" id="miniBtnMode" onclick="toggleGameSetting('mode')">Mode: Reveal</button>
+                <button class="mini-btn danger" id="btnDeleteCard" onclick="deleteCurrentCard()">Remove</button>
             </div>
         </div>
     </div>
@@ -752,7 +755,7 @@
         </div>
 
         <button class="g-btn red" id="btnResetData" style="width:100%">Reset All Progress</button>
-        <div style="font-size:10px; color:#444; text-align:center; margin-top:20px;">v2.7 Smart Edition</div>
+        <div style="font-size:10px; color:#444; text-align:center; margin-top:20px;">v2.8 Smart Session Upgrade</div>
     </div>
 
     <div id="panel-ranks" class="panel">
@@ -767,7 +770,7 @@
     </button>
     <button class="nav-item" data-panel="decks" onclick="switchPanel('decks')">
         <span class="nav-icon">📚</span>
-        <span class="nav-label">Library</span>
+        <span class="nav-label">Levels</span>
     </button>
     <button class="nav-item" data-panel="game" onclick="switchPanel('game')">
         <span class="nav-icon">🎮</span>
@@ -820,7 +823,7 @@
              </div>
         </div>
         <button class="g-btn primary" onclick="closeOverlay()">Finish</button>
-        <button class="g-btn red" id="btnPracticeStruggle" style="margin-top:10px; display:none" onclick="startPracticeStruggle()">Fix Mistakes</button>
+        <button class="g-btn red" id="btnPracticeStruggle" style="margin-top:10px; display:none" onclick="startPracticeStruggle(false)">Fix Mistakes</button>
     </div>
 </div>
 
@@ -864,6 +867,7 @@ const STATE = {
   // Session
   sessionData: {}, sessionStats: { correctFirst: 0, struggle: 0 },
   sessionStruggleIds: [], customSessionList: null, lastCardUid: null, streak: 0,
+  history: [], // For Return button
   
   // Nav & Config
   view: 'home', selDiff: null, selLevel: null,
@@ -896,6 +900,7 @@ const FUN_FACTS = [
 let editingCardUid = null;
 let pendingDeckId = null;
 let pendingIsMix = false;
+let pendingDir = null;
 let spanishVoices = [];
 
 // --- INIT ---
@@ -1051,153 +1056,207 @@ function selectSmartLevel(diffId) {
     document.getElementById('welcomeScreen').style.display = 'none';
 }
 
+function openWelcomeScreen() {
+    document.getElementById('welcomeScreen').style.display = 'flex';
+}
+
 function startSmartSession() {
-    // 1. Identify Target Pool
+    // 1. Setup & Definitions
     if(!STATE.smartFocus) { document.getElementById('welcomeScreen').style.display='flex'; return; }
     
-    // We need to find the decks matching current focus
-    let targetDecks = STATE.activeDecks.filter(d => d.difficultyId === STATE.smartFocus.diff && d.levelIndex === STATE.smartFocus.level);
+    // Ordered difficulties array to help with linear progression
+    const diffOrder = ['beginner', 'basic', 'intermediate', 'proficient']; 
+    // Fallback if difficulty IDs differ in JSON
+    const actualDiffs = STATE.decksRaw.difficulties.map(d => d.id);
     
-    // Progression Check: If no new words in current level, move to next
-    let newWordsInLevel = [];
-    targetDecks.forEach(d => {
-        d.cards.forEach(c => {
-            const uid = getCardId(d.id, c);
-            if(STATE.blacklist.has(uid)) return;
-            // Check if un-shown (seen == 0 or undefined)
-            if(!STATE.progress[uid] || !STATE.progress[uid].seen) newWordsInLevel.push({ ...c, _realDeckId: d.id, _uid: uid });
-        });
-    });
+    // Helper to get linear level index (0 = Beginner L1, 1 = Beginner L2, etc.)
+    const getLinearScore = (diffId, lvl) => {
+        let diffIdx = actualDiffs.indexOf(diffId);
+        if(diffIdx === -1) diffIdx = 0;
+        return (diffIdx * 3) + lvl;
+    };
+    
+    let currentFocusScore = getLinearScore(STATE.smartFocus.diff, STATE.smartFocus.level);
 
-    if(newWordsInLevel.length === 0) {
-        // Try to advance level
-        const struggleCountInLevel = countStruggleInLevel(STATE.smartFocus.diff, STATE.smartFocus.level);
-        
-        // Mastery Gate: If too many struggles in current level, DO NOT ADVANCE. Just review.
-        if (struggleCountInLevel > 3) {
-            // Stay in level, but no new words. Just Review Session.
-        } else {
-            // Advance
-            const nextLevel = STATE.smartFocus.level + 1;
-            // Check if next level exists in this difficulty
-            const hasNextLevel = STATE.activeDecks.some(d => d.difficultyId === STATE.smartFocus.diff && d.levelIndex === nextLevel);
-            
-            if (hasNextLevel) {
-                STATE.smartFocus.level = nextLevel;
+    // 2. Identify Available Pools
+    let poolNew = [];
+    
+    // Search for NEW words in current level
+    const findNewWords = (diff, lvl) => {
+        let p = [];
+        STATE.activeDecks.forEach(d => {
+            if(d.difficultyId === diff && d.levelIndex === lvl) {
+                d.cards.forEach(c => {
+                    const uid = getCardId(d.id, c);
+                    if(STATE.blacklist.has(uid)) return;
+                    if(!STATE.progress[uid] || !STATE.progress[uid].seen) {
+                        p.push({ ...c, _realDeckId: d.id, _uid: uid });
+                    }
+                });
+            }
+        });
+        return p;
+    };
+
+    poolNew = findNewWords(STATE.smartFocus.diff, STATE.smartFocus.level);
+
+    // 3. Logic: Advance Level if Empty + Gate Check
+    if(poolNew.length === 0) {
+        // Check Mastery Gate: Total Struggle List < 10?
+        if (STATE.struggleList.size < 10) {
+            // Can Advance!
+            if (STATE.smartFocus.level < 3) {
+                STATE.smartFocus.level++;
             } else {
                 // Move to next Difficulty
-                const diffOrder = STATE.decksRaw.difficulties.map(d => d.id);
-                const currIdx = diffOrder.indexOf(STATE.smartFocus.diff);
-                if (currIdx < diffOrder.length - 1) {
-                    STATE.smartFocus.diff = diffOrder[currIdx + 1];
+                const currIdx = actualDiffs.indexOf(STATE.smartFocus.diff);
+                if (currIdx < actualDiffs.length - 1) {
+                    STATE.smartFocus.diff = actualDiffs[currIdx + 1];
                     STATE.smartFocus.level = 1;
                 } else {
-                    alert("You have reached the end of the content! Resetting to start.");
-                    STATE.smartFocus.level = 1; 
+                    // Maxed out everything, stay here
+                    // Alert once? No, just silent stay.
                 }
             }
             saveData();
-            // Recursive call to start session with new focus
-            startSmartSession(); 
-            return;
+            currentFocusScore = getLinearScore(STATE.smartFocus.diff, STATE.smartFocus.level);
+            // Try fetch again
+            poolNew = findNewWords(STATE.smartFocus.diff, STATE.smartFocus.level);
+        } else {
+            // GATE CLOSED. Stay on current level. Pool New remains empty.
+            // We will fill with known/struggle.
         }
     }
 
-    // Refresh target decks after potential level change
-    targetDecks = STATE.activeDecks.filter(d => d.difficultyId === STATE.smartFocus.diff && d.levelIndex === STATE.smartFocus.level);
-
-    // 2. Build the Pools
+    // 4. Build STRUGGLE Pool (Current Level or Lower ONLY + Manual)
     let poolStruggle = [];
+    STATE.struggleList.forEach(uid => {
+        const parts = uid.split(':');
+        const deckId = parts[0];
+        const deck = STATE.activeDecks.find(d => d.id === deckId);
+        if (!deck) return;
+        
+        // Find card
+        const card = deck.cards.find(x => x.es.replace(/\s/g,'') === parts.slice(1).join(':'));
+        if (!card) return;
+
+        // Condition: Manual OR (Level <= Current)
+        if (card._custom) {
+            poolStruggle.push({ ...card, _realDeckId: deckId, _uid: uid });
+        } else {
+            const cardScore = getLinearScore(deck.difficultyId, deck.levelIndex);
+            if (cardScore <= currentFocusScore) {
+                poolStruggle.push({ ...card, _realDeckId: deckId, _uid: uid });
+            }
+        }
+    });
+
+    // 5. Build KNOWN Pool (Current, Prev 1, Prev 2 + Manual)
     let poolKnown = [];
-    let poolNew = [];
-
-    // Global Struggle Pool (Global, not just current level)
-    STATE.activeDecks.forEach(d => d.cards.forEach(c => {
-        const uid = getCardId(d.id, c);
-        if(STATE.struggleList.has(uid)) poolStruggle.push({ ...c, _realDeckId: d.id, _uid: uid });
-    }));
-
-    // Local Known & New Pool (From current level)
-    targetDecks.forEach(d => d.cards.forEach(c => {
-        const uid = getCardId(d.id, c);
-        if(STATE.blacklist.has(uid) || STATE.struggleList.has(uid)) return; // Don't duplicate struggle
-        
-        const p = STATE.progress[uid];
-        const isKnown = p && (p.scoreEsEn >= 4 || p.scoreEnEs >= 4);
-        
-        if(isKnown) poolKnown.push({ ...c, _realDeckId: d.id, _uid: uid });
-        else if(!p || !p.seen) poolNew.push({ ...c, _realDeckId: d.id, _uid: uid });
-    }));
-
-    // 3. Select Cards (5 Struggle / 4 Known / 6 New)
-    const finalSession = [];
+    const now = Date.now();
     
-    // Shuffle helper
+    STATE.activeDecks.forEach(d => {
+        d.cards.forEach(c => {
+            const uid = getCardId(d.id, c);
+            if(STATE.blacklist.has(uid) || STATE.struggleList.has(uid)) return;
+            
+            const p = STATE.progress[uid];
+            // Known = score >= 4 in EITHER direction? Usually both is mastery, but let's be lenient for review.
+            // Let's say one side >= 4.
+            if(p && (p.scoreEsEn >= 4 || p.scoreEnEs >= 4)) {
+                
+                // Filter: Manual OR (Level in Range [Current-2, Current])
+                let isEligible = false;
+                if(c._custom) {
+                    isEligible = true;
+                } else {
+                    const cardScore = getLinearScore(d.difficultyId, d.levelIndex);
+                    if (cardScore <= currentFocusScore && cardScore >= currentFocusScore - 2) {
+                        isEligible = true;
+                    }
+                }
+
+                if(isEligible) {
+                    // Calculate Weight
+                    let w = 1.0;
+                    if (c._custom) w *= 0.6; // Manual weight penalty
+                    
+                    // Staleness Bonus
+                    const last = p.lastPlayed || 0;
+                    const daysSince = (now - last) / (1000 * 60 * 60 * 24);
+                    if (daysSince >= 2) w *= 2.0;
+
+                    poolKnown.push({ ...c, _realDeckId: d.id, _uid: uid, _weight: w });
+                }
+            }
+        });
+    });
+
+    // 6. Select Cards
+    // Requirements: 5 Struggle / 5 Known / 5 New.
+    // Fallback: If 0 Struggle -> 10 Known / 5 New.
+    
+    const finalSession = [];
     const shuffle = (arr) => arr.sort(() => 0.5 - Math.random());
     
+    // Helper: Weighted Random Pick
+    const pickWeighted = (pool, count) => {
+        let picked = [];
+        let tempPool = [...pool];
+        for(let i=0; i<count; i++) {
+            if(tempPool.length === 0) break;
+            
+            let totalW = tempPool.reduce((a,b) => a + b._weight, 0);
+            let r = Math.random() * totalW;
+            let acc = 0;
+            let selectedIdx = -1;
+            
+            for(let j=0; j<tempPool.length; j++) {
+                acc += tempPool[j]._weight;
+                if (r <= acc) { selectedIdx = j; break; }
+            }
+            if(selectedIdx === -1) selectedIdx = tempPool.length - 1; // Fallback
+            
+            picked.push(tempPool[selectedIdx]);
+            tempPool.splice(selectedIdx, 1);
+        }
+        return picked;
+    };
+
+    // A. Pick Struggle (Max 5)
     shuffle(poolStruggle);
-    shuffle(poolKnown);
+    const strugglePicks = poolStruggle.slice(0, 5);
+    finalSession.push(...strugglePicks);
+    
+    // B. Pick New (Target 5)
+    // If Mastery Gate closed (poolNew empty), this adds 0.
     shuffle(poolNew);
-
-    // Fill Struggle (Max 5)
-    let sCount = 0;
-    for(let i=0; i<5 && i<poolStruggle.length; i++) { finalSession.push(poolStruggle[i]); sCount++; }
-
-    // Logic: If Struggle < 5, should we fill with Known or New? 
-    // User requested: "Replace them with 3 un-shown and 2 known".
-    // My improvement: "Don't overload with New". 
-    // Compromise: Fill gaps with Known to maintain confidence.
+    const newPicks = poolNew.slice(0, 5);
+    finalSession.push(...newPicks);
     
-    // Fill Known (Target 4 + any filled struggle slots)
-    // Actually adhering to strict user request logic but safer:
-    // Base Known = 4. 
-    // Base New = 6.
-    // If Struggle is missing X slots, give X to Known (safer) OR split.
-    // Let's do: Fill remaining Struggle slots with Known.
+    // C. Pick Known (Target 5, OR 10 if no struggles)
+    let knownTarget = (strugglePicks.length === 0) ? 10 : 5;
     
-    let kTarget = 4 + (5 - sCount); 
-    
-    // Fill Known
-    for(let i=0; i<kTarget && i<poolKnown.length; i++) { finalSession.push(poolKnown[i]); }
-
-    // Fill New (Target 6, unless Mastery Gate was hit earlier -> then 0)
-    // If we have a huge struggle backlog (>5), reduce new cards to 3 to focus on repairs.
-    let nTarget = (poolStruggle.length > 5) ? 3 : 6;
-    
-    for(let i=0; i<nTarget && i<poolNew.length; i++) { finalSession.push(poolNew[i]); }
-
-    // If session is too small (<5 cards), force fill with random knowns/news from decks
-    if (finalSession.length < 5 && (poolKnown.length > 0 || poolNew.length > 0)) {
-        // Just fill up to 10 with whatever is left
-        let remKnown = poolKnown.slice(kTarget);
-        let remNew = poolNew.slice(nTarget);
-        let remainder = [...remKnown, ...remNew];
-        shuffle(remainder);
-        for(let i=0; i<5 && i<remainder.length; i++) finalSession.push(remainder[i]);
+    // If we missed New words (gate closed or ran out), should we fill with known? 
+    // Yes, keeps session length healthy (~15).
+    if (newPicks.length < 5) {
+        knownTarget += (5 - newPicks.length);
     }
+    
+    const knownPicks = pickWeighted(poolKnown, knownTarget);
+    finalSession.push(...knownPicks);
 
-    if (finalSession.length === 0) return alert("No cards available in this level yet!");
+    // D. Validation
+    if (finalSession.length === 0) return alert("No cards available! Add manual cards or check filters.");
 
     startFilteredSession(finalSession.map(c => c._uid));
     
-    // Display Toast with Context
-    const diffName = STATE.decksRaw.difficulties.find(d=>d.id === STATE.smartFocus.diff)?.label || STATE.smartFocus.diff;
-    const msg = `Smart Session: ${diffName} Level ${STATE.smartFocus.level}`;
+    // Display Toast
+    const diffName = actualDiffs.find(d => d === STATE.smartFocus.diff) || STATE.smartFocus.diff;
+    const msg = `Smart Session: ${diffName.charAt(0).toUpperCase()+diffName.slice(1)} Level ${STATE.smartFocus.level}`;
     const toast = document.getElementById('rankNotification');
     toast.textContent = msg; toast.classList.add('show');
     setTimeout(()=>toast.classList.remove('show'), 3000);
-}
-
-function countStruggleInLevel(diffId, levelIdx) {
-    let count = 0;
-    STATE.activeDecks.forEach(d => {
-        if(d.difficultyId === diffId && d.levelIndex === levelIdx) {
-            d.cards.forEach(c => {
-                if(STATE.struggleList.has(getCardId(d.id, c))) count++;
-            });
-        }
-    });
-    return count;
 }
 
 // --- RENDER HOME ---
@@ -1228,8 +1287,8 @@ function renderHome() {
 
 function updateDailyBarUI() {
     const max = 20;
-    const current = Math.min(STATE.dailyCount, max);
-    const pct = (current / max) * 100;
+    const current = Math.min(Math.max(0, STATE.dailyCount), 1000); // Visual clamp
+    const pct = Math.min((current / max) * 100, 100);
     
     const bar = document.getElementById('dailyProgressBar');
     requestAnimationFrame(() => {
@@ -1298,13 +1357,18 @@ function renderDecks() {
     
     const levels = new Set(STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff).map(d => d.levelIndex));
     [...levels].sort().forEach(lvl => {
-      const pct = calculateGroupProgress('level', lvl);
+      // Get split stats for Level
+      const stats = getLevelStats(STATE.selDiff, lvl);
+      
       const el = document.createElement('div');
       el.className = 'deck-card';
       el.innerHTML = `
         <div class="deck-icon">📶</div>
         <div class="deck-title">Level ${lvl}</div>
-        <div class="progress-split"><div class="prog-bar-segment"><div class="prog-fill-seg" style="width:${pct}%"></div></div></div>
+        <div class="progress-split">
+            <div class="prog-bar-segment" title="ES->EN"><div class="prog-fill-seg" style="width:${stats.pctEsEn}%"></div></div>
+            <div class="prog-bar-segment" title="EN->ES"><div class="prog-fill-seg" style="width:${stats.pctEnEs}%"></div></div>
+        </div>
       `;
       el.onclick = () => { STATE.selLevel = lvl; renderDecks(); };
       domGrid.appendChild(el);
@@ -1318,7 +1382,7 @@ function renderDecks() {
 
     const decks = STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel);
     let mixCount = 0;
-    decks.forEach(d => { mixCount += getPlayableCount(d); });
+    decks.forEach(d => { mixCount += getPlayableCount(d, true); }); // Include custom for Mix
     
     // Mix Card
     const mixEl = document.createElement('div');
@@ -1330,7 +1394,8 @@ function renderDecks() {
     decks.forEach(d => {
       const topic = STATE.decksRaw.topics.find(t => t.id === d.topicId);
       const label = topic ? topic.label : d.name;
-      const count = getPlayableCount(d);
+      // Exclude custom from visual count in library (except mix/custom deck)
+      const count = getPlayableCount(d, false); 
       const status = checkDeckCompletion(d);
       const icon = getTopicEmoji(d.topicId);
       const stats = getDeckStats(d); 
@@ -1353,7 +1418,18 @@ function renderDecks() {
             <div class="dir-box ${stats.isEnEsDone ? 'done' : ''}">EN→ES</div>
         </div>
       `;
-      el.onclick = () => startSession(d.id);
+      
+      // Split Click Logic
+      el.onclick = (e) => {
+         const rect = el.getBoundingClientRect();
+         const clickX = e.clientX - rect.left;
+         const width = rect.width;
+         
+         // Left Side = ES->EN, Right Side = EN->ES
+         const dir = (clickX < width / 2) ? 'es-en' : 'en-es';
+         startSession(d.id, false, dir);
+      };
+      
       domGrid.appendChild(el);
     });
   }
@@ -1365,7 +1441,7 @@ function calculateGroupProgress(groupType, id) {
         if(groupType === 'difficulty' && d.difficultyId !== id) return;
         if(groupType === 'level' && d.difficultyId === STATE.selDiff && d.levelIndex !== id) return;
         d.cards.forEach(c => {
-            if(c._custom && !STATE.includeCustom) return;
+            if(c._custom) return; // Exclude custom
             const uid = getCardId(d.id, c);
             if(STATE.blacklist.has(uid)) return;
             totalItems += 2;
@@ -1378,8 +1454,33 @@ function calculateGroupProgress(groupType, id) {
     return Math.round((masteredItems / totalItems) * 100);
 }
 
+function getLevelStats(diffId, lvlIdx) {
+    let totalCards = 0;
+    let masteredEs = 0;
+    let masteredEn = 0;
+    
+    STATE.activeDecks.forEach(d => {
+        if(d.difficultyId !== diffId || d.levelIndex !== lvlIdx) return;
+        d.cards.forEach(c => {
+            if(c._custom) return; // Exclude custom
+            const uid = getCardId(d.id, c);
+            if(STATE.blacklist.has(uid)) return;
+            totalCards++;
+            const p = STATE.progress[uid] || {};
+            if((p.scoreEsEn||0)>=4) masteredEs++;
+            if((p.scoreEnEs||0)>=4) masteredEn++;
+        });
+    });
+    
+    if(totalCards === 0) return { pctEsEn: 0, pctEnEs: 0 };
+    return {
+        pctEsEn: Math.round((masteredEs/totalCards)*100),
+        pctEnEs: Math.round((masteredEn/totalCards)*100)
+    };
+}
+
 function getDeckStats(deck) {
-    const core = deck.cards.filter(c => !c._custom || STATE.includeCustom);
+    const core = deck.cards.filter(c => !c._custom); // Exclude custom
     if(core.length === 0) return { pctEsEn: 0, pctEnEs: 0, isEsEnDone: false, isEnEsDone: false };
     let cEs = 0, cEn = 0;
     core.forEach(c => {
@@ -1403,9 +1504,9 @@ function checkDeckCompletion(d) {
     return null;
 }
 
-function getPlayableCount(deck) {
+function getPlayableCount(deck, includeCustom = false) {
   return deck.cards.filter(c => {
-     if(c._custom && !STATE.includeCustom) return false;
+     if(c._custom && !includeCustom) return false;
      return !STATE.blacklist.has(getCardId(deck.id, c));
   }).length;
 }
@@ -1443,9 +1544,11 @@ function startCustomSession() {
     startFilteredSession(uids);
 }
 
-function startSession(deckId, isMix = false) {
+function startSession(deckId, isMix = false, overrideDir = null) {
     pendingDeckId = deckId;
     pendingIsMix = isMix;
+    pendingDir = overrideDir;
+    
     const saveKey = isMix ? `mix_${STATE.selDiff}_${STATE.selLevel}` : deckId;
     if(STATE.deckProgress[saveKey]) {
         const last = STATE.deckProgress[saveKey].lastPlayed;
@@ -1472,6 +1575,13 @@ function confirmStartSession(resume) {
     STATE.streak = 0;
     STATE.sessionStats = { correctFirst: 0, struggle: 0 };
     STATE.sessionData = {}; 
+    STATE.history = [];
+    
+    // Set Direction if overridden by split click
+    if(pendingDir) {
+        STATE.direction = pendingDir;
+        updateGameMiniSettings();
+    }
 
     if(resume && STATE.deckProgress[saveKey]) {
         const savedUids = STATE.deckProgress[saveKey].correctUids || [];
@@ -1507,13 +1617,25 @@ function resumeSavedSession() {
     } else nextCard();
 }
 
-function startPracticeStruggle() {
-    if(STATE.struggleList.size === 0) return alert("No struggle words yet!");
+function startPracticeStruggle(isGlobal = true) {
+    let sourceList = [];
+    
+    if (isGlobal) {
+        sourceList = Array.from(STATE.struggleList);
+    } else {
+        // Post-Session: Use the struggles accumulated in this session
+        sourceList = [...STATE.sessionStruggleIds];
+    }
+    
+    if(sourceList.length === 0) return alert("No struggle words found!");
+    
     STATE.sessionData = {}; 
     STATE.isStruggleMode = true;
-    STATE.sessionStruggleIds = Array.from(STATE.struggleList);
+    STATE.sessionStruggleIds = sourceList; // Use the specific list
     STATE.lastCardUid = null;
-    STATE.streak = 0;  
+    STATE.streak = 0;
+    STATE.history = [];
+    
     document.getElementById('overlay').style.display = 'none';
     switchPanel('game');
     updateProgressBar(STATE.sessionStruggleIds.length);
@@ -1528,6 +1650,7 @@ function startFilteredSession(uidList) {
     STATE.isStruggleMode = false;
     STATE.sessionStats = { correctFirst: 0, struggle: 0 };
     STATE.streak = 0;
+    STATE.history = [];
     if(uidList.length === 0) { alert("No cards."); return; }
     switchPanel('game');
     updateProgressBar(uidList.length);
@@ -1543,7 +1666,12 @@ function getPoolFromCurrentSession() {
   relevantDecks.forEach(d => {
     if(!d) return;
     d.cards.forEach((c, idx) => {
-      if(c._custom && !STATE.includeCustom) return;
+      // Include custom if mix, or if topic matches
+      if(c._custom) {
+          // Logic: Custom cards should be shown if they are in the corresponding category
+          // They are already in the deck.cards array. So we just include them.
+      }
+      
       const uid = getCardId(d.id, c);
       if(STATE.blacklist.has(uid)) return;
       pool.push({ ...c, _realDeckId: d.id, _uid: uid });
@@ -1552,7 +1680,30 @@ function getPoolFromCurrentSession() {
   return pool;
 }
 
+function prevCard() {
+    if(STATE.history.length === 0) return;
+    const prevUid = STATE.history.pop();
+    
+    // Find card obj
+    const parts = prevUid.split(':');
+    const d = STATE.activeDecks.find(deck => deck.id === parts[0]);
+    if(d) {
+        const c = d.cards.find(x => x.es.replace(/\s/g,'') === parts.slice(1).join(':'));
+        if(c) {
+             STATE.currentCard = { ...c, _realDeckId: d.id, _uid: prevUid };
+             STATE.lastCardUid = prevUid;
+             renderGameCard();
+             showAnswer(true); // Force show answer
+        }
+    }
+}
+
 function nextCard() {
+  // Push current to history before moving
+  if(STATE.currentCard) {
+      STATE.history.push(STATE.currentCard._uid);
+  }
+
   let pool = [];
   if (STATE.customSessionList) {
       STATE.customSessionList.forEach(uid => {
@@ -1609,7 +1760,17 @@ function renderGameCard() {
   
   document.getElementById('btnPickDeck').style.display = 'none';
   document.getElementById('btnShowAnswer').style.display = 'block';
-  document.getElementById('btnDeleteCard').style.display = 'block';
+  // Replaced Delete with Return
+  const btnPrev = document.getElementById('btnPrevCard');
+  if(STATE.history.length > 0) {
+      btnPrev.style.display = 'block';
+      btnPrev.style.opacity = '1';
+  } else {
+      btnPrev.style.display = 'block';
+      btnPrev.style.opacity = '0.3';
+  }
+  btnPrev.onclick = prevCard;
+
   document.getElementById('gameReveal').style.display = 'none';
   document.getElementById('gameControlsJudge').style.display = 'none';
   document.getElementById('gameControlsNext').style.display = 'none';
@@ -1631,7 +1792,8 @@ function renderGameCard() {
   
   if (STATE.mode === 'type') {
       document.getElementById('gameInputArea').style.display = 'block';
-      setTimeout(() => { input.focus(); }, 300);
+      // Auto Focus
+      setTimeout(() => { input.focus(); }, 100);
   } else {
       document.getElementById('gameInputArea').style.display = 'none';
   }
@@ -1701,19 +1863,30 @@ function showAnswer(force = false) {
 
 function markCard(success, autoAdvance = true) {
   const uid = STATE.currentCard._uid;
-  if(!STATE.progress[uid]) STATE.progress[uid] = { scoreEsEn: 0, scoreEnEs: 0, seen: 0 };
+  if(!STATE.progress[uid]) STATE.progress[uid] = { scoreEsEn: 0, scoreEnEs: 0, seen: 0, lastPlayed: 0 };
   if(!STATE.sessionData[uid]) STATE.sessionData[uid] = { count: 0, struggle: false, correctInSession: false };
   
   STATE.progress[uid].seen++;
+  STATE.progress[uid].lastPlayed = Date.now(); // Update timestamp for staleness
+  
   STATE.sessionData[uid].count++;
   const isEs = STATE.direction === 'es-en';
 
   let currentScore = isEs ? STATE.progress[uid].scoreEsEn : STATE.progress[uid].scoreEnEs;
 
   if(success) {
+      const alreadyCorrect = STATE.sessionData[uid].correctInSession;
       STATE.sessionData[uid].correctInSession = true;
       STATE.streak++;
-      STATE.dailyCount++; 
+      
+      // Daily Goal Logic: +1 if correct
+      if(!alreadyCorrect) { // Prevent farming same word in session? 
+         // User said "for each correct answer it adds". 
+         // But also "should go down".
+         // I'll allow +1 every time it's marked correct, assuming flow is natural.
+         STATE.dailyCount++;
+      }
+      
       triggerCardFeedback(true);
       if(STATE.sessionData[uid].count === 1) STATE.sessionStats.correctFirst++;
       currentScore = 4;
@@ -1738,6 +1911,10 @@ function markCard(success, autoAdvance = true) {
   } else {
       STATE.sessionData[uid].correctInSession = false;
       STATE.streak = 0;
+      
+      // Daily Goal Logic: -1 if wrong
+      STATE.dailyCount = Math.max(0, STATE.dailyCount - 1);
+      
       if(!autoAdvance) triggerCardFeedback(false); 
       currentScore = Math.max(0, currentScore - 1); 
       STATE.sessionData[uid].struggle = true;
@@ -1757,6 +1934,15 @@ function markCard(success, autoAdvance = true) {
   else {
     document.getElementById('streakIndicator').textContent = STATE.streak >= 2 ? `🔥 ${STATE.streak}` : '';
   }
+}
+
+function deleteCurrentCard() {
+    if(!STATE.currentCard) return;
+    if(confirm("Remove card?")) { 
+        STATE.blacklist.add(STATE.currentCard._uid); 
+        saveData(); 
+        nextCard(); 
+    }
 }
 
 function triggerCardFeedback(isCorrect) {
@@ -1828,7 +2014,15 @@ function showDeckComplete() {
   document.getElementById('resCorrect').textContent = STATE.sessionStats.correctFirst;
   document.getElementById('resStruggle').textContent = STATE.sessionStats.struggle; 
   const btn = document.getElementById('btnPracticeStruggle');
-  btn.style.display = STATE.sessionStruggleIds.length > 0 ? 'inline-block' : 'none';
+  
+  // Only show if there were struggles IN THIS SESSION
+  if (STATE.sessionStruggleIds.length > 0) {
+      btn.style.display = 'inline-block';
+      // It calls startPracticeStruggle(false) -> which uses session ids
+  } else {
+      btn.style.display = 'none';
+  }
+  
   launchConfetti();
 }
 
@@ -1854,7 +2048,7 @@ function updateProgressBar(totalOverride = null) {
     else {
         const isMix = !STATE.currentDeckId;
         const decks = isMix ? STATE.activeDecks.filter(d => d.difficultyId === STATE.selDiff && d.levelIndex === STATE.selLevel) : [STATE.activeDecks.find(d => d.id === STATE.currentDeckId)];
-        decks.forEach(d => { if(d) total += getPlayableCount(d); });
+        decks.forEach(d => { if(d) total += getPlayableCount(d, true); });
     }
     current = Object.values(STATE.sessionData).filter(d => d.correctInSession).length;
     const pct = total === 0 ? 0 : Math.round((current / total) * 100);
@@ -1999,11 +2193,16 @@ function bindEvents() {
     };
   });
   
+  // Close welcome screen by tapping outside
+  document.getElementById('welcomeScreen').addEventListener('click', function(e) {
+      if(e.target === this) this.style.display = 'none';
+  });
+  
   document.getElementById('btnShowAnswer').onclick = () => showAnswer();
   document.getElementById('btnEasy').onclick = () => markCard(true);
   document.getElementById('btnHard').onclick = () => markCard(false);
   document.getElementById('btnNextCard').onclick = () => nextCard();
-  document.getElementById('btnDeleteCard').onclick = () => { if(confirm("Remove card?")) { STATE.blacklist.add(STATE.currentCard._uid); saveData(); nextCard(); }};
+
   document.getElementById('gameInput').onkeydown = (e) => { if(e.key === 'Enter') showAnswer(); };
   
   // Custom Card Add
