@@ -1155,9 +1155,9 @@ function startSmartSession() {
             const card = d.cards.find(x => x.es.replace(/\s/g,'') === parts.slice(1).join(':'));
             if(!card) return;
             
-            // Count if Custom OR (Level <= Current Smart Level)
+            // Count if Custom (AND setting is ON) OR (Level <= Current Smart Level)
             if(card._custom) {
-                relevantStruggleCount++;
+                if(STATE.includeCustom) relevantStruggleCount++;
             } else {
                 const s = getLinearScore(d.difficultyId, d.levelIndex);
                 if(s <= currentFocusScore) relevantStruggleCount++;
