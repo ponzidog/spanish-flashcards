@@ -195,17 +195,21 @@
     }
     .rank-mini-fill { height: 100%; background: var(--spanish-gold); width: 0%; }
 
+    /* Smart Button Container */
+    .smart-btn-container {
+        display: flex; gap: 8px; margin-bottom: 30px;
+    }
+    
     /* Glowing Play Button */
     .btn-hero-play {
-        width: 100%;
+        flex: 1;
         background: linear-gradient(135deg, #ef4444, #f59e0b);
         background-size: 200% 200%;
         border: none; padding: 20px; border-radius: var(--radius-lg);
         color: white; font-size: 18px; font-weight: 700;
         box-shadow: 0 10px 30px -5px rgba(239,68,68,0.5);
         cursor: pointer; 
-        display: flex; align-items: center; justify-content: center; gap: 10px;
-        margin-bottom: 30px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
         animation: glowGradient 3s ease infinite;
     }
     @keyframes glowGradient {
@@ -214,6 +218,15 @@
         100% { background-position: 0% 50%; box-shadow: 0 10px 30px -5px rgba(239,68,68,0.5); }
     }
     .btn-hero-play:active { transform: scale(0.98); }
+
+    .btn-smart-settings {
+        width: 50px; background: rgba(255,255,255,0.05); 
+        border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px; cursor: pointer; transition: 0.2s;
+        color: var(--text-muted);
+    }
+    .btn-smart-settings:active { transform: scale(0.9); }
 
     /* Quick Actions */
     .quick-actions-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px; }
@@ -442,6 +455,17 @@
         text-align: center;
     }
 
+    /* Welcome Level Select */
+    .level-select-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px; }
+    .level-btn {
+        background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+        padding: 15px; border-radius: var(--radius-md); text-align: left;
+        cursor: pointer; transition: 0.2s;
+    }
+    .level-btn:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
+    .level-btn strong { display: block; color: #fff; margin-bottom: 2px; }
+    .level-btn span { font-size: 12px; color: var(--text-muted); }
+
     /* Confetti */
     .confetti { position: absolute; width: 10px; height: 10px; background: #f00; animation: fall 3s linear forwards; z-index: 2000; }
     @keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
@@ -533,9 +557,15 @@
             </div>
         </div>
 
-        <button class="btn-hero-play" onclick="startNewDeckFlow()">
-            <span>🚀 Start Learning!</span>
-        </button>
+        <div class="smart-btn-container">
+            <button class="btn-hero-play" onclick="startSmartSession()">
+                <span>🚀 Smart Learning</span>
+                <span style="font-size:11px; font-weight:400; opacity:0.8; text-transform:uppercase; letter-spacing:0.5px">Play Daily Mix</span>
+            </button>
+            <button class="btn-smart-settings" onclick="document.getElementById('welcomeScreen').style.display='flex'">
+               🎯
+            </button>
+        </div>
 
         <div class="quick-actions-title">Quick Actions</div>
         <div class="quick-grid">
@@ -578,7 +608,6 @@
                 <div class="word-huge" id="gameFrontText">Hola</div>
                 
                 <div id="gameInputArea" style="display:none; width:100%; margin-top:15px;">
-                    <!-- Removed inline onkeyup lowercase logic, added autocapitalize="off" -->
                     <input type="text" class="input-game" id="gameInput" placeholder="Type answer..." autocomplete="off" autocapitalize="off">
                     <div id="gameFeedback" style="height:20px; font-size:13px; margin-top:5px;"></div>
                 </div>
@@ -622,7 +651,6 @@
     <div id="panel-words" class="panel">
         <h2 style="margin-top:0">My Words</h2>
         
-        <!-- NEW VERTICAL LANDING FOR WORDS -->
         <div id="wordsLanding">
             <button class="big-nav-btn" onclick="toggleWordSection('add')">
                 <div>
@@ -638,14 +666,12 @@
             </button>
         </div>
 
-        <!-- NEW ADD CARD FORM STYLE -->
         <div id="wordsAddSection" style="display:none; margin-top:20px;">
              <button class="crumb-btn" onclick="toggleWordSection('landing')">‹ Back</button>
              <h3 style="color:var(--text-main); margin-bottom:20px;">Create Card</h3>
              
              <div class="form-group">
                 <label class="form-label">Spanish Word</label>
-                <!-- Removed onkeyup lowercase, added autocapitalize=off -->
                 <input type="text" id="addEs" class="input-add" placeholder="e.g. la mesa" autocapitalize="off" autocomplete="off">
              </div>
              
@@ -726,7 +752,7 @@
         </div>
 
         <button class="g-btn red" id="btnResetData" style="width:100%">Reset All Progress</button>
-        <div style="font-size:10px; color:#444; text-align:center; margin-top:20px;">v2.6 Midnight Edition</div>
+        <div style="font-size:10px; color:#444; text-align:center; margin-top:20px;">v2.7 Smart Edition</div>
     </div>
 
     <div id="panel-ranks" class="panel">
@@ -747,12 +773,38 @@
         <span class="nav-icon">🎮</span>
         <span class="nav-label">Play</span>
     </button>
-    <!-- Updated onclick to go to Landing -->
     <button class="nav-item" data-panel="words" onclick="switchPanel('words'); toggleWordSection('landing');">
         <span class="nav-icon">🗂</span>
         <span class="nav-label">Words</span>
     </button>
 </nav>
+
+<div class="overlay" id="welcomeScreen" style="z-index:9950;">
+    <div class="overlay-box" style="text-align:left">
+        <h2 style="color:#fff; margin-top:0">Welcome! 👋</h2>
+        <p style="color:var(--text-muted); font-size:13px; line-height:1.4">
+            To personalize your Smart Learning sessions, please select your current Spanish level. You can change this later.
+        </p>
+        <div class="level-select-grid">
+            <div class="level-btn" onclick="selectSmartLevel('beginner')">
+                <strong>🐣 Beginner</strong>
+                <span>New to Spanish. Start from scratch.</span>
+            </div>
+            <div class="level-btn" onclick="selectSmartLevel('basic')">
+                <strong>🌱 Basic</strong>
+                <span>I know some words and simple phrases.</span>
+            </div>
+            <div class="level-btn" onclick="selectSmartLevel('intermediate')">
+                <strong>🧗 Intermediate</strong>
+                <span>I can hold a basic conversation.</span>
+            </div>
+            <div class="level-btn" onclick="selectSmartLevel('proficient')">
+                <strong>🚀 Proficient</strong>
+                <span>I am comfortable with most topics.</span>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="overlay" id="overlay">
     <div class="overlay-box">
@@ -817,7 +869,10 @@ const STATE = {
   view: 'home', selDiff: null, selLevel: null,
   wordManagerLimit: 25, activeFilter: { status: 'all', topic: 'all' }, sortAsc: true,
   currentDeckId: null, currentCard: null, isStruggleMode: false,
-  direction: 'es-en', mode: 'reveal', includeCustom: true
+  direction: 'es-en', mode: 'reveal', includeCustom: true,
+  
+  // Smart Learning State
+  smartFocus: null // { diff: 'id', level: 1 }
 };
 
 const RANKS = [
@@ -858,13 +913,16 @@ async function init() {
   updateGameMiniSettings();
   initTTS(); 
   
+  // Check First Run / Smart Level
+  if(!STATE.smartFocus) {
+      document.getElementById('welcomeScreen').style.display = 'flex';
+  }
+
   switchPanel('home');
   
   setTimeout(() => {
       document.getElementById('loadingScreen').style.opacity = '0';
       setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
-      
-      // Fix: Force animation update after loading
       setTimeout(updateDailyBarUI, 100);
   }, 1500);
 }
@@ -915,14 +973,13 @@ function loadLocalData() {
   const settings = JSON.parse(localStorage.getItem('sf_settings') || '{}');
   if(settings.dir) STATE.direction = settings.dir;
   if(settings.mode) STATE.mode = settings.mode;
-  if(settings.selDiff && !activeSession) STATE.selDiff = settings.selDiff; 
+  if(settings.smartFocus) STATE.smartFocus = settings.smartFocus;
   STATE.includeCustom = settings.includeCustom !== false;
 
   STATE.dayStreak = parseInt(localStorage.getItem('sf_dayStreak') || '0');
   STATE.lastActiveDate = localStorage.getItem('sf_lastActiveDate');
   STATE.lastRankIndex = parseInt(localStorage.getItem('sf_lastRankIndex') || '0');
   
-  // Daily Count Logic
   const today = new Date().toDateString();
   const savedDailyDate = localStorage.getItem('sf_dailyDate');
   if (savedDailyDate === today) {
@@ -947,7 +1004,6 @@ function saveData() {
   localStorage.setItem('sf_dayStreak', STATE.dayStreak.toString());
   if(STATE.lastActiveDate) localStorage.setItem('sf_lastActiveDate', STATE.lastActiveDate);
   localStorage.setItem('sf_lastRankIndex', STATE.lastRankIndex.toString());
-  
   localStorage.setItem('sf_dailyCount', STATE.dailyCount.toString());
 
   if (STATE.currentDeckId || STATE.isStruggleMode || STATE.customSessionList) {
@@ -963,7 +1019,7 @@ function saveData() {
       localStorage.removeItem('sf_active_session');
   }
 
-  const settings = { dir: STATE.direction, mode: STATE.mode, selDiff: STATE.selDiff, includeCustom: STATE.includeCustom };
+  const settings = { dir: STATE.direction, mode: STATE.mode, smartFocus: STATE.smartFocus, includeCustom: STATE.includeCustom };
   localStorage.setItem('sf_settings', JSON.stringify(settings));
 }
 
@@ -981,19 +1037,170 @@ function injectCustomCards() {
 function cleanupOrphanedData() {
   const validUids = new Set();
   STATE.activeDecks.forEach(d => d.cards.forEach(c => validUids.add(getCardId(d.id, c))));
-  
   let changed = false;
   STATE.struggleList.forEach(uid => { if(!validUids.has(uid)) { STATE.struggleList.delete(uid); changed = true; }});
   STATE.starred.forEach(uid => { if(!validUids.has(uid)) { STATE.starred.delete(uid); changed = true; }});
-  
-  Object.keys(STATE.progress).forEach(uid => {
-      if(!validUids.has(uid)) { delete STATE.progress[uid]; changed = true; }
-  });
-  
+  Object.keys(STATE.progress).forEach(uid => { if(!validUids.has(uid)) { delete STATE.progress[uid]; changed = true; }});
   if(changed) saveData();
 }
 
-// --- HOME RENDER ---
+// --- HOME & SMART ---
+function selectSmartLevel(diffId) {
+    STATE.smartFocus = { diff: diffId, level: 1 };
+    saveData();
+    document.getElementById('welcomeScreen').style.display = 'none';
+}
+
+function startSmartSession() {
+    // 1. Identify Target Pool
+    if(!STATE.smartFocus) { document.getElementById('welcomeScreen').style.display='flex'; return; }
+    
+    // We need to find the decks matching current focus
+    let targetDecks = STATE.activeDecks.filter(d => d.difficultyId === STATE.smartFocus.diff && d.levelIndex === STATE.smartFocus.level);
+    
+    // Progression Check: If no new words in current level, move to next
+    let newWordsInLevel = [];
+    targetDecks.forEach(d => {
+        d.cards.forEach(c => {
+            const uid = getCardId(d.id, c);
+            if(STATE.blacklist.has(uid)) return;
+            // Check if un-shown (seen == 0 or undefined)
+            if(!STATE.progress[uid] || !STATE.progress[uid].seen) newWordsInLevel.push({ ...c, _realDeckId: d.id, _uid: uid });
+        });
+    });
+
+    if(newWordsInLevel.length === 0) {
+        // Try to advance level
+        const struggleCountInLevel = countStruggleInLevel(STATE.smartFocus.diff, STATE.smartFocus.level);
+        
+        // Mastery Gate: If too many struggles in current level, DO NOT ADVANCE. Just review.
+        if (struggleCountInLevel > 3) {
+            // Stay in level, but no new words. Just Review Session.
+        } else {
+            // Advance
+            const nextLevel = STATE.smartFocus.level + 1;
+            // Check if next level exists in this difficulty
+            const hasNextLevel = STATE.activeDecks.some(d => d.difficultyId === STATE.smartFocus.diff && d.levelIndex === nextLevel);
+            
+            if (hasNextLevel) {
+                STATE.smartFocus.level = nextLevel;
+            } else {
+                // Move to next Difficulty
+                const diffOrder = STATE.decksRaw.difficulties.map(d => d.id);
+                const currIdx = diffOrder.indexOf(STATE.smartFocus.diff);
+                if (currIdx < diffOrder.length - 1) {
+                    STATE.smartFocus.diff = diffOrder[currIdx + 1];
+                    STATE.smartFocus.level = 1;
+                } else {
+                    alert("You have reached the end of the content! Resetting to start.");
+                    STATE.smartFocus.level = 1; 
+                }
+            }
+            saveData();
+            // Recursive call to start session with new focus
+            startSmartSession(); 
+            return;
+        }
+    }
+
+    // Refresh target decks after potential level change
+    targetDecks = STATE.activeDecks.filter(d => d.difficultyId === STATE.smartFocus.diff && d.levelIndex === STATE.smartFocus.level);
+
+    // 2. Build the Pools
+    let poolStruggle = [];
+    let poolKnown = [];
+    let poolNew = [];
+
+    // Global Struggle Pool (Global, not just current level)
+    STATE.activeDecks.forEach(d => d.cards.forEach(c => {
+        const uid = getCardId(d.id, c);
+        if(STATE.struggleList.has(uid)) poolStruggle.push({ ...c, _realDeckId: d.id, _uid: uid });
+    }));
+
+    // Local Known & New Pool (From current level)
+    targetDecks.forEach(d => d.cards.forEach(c => {
+        const uid = getCardId(d.id, c);
+        if(STATE.blacklist.has(uid) || STATE.struggleList.has(uid)) return; // Don't duplicate struggle
+        
+        const p = STATE.progress[uid];
+        const isKnown = p && (p.scoreEsEn >= 4 || p.scoreEnEs >= 4);
+        
+        if(isKnown) poolKnown.push({ ...c, _realDeckId: d.id, _uid: uid });
+        else if(!p || !p.seen) poolNew.push({ ...c, _realDeckId: d.id, _uid: uid });
+    }));
+
+    // 3. Select Cards (5 Struggle / 4 Known / 6 New)
+    const finalSession = [];
+    
+    // Shuffle helper
+    const shuffle = (arr) => arr.sort(() => 0.5 - Math.random());
+    
+    shuffle(poolStruggle);
+    shuffle(poolKnown);
+    shuffle(poolNew);
+
+    // Fill Struggle (Max 5)
+    let sCount = 0;
+    for(let i=0; i<5 && i<poolStruggle.length; i++) { finalSession.push(poolStruggle[i]); sCount++; }
+
+    // Logic: If Struggle < 5, should we fill with Known or New? 
+    // User requested: "Replace them with 3 un-shown and 2 known".
+    // My improvement: "Don't overload with New". 
+    // Compromise: Fill gaps with Known to maintain confidence.
+    
+    // Fill Known (Target 4 + any filled struggle slots)
+    // Actually adhering to strict user request logic but safer:
+    // Base Known = 4. 
+    // Base New = 6.
+    // If Struggle is missing X slots, give X to Known (safer) OR split.
+    // Let's do: Fill remaining Struggle slots with Known.
+    
+    let kTarget = 4 + (5 - sCount); 
+    
+    // Fill Known
+    for(let i=0; i<kTarget && i<poolKnown.length; i++) { finalSession.push(poolKnown[i]); }
+
+    // Fill New (Target 6, unless Mastery Gate was hit earlier -> then 0)
+    // If we have a huge struggle backlog (>5), reduce new cards to 3 to focus on repairs.
+    let nTarget = (poolStruggle.length > 5) ? 3 : 6;
+    
+    for(let i=0; i<nTarget && i<poolNew.length; i++) { finalSession.push(poolNew[i]); }
+
+    // If session is too small (<5 cards), force fill with random knowns/news from decks
+    if (finalSession.length < 5 && (poolKnown.length > 0 || poolNew.length > 0)) {
+        // Just fill up to 10 with whatever is left
+        let remKnown = poolKnown.slice(kTarget);
+        let remNew = poolNew.slice(nTarget);
+        let remainder = [...remKnown, ...remNew];
+        shuffle(remainder);
+        for(let i=0; i<5 && i<remainder.length; i++) finalSession.push(remainder[i]);
+    }
+
+    if (finalSession.length === 0) return alert("No cards available in this level yet!");
+
+    startFilteredSession(finalSession.map(c => c._uid));
+    
+    // Display Toast with Context
+    const diffName = STATE.decksRaw.difficulties.find(d=>d.id === STATE.smartFocus.diff)?.label || STATE.smartFocus.diff;
+    const msg = `Smart Session: ${diffName} Level ${STATE.smartFocus.level}`;
+    const toast = document.getElementById('rankNotification');
+    toast.textContent = msg; toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 3000);
+}
+
+function countStruggleInLevel(diffId, levelIdx) {
+    let count = 0;
+    STATE.activeDecks.forEach(d => {
+        if(d.difficultyId === diffId && d.levelIndex === levelIdx) {
+            d.cards.forEach(c => {
+                if(STATE.struggleList.has(getCardId(d.id, c))) count++;
+            });
+        }
+    });
+    return count;
+}
+
+// --- RENDER HOME ---
 function renderHome() {
     const hour = new Date().getHours();
     let msg = "Hola amigo!";
@@ -1025,7 +1232,6 @@ function updateDailyBarUI() {
     const pct = (current / max) * 100;
     
     const bar = document.getElementById('dailyProgressBar');
-    // Ensure transition works by setting width
     requestAnimationFrame(() => {
         bar.style.width = `${pct}%`;
     });
@@ -1134,7 +1340,6 @@ function renderDecks() {
       if(status === 'gold') el.classList.add('mastered-gold');
       else if(status === 'green') el.classList.add('mastered-green');
       
-      // Added Indicators
       el.innerHTML = `
         <div class="deck-icon">${icon}</div>
         <div class="deck-title">${label}</div>
@@ -1411,7 +1616,7 @@ function renderGameCard() {
   document.getElementById('gameControlsStart').style.display = 'flex';
   
   document.getElementById('btnEditCard').style.display = c._custom ? 'block' : 'none';
-  // NEW: Hide speak button if in EN -> ES mode
+  
   if (STATE.direction === 'en-es') {
       document.getElementById('btnSpeakCard').style.display = 'none';
   } else {
@@ -1426,10 +1631,7 @@ function renderGameCard() {
   
   if (STATE.mode === 'type') {
       document.getElementById('gameInputArea').style.display = 'block';
-      // Auto-Focus Logic: Increased to 300ms to ensure animation finishes before focus
-      setTimeout(() => { 
-          input.focus(); 
-      }, 300);
+      setTimeout(() => { input.focus(); }, 300);
   } else {
       document.getElementById('gameInputArea').style.display = 'none';
   }
@@ -1475,7 +1677,6 @@ function showAnswer(force = false) {
     const targets = rawTarget.split('/').map(t => cleanText(t));
     const cleanThe = (s) => s.replace(/^(the|el|la|los|las|un|una)\s+/, '');
     
-    // Check match
     let isCorrect = targets.some(t => cleanThe(t) === cleanThe(val));
     
     if(isCorrect) {
@@ -1492,7 +1693,6 @@ function showAnswer(force = false) {
   }
 
   document.getElementById('gameReveal').style.display = 'block';
-  // NEW: Ensure speak button appears when answer is shown
   document.getElementById('btnSpeakCard').style.display = 'block';
   document.getElementById('gameControlsStart').style.display = 'none';
   if(STATE.mode === 'reveal') document.getElementById('gameControlsJudge').style.display = 'flex';
