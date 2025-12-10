@@ -509,6 +509,31 @@
       .word-huge { font-size: 26px; }
       .flashcard { min-height: 240px; padding: 20px; }
     }
+/* New styles for the top of the card (prevents overlay) */
+    .card-meta-row {
+        display: flex; 
+        justify-content: space-between; 
+        width: 100%; 
+        align-items: center;
+        margin-bottom: 20px; /* Pushes content down so it doesn't overlap */
+    }
+
+    /* New style for the sound icon */
+    .btn-tts {
+        background: transparent; 
+        border: none; 
+        font-size: 0.8em; /* Slightly smaller than text */
+        cursor: pointer;
+        margin-right: 8px; 
+        opacity: 0.7; 
+        transition: 0.2s;
+        vertical-align: middle; 
+        display: inline-block; 
+        padding: 4px;
+    }
+    .btn-tts:hover { opacity: 1; transform: scale(1.1); }
+    .btn-tts:active { transform: scale(0.9); }
+    
   </style>
 </head>
 <body>
@@ -615,12 +640,15 @@
             </div>
 
             <div class="flashcard" id="gameCard">
-                <div style="display:flex; justify-content:space-between; width:100%; position:absolute; top:20px; left:0; padding:0 20px;">
+                <div class="card-meta-row">
                     <div style="display:flex; align-items:center; gap:6px;">
                          <div id="gameStatusDot" class="status-dot"></div>
                          <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;" id="gameDeckName">DECK</div>
                     </div>
-                    <div id="btnStarCard" onclick="toggleStar()" style="font-size:18px; color:rgba(255,255,255,0.2); cursor:pointer">★</div>
+                    <div style="display:flex; gap:10px">
+                        <div id="btnEditCard" onclick="openEditForCurrentCard()" style="font-size:16px; color:var(--text-muted); cursor:pointer; display:none">✏️</div>
+                        <div id="btnStarCard" onclick="toggleStar()" style="font-size:18px; color:rgba(255,255,255,0.2); cursor:pointer">★</div>
+                    </div>
                 </div>
 
                 <div class="lang-label" id="gameFrontLabel">Spanish</div>
@@ -637,10 +665,7 @@
                     <div class="reveal-ex" id="gameExamples"></div>
                 </div>
                 
-                <div style="position:absolute; bottom:15px; display:flex; gap:10px;">
-                   <button id="btnEditCard" onclick="openEditForCurrentCard()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:12px;">EDIT</button>
-                   <button id="btnSpeakCard" onclick="speakCurrentCard()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:12px;">🔊 LISTEN</button>
-                </div>
+                <div style="flex:1"></div> 
             </div>
             
             <div class="streak-display" id="streakIndicator"></div>
@@ -1801,7 +1826,8 @@ function renderGameCard() {
   
   document.getElementById('btnPickDeck').style.display = 'none';
   document.getElementById('btnShowAnswer').style.display = 'block';
-  // Replaced Delete with Return
+  
+  // Handle Return/Prev Button
   const btnPrev = document.getElementById('btnPrevCard');
   if(STATE.history.length > 0) {
       btnPrev.style.display = 'block';
@@ -1817,44 +1843,38 @@ function renderGameCard() {
   document.getElementById('gameControlsNext').style.display = 'none';
   document.getElementById('gameControlsStart').style.display = 'flex';
   
+  // Show Edit Pencil if custom
   document.getElementById('btnEditCard').style.display = c._custom ? 'block' : 'none';
   
-  if (STATE.direction === 'en-es') {
-      document.getElementById('btnSpeakCard').style.display = 'none';
-  } else {
-      document.getElementById('btnSpeakCard').style.display = 'block';
-  }
+  // Star State
   const btnStar = document.getElementById('btnStarCard');
   btnStar.style.color = STATE.starred.has(c._uid) ? 'var(--spanish-gold)' : 'rgba(255,255,255,0.2)';
 
-  // --- Status Dot Indicator Logic ---
+  // Status Dot
   const dot = document.getElementById('gameStatusDot');
-  dot.className = 'status-dot'; // Reset
+  dot.className = 'status-dot'; 
   if (STATE.struggleList.has(c._uid)) {
       dot.classList.add('red');
   } else {
       const p = STATE.progress[c._uid] || {};
       const score = (STATE.direction === 'es-en') ? (p.scoreEsEn||0) : (p.scoreEnEs||0);
-      // Logic: if status is known (score >= 4), green. Else white.
-      if (score >= 4) {
-          dot.classList.add('green');
-      } else {
-          dot.classList.add('white');
-      }
+      if (score >= 4) dot.classList.add('green');
+      else dot.classList.add('white');
   }
 
+  // Input Mode Reset
   const input = document.getElementById('gameInput');
   input.value = '';
   document.getElementById('gameFeedback').textContent = '';
   
   if (STATE.mode === 'type') {
       document.getElementById('gameInputArea').style.display = 'block';
-      // Auto Focus
       setTimeout(() => { input.focus(); }, 100);
   } else {
       document.getElementById('gameInputArea').style.display = 'none';
   }
 
+  // Mini Settings Text
   document.getElementById('miniBtnDir').textContent = STATE.direction === 'es-en' ? 'Swap: ES ➡ EN' : 'Swap: EN ➡ ES';
   document.getElementById('miniBtnDir').className = STATE.direction === 'en-es' ? 'mini-btn active' : 'mini-btn';
   
@@ -1864,14 +1884,21 @@ function renderGameCard() {
   document.getElementById('streakIndicator').textContent = STATE.streak >= 2 ? `🔥 ${STATE.streak}` : '';
   document.getElementById('gameDeckName').textContent = STATE.activeDecks.find(d => d.id === c._realDeckId)?.name || "";
   
+  // --- CONTENT RENDERING (With Audio Icon) ---
   const isEs = STATE.direction === 'es-en';
-  
+  const cleanEs = c.es.replace(/'/g, "\\'"); // Escape quotes for JS string
+  const audioBtn = `<button class="btn-tts" onclick="speakSpanish('${cleanEs}')">🔊</button>`;
+
   document.getElementById('gameFrontLabel').textContent = isEs ? "Spanish" : "English";
-  let frontHtml = isEs ? c.es : c.en;
+  
+  // Inject Audio button ONLY if the side is Spanish
+  let frontHtml = isEs ? `${audioBtn} ${c.es}` : c.en;
   document.getElementById('gameFrontText').innerHTML = frontHtml;
   
   document.getElementById('gameBackLabel').textContent = isEs ? "English" : "Spanish";
-  let backHtml = isEs ? c.en : c.es;
+  
+  // Inject Audio button ONLY if the side is Spanish
+  let backHtml = isEs ? c.en : `${audioBtn} ${c.es}`;
   document.getElementById('gameBackText').innerHTML = backHtml;
   
   let ex = "";
